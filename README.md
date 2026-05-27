@@ -7,6 +7,16 @@
 
 ---
 
+## 🚀 Quick Access (Live Demo)
+
+**Recommended (Faster & More Stable in China):**
+- **Cloudflare Pages**: [https://opentavern.pages.dev](https://opentavern.pages.dev)
+
+**Backup:**
+- **GitHub Pages**: [https://hajimides.github.io/OpenTavern](https://hajimides.github.io/OpenTavern)
+
+---
+
 ## ✨ Key Features
 
 - **Zero Setup** — Single HTML file. Double-click to run. No installation or server required.
@@ -39,19 +49,18 @@
 
 ## 🚀 Quick Start
 
-### Run Locally (Recommended)
+### Run Locally (Recommended for Development)
 
-1. Download `OpenTavern.html`
-2. Open it with any modern browser (Chrome, Edge, Firefox, Safari)
+1. Download `index.html` (or `OpenTavern.html`)
+2. Open it with any modern browser
 3. Click the **⚙️ Settings** button and configure your API endpoint and key
 
 ### Deploy Online
 
-Upload `OpenTavern.html` to any static hosting service:
-- GitHub Pages
-- Cloudflare Pages
-- Vercel
-- Netlify
+You can use either of the following methods:
+
+- **Cloudflare Pages** (Recommended)
+- **GitHub Pages**
 
 ---
 
@@ -118,7 +127,7 @@ A: Yes, after the initial load and API configuration.
 A: Yes. For summarization, you can use a separate, more permissive model to avoid refusals.
 
 **Q: How do I update the app?**  
-A: Simply download the latest `OpenTavern.html` and replace the old file.
+A: Simply download the latest version and replace the file, or push to GitHub if using Cloudflare Pages / GitHub Pages.
 
 ---
 
