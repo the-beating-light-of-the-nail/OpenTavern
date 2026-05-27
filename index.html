@@ -3547,6 +3547,7 @@ function streamChat(onToken, onComplete, onError) {
     } catch (err) {
         console.error('buildMessagesForAPI failed:', err);
         state.isGenerating = false;
+        appStore.notify('isGenerating');
         onError(new Error('构建提示词时出错：' + (err.message || err)));
         return;
     }
@@ -3600,6 +3601,7 @@ function streamChat(onToken, onComplete, onError) {
             reader.read().then(function(result) {
                 if (result.done) {
                     state.isGenerating = false;
+                    appStore.notify('isGenerating');
                     state.abortController = null;
                     onComplete(fullContent);
                     return;
@@ -3613,6 +3615,7 @@ function streamChat(onToken, onComplete, onError) {
                     var data = line.slice(6);
                     if (data === '[DONE]') {
                         state.isGenerating = false;
+                        appStore.notify('isGenerating');
                         state.abortController = null;
                         onComplete(fullContent);
                         return;
@@ -3629,6 +3632,7 @@ function streamChat(onToken, onComplete, onError) {
                 pump();
             }).catch(function(e) {
                 state.isGenerating = false;
+                appStore.notify('isGenerating');
                 state.abortController = null;
                 if (e.name === 'AbortError') onComplete(fullContent);
                 else onError(e);
@@ -3637,6 +3641,7 @@ function streamChat(onToken, onComplete, onError) {
         pump();
     }).catch(function(e) {
         state.isGenerating = false;
+        appStore.notify('isGenerating');
         state.abortController = null;
         if (e.name === 'AbortError') onComplete('');
         else onError(e);
@@ -3648,6 +3653,7 @@ function stopGeneration() {
         state.abortController.abort();
         state.abortController = null;
         state.isGenerating = false;
+        appStore.notify('isGenerating');
     }
 }
 
@@ -3921,8 +3927,10 @@ function newConversation() {
     conv._lastRenderedVisibleCount = 0;   // 新对话，增量状态重置
     conv._showAllMessages = false;
     persistState();
-    // activeConvId change will handle most renders
-    renderWorldInfoBudgetWarning();
+
+    // 显式通知 activeConvId 变更，触发列表和消息渲染
+    requestRender('activeConvId');
+
     if (isMobile()) closeSidebar();
 }
 
@@ -3942,6 +3950,10 @@ function loadConversation(id) {
     }
 
     persistState();
+
+    // 显式通知 activeConvId 变更
+    requestRender('activeConvId');
+
     if (isMobile()) closeSidebar();
 }
 
@@ -4081,7 +4093,7 @@ function importConversations(file) {
                 }
                 state.activeConvId = state.conversationOrder[0];
                 persistState();
-                // activeConvId change handles rendering
+                requestRender('activeConvId');
             }
             var msg = t('import_conv_success') + imported + t('import_conv_success_suffix');
             if (skipped > 0) msg += ' ' + skipped + t('import_conv_duplicate');
@@ -4614,6 +4626,7 @@ function regenerateMessage(actualIdx) {
                 persistState();
             }
             state.isGenerating = false;
+            appStore.notify('isGenerating');      // 关键修复：通知UI更新输入状态
             // 使用增量追加而不是全量渲染，避免用户浏览历史时被强制滚到底部
             appendFinalAssistantMessage(c, fullContent);
             renderTokenBar();                     // lightweight
@@ -4623,6 +4636,7 @@ function regenerateMessage(actualIdx) {
             var streamingEl = document.getElementById('streamingMsg');
             if (streamingEl) streamingEl.remove();
             state.isGenerating = false;
+            appStore.notify('isGenerating');
             renderMessagesOnly();
             alert('Error: ' + (err.message || err));
         }
@@ -4684,6 +4698,7 @@ function sendMessage() {
                 persistState();
             }
             state.isGenerating = false;
+            appStore.notify('isGenerating');      // 关键修复：通知UI更新输入状态
             // 使用增量追加而不是全量渲染，避免用户浏览历史时被强制滚到底部
             appendFinalAssistantMessage(conv, fullContent);
             renderTokenBar();
@@ -4693,6 +4708,7 @@ function sendMessage() {
             var streamingEl = document.getElementById('streamingMsg');
             if (streamingEl) streamingEl.remove();
             state.isGenerating = false;
+            appStore.notify('isGenerating');
             renderMessagesOnly();
             alert('Error: ' + (err.message || err));
         }
