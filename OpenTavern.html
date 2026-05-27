@@ -1642,91 +1642,66 @@ function makeId() {
     return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
 }
 
-// ==================== Lightweight Reactive State (Pub/Sub + Proxy) ====================
-/**
- * Simple reactive store for OpenTavern.
- * Supports:
- * - Proxy-based deep mutation detection (best effort)
- * - Subscription by key or wildcard
- * - Automatic partial re-render triggering
- */
+// ==================== 状态容器 + 手动通知机制 ====================
+// 当前为非响应式设计（已移除 Proxy 自动响应）。
+// 修改 state 后请显式调用 appStore.notify('key') 或直接调用对应的 renderXXXOnly() / requestRender()。
+// 推荐做法：直接修改 state.xxx 后，显式调用 appStore.notify('xxx') 或直接调用对应 render 函数。
 function createReactiveStore(initialState) {
-    var listeners = {}; // key -> Set of callbacks
-    var allListeners = new Set(); // listeners that want everything
+    // 使用普通对象，不再使用 Proxy 做自动通知
+    var state = JSON.parse(JSON.stringify(initialState || {}));
+
+    var listeners = {};           // 'settings' -> Set<Function>
+    var globalListeners = new Set();
 
     function notify(changedKeys) {
-        // Notify specific key listeners
+        // 通知特定 key 的监听者
         changedKeys.forEach(function(key) {
             if (listeners[key]) {
                 listeners[key].forEach(function(fn) {
-                    try { fn(key); } catch(e) { console.error(e); }
+                    try { fn(key); } catch (e) { console.error(e); }
                 });
             }
         });
-        // Notify global listeners
-        allListeners.forEach(function(fn) {
-            try { fn(changedKeys); } catch(e) { console.error(e); }
+
+        // 通知全局监听者
+        globalListeners.forEach(function(fn) {
+            try { fn(changedKeys); } catch (e) { console.error(e); }
         });
     }
 
-    var internalState = JSON.parse(JSON.stringify(initialState || {}));
-
-    var handler = {
-        set: function(target, prop, value) {
-            if (target[prop] !== value) {
-                target[prop] = value;
-                notify([prop]);
-            }
-            return true;
-        },
-        deleteProperty: function(target, prop) {
-            delete target[prop];
-            notify([prop]);
-            return true;
-        }
-    };
-
-    var proxy = new Proxy(internalState, handler);
-
-    // For nested objects, we can wrap on access (simplified for this app)
-    function getState() {
-        return proxy;
-    }
-
-    function subscribe(keyOrFn, callback) {
-        if (typeof keyOrFn === 'function') {
-            // global listener
-            allListeners.add(keyOrFn);
-            return function unsubscribe() {
-                allListeners.delete(keyOrFn);
-            };
-        }
-
-        var key = keyOrFn;
-        if (!listeners[key]) listeners[key] = new Set();
-        listeners[key].add(callback);
-
-        return function unsubscribe() {
-            if (listeners[key]) listeners[key].delete(callback);
-        };
-    }
-
-    function set(key, value) {
-        proxy[key] = value;
-    }
-
-    function update(key, updater) {
-        var current = proxy[key];
-        var next = typeof updater === 'function' ? updater(current) : updater;
-        proxy[key] = next;
-    }
-
     return {
-        get state() { return getState(); },
-        subscribe: subscribe,
-        set: set,
-        update: update,
-        notify: function(keys) { notify(Array.isArray(keys) ? keys : [keys]); }
+        get state() {
+            return state;
+        },
+
+        // 订阅某个 key 的变化，或订阅所有变化
+        subscribe: function(keyOrFn, callback) {
+            if (typeof keyOrFn === 'function') {
+                // 全局订阅
+                globalListeners.add(keyOrFn);
+                return function unsubscribe() {
+                    globalListeners.delete(keyOrFn);
+                };
+            }
+
+            var key = keyOrFn;
+            if (!listeners[key]) {
+                listeners[key] = new Set();
+            }
+            listeners[key].add(callback);
+
+            return function unsubscribe() {
+                if (listeners[key]) {
+                    listeners[key].delete(callback);
+                }
+            };
+        },
+
+        // 手动触发通知（推荐在修改深层状态后调用）
+        notify: function(keys) {
+            var arr = Array.isArray(keys) ? keys : [keys];
+            notify(arr);
+        }
     };
 }
 
@@ -1770,7 +1745,9 @@ function defaultConversation() {
     };
 }
 
-// ==================== App State (now reactive) ====================
+// ==================== App State ====================
+// 注意：当前使用**非响应式**状态管理。
+// 直接修改 state.xxx 后，必须手动调用 appStore.notify('xxx') 或对应的 renderXXXOnly() 函数。
 var appStore = createReactiveStore({
     settings: defaultSettings(),
     conversations: {},
@@ -1780,9 +1757,10 @@ var appStore = createReactiveStore({
     abortController: null
 });
 
-var state = appStore.state; // keep backward compat for existing code that does state.xxx = yyy
+var state = appStore.state; // 直接暴露普通对象，方便现有代码继续使用 state.xxx = yyy
 
-// Map of state keys -> render functions that care about them
+// 手动渲染订阅表（必须通过 appStore.notify('key') 显式触发）
+// 由于已移除自动响应式，状态修改后需要主动调用 notify 或直接调用渲染函数
 var renderSubscriptions = {
     'conversations': renderConversationList,
     'conversationOrder': renderConversationList,
@@ -1794,19 +1772,18 @@ var renderSubscriptions = {
     },
     'isGenerating': function() {
         updateInputState();
-        renderMessagesOnly(); // for streaming indicator
+        renderMessagesOnly();
     },
     'settings': function() {
         updateInputState();
         renderTopBar();
     },
-    // World Info related
     'worldInfo': function() {
         renderWorldInfoBudgetWarning();
     }
 };
 
-// Wire the store to trigger partial renders
+// 只有当代码显式调用 appStore.notify('xxx') 时才会触发对应渲染
 appStore.subscribe(function(changedKeys) {
     changedKeys.forEach(function(key) {
         if (renderSubscriptions[key]) {
@@ -1819,28 +1796,75 @@ appStore.subscribe(function(changedKeys) {
     });
 });
 
-// Helper to force full render when needed
+// ==================== 渲染辅助函数（当前推荐做法） ====================
+// 注意：由于已移除自动响应式状态管理，这些函数只是便捷封装。
+// 状态修改后请显式调用对应渲染函数或 requestRender / requestFullRender。
+
 function requestFullRender() {
     renderAll();
 }
 
-// ==================== Targeted Render Helpers ====================
-// These are preferred over renderAll() when possible
 function requestRender(key) {
     if (Array.isArray(key)) {
-        key.forEach(function(k) { appStore.notify([k]); });
+        appStore.notify(key);
     } else {
         appStore.notify([key]);
     }
 }
 
-// Common granular render triggers
-function renderActiveConversation() {
-    requestRender(['activeConvId', 'conversations']);
-}
-
 function renderMessagesOnly() {
     if (dom.messagesContainer) renderMessages();
+}
+
+// 流式完成后增量追加最终消息（避免全量重绘导致滚动跳到底部）
+function appendFinalAssistantMessage(conv, fullContent) {
+    if (!conv || !dom.messagesContainer || !fullContent) return;
+
+    // 防护：如果当前激活的对话已经不是这个 conv 了（用户切换了对话），直接放弃追加
+    // 避免在快速切换对话后，旧的流式完成回调错误地往当前对话里重复追加消息
+    var activeConv = getActiveConv();
+    if (!activeConv || activeConv.id !== conv.id) {
+        return;
+    }
+
+    var container = dom.messagesContainer;
+    var charName = conv.character ? conv.character.name : t('sender_assistant');
+    var actualIdx = conv.messages.length - 1; // 刚 push 进去的索引
+
+    var msgDiv = document.createElement('div');
+    msgDiv.className = 'msg-enter msg-assistant flex justify-start';
+    msgDiv.innerHTML = `
+        <div class="max-w-[80%] msg-wrapper">
+            <p class="text-[10px] text-zinc-500 mb-1 ml-1 font-medium">${escapeHtml(charName)}</p>
+            <div class="msg-bubble">${highlightDialogue(fullContent)}</div>
+            <div class="msg-actions">
+                <button class="msg-action-btn copy-btn" data-action="copy" data-msg-idx="${actualIdx}" title="${t('copy')}">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+                <button class="msg-action-btn retry-btn" data-action="retry" data-msg-idx="${actualIdx}" title="${t('regenerate')}">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                </button>
+                <button class="msg-action-btn del-btn" data-action="delete" data-msg-idx="${actualIdx}" title="${t('delete_msg')}">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+            </div>
+        </div>`;
+
+    container.appendChild(msgDiv);
+
+    // 更新增量渲染计数
+    if (typeof conv._lastRenderedVisibleCount === 'number') {
+        conv._lastRenderedVisibleCount += 1;
+    }
+
+    // 只有当用户当前在底部时才自动滚动到底部
+    var isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 150;
+    if (isNearBottom) {
+        container.scrollTop = container.scrollHeight;
+    }
+
+    // 更新 token 信息栏（函数独立性考虑，即使调用方也会调用一次）
+    renderTokenBar();
 }
 
 function renderConversationListOnly() {
@@ -1855,15 +1879,23 @@ function renderCharacterUI() {
 function initState() {
     var saved = loadAll();
     if (saved) {
-        if (saved.settings) Object.assign(state.settings, saved.settings);
+        // 推荐使用逐属性赋值，而不是 Object.assign
+        // 这样即使将来恢复响应式，也更容易触发正确的通知
+        if (saved.settings) {
+            Object.keys(saved.settings).forEach(function(key) {
+                state.settings[key] = saved.settings[key];
+            });
+        }
         if (saved.conversations) state.conversations = saved.conversations;
         if (saved.conversationOrder) state.conversationOrder = saved.conversationOrder;
         if (saved.activeConvId && state.conversations[saved.activeConvId]) {
             state.activeConvId = saved.activeConvId;
         }
     }
+
     // Ensure lang is set (migration from v1)
     if (!state.settings.lang) state.settings.lang = 'zh-CN';
+
     // If no active conversation, create one
     if (!state.activeConvId || !state.conversations[state.activeConvId]) {
         var conv = defaultConversation();
@@ -1948,7 +1980,10 @@ function setLanguage(lang) {
     });
     persistState();
     applyTranslations();
-    requestFullRender(); // language change affects almost everything
+
+    // 语言变更影响范围很大，使用全量渲染
+    appStore.notify('settings');
+    requestFullRender();
 }
 
 // ==================== Character Import ====================
@@ -2091,7 +2126,12 @@ function buildMessagesForAPI() {
     if (regularMsgs.length > maxMsgs) {
         regularMsgs = regularMsgs.slice(regularMsgs.length - maxMsgs);
     }
-    apiMessages = apiMessages.concat(regularMsgs);
+
+    // 关键修复：必须深拷贝消息对象，防止后续 Outlet 替换污染原始 conv.messages
+    var clonedRegularMsgs = regularMsgs.map(function(m) {
+        return { role: m.role, content: m.content };
+    });
+    apiMessages = apiMessages.concat(clonedRegularMsgs);
 
     // @D (Depth) insertions: support positive and negative depth + correct roles
     var depthEntries = wiByPos[WI_POS.AT_DEPTH] || [];
@@ -2118,19 +2158,21 @@ function buildMessagesForAPI() {
     }
 
     // === Outlet Support ===
-    // Resolve {{outlet::Name}} in all messages
+    // Resolve {{outlet::Name}} in all messages（在克隆对象上操作，不会污染原始存储）
     var wiOutlets = wiResult.outlets || {};
     if (Object.keys(wiOutlets).length > 0) {
         apiMessages.forEach(function(msg) {
-            msg.content = msg.content.replace(/\{\{outlet::([^}]+)\}\}/gi, function(match, outletName) {
-                var name = outletName.trim();
-                var entries = wiOutlets[name];
-                if (!entries || entries.length === 0) return '';
-                var combined = entries.map(function(e) {
-                    return replacePlaceholders(e.content || '', charName, userName);
-                }).join('\n\n');
-                return combined;
-            });
+            if (msg.content && msg.content.includes('{{outlet::')) {
+                msg.content = msg.content.replace(/\{\{outlet::([^}]+)\}\}/gi, function(match, outletName) {
+                    var name = outletName.trim();
+                    var entries = wiOutlets[name];
+                    if (!entries || entries.length === 0) return '';
+                    var combined = entries.map(function(e) {
+                        return replacePlaceholders(e.content || '', charName, userName);
+                    }).join('\n\n');
+                    return combined;
+                });
+            }
         });
     }
 
@@ -2890,6 +2932,7 @@ function handleWIFileImport(e) {
             if (dom.wiSearch) dom.wiSearch.value = '';
             renderWIEntryList('');
             showNoSelection();
+            renderWorldInfoBadge();   // ← 修复：导入后刷新侧边栏计数
             alert('世界书导入成功（' + Object.keys(wi.entries).length + ' 条目）');
         } catch (err) {
             alert('导入失败: ' + err.message);
@@ -2966,8 +3009,19 @@ function entryMatchesKeys(entry, text, caseSensitive, wholeWord) {
                 re = new RegExp(pattern, f);
             } catch (e) { re = null; }
         } else {
-            var pat = wholeWord ? '\\b' + escapeRegex(k) + '\\b' : escapeRegex(k);
-            re = new RegExp(pat, flags);
+            if (wholeWord) {
+                // 更好的 Unicode 单词边界（支持中文、日文等）
+                try {
+                    var escaped = escapeRegex(k);
+                    var pat = '(?<!\\w)' + escaped + '(?!\\w)';
+                    re = new RegExp(pat, flags + 'u');
+                } catch (e) {
+                    // 旧浏览器不支持 lookbehind，回退到普通匹配
+                    re = new RegExp(escapeRegex(k), flags);
+                }
+            } else {
+                re = new RegExp(escapeRegex(k), flags);
+            }
         }
         if (re && re.test(text)) return true;
     }
@@ -3142,13 +3196,23 @@ function getActivatedWorldInfo(conv) {
     if (!wi || !wi.entries) return { entries: [], byPosition: {} };
 
     // ==================== World Info Activation Cache ====================
-    // 计算一个轻量 hash：消息数量 + 最后一条消息内容前 64 字符 + 世界书条目数量
+    // 改进版：包含消息数量 + 最后一条消息内容哈希 + 世界书条目数量 + 简单消息指纹（防止中间删除导致缓存失效）
     var messages = conv.messages || [];
     var lastMsg = messages.length > 0 ? messages[messages.length - 1] : null;
     var lastContentHash = lastMsg ? (lastMsg.content || '').slice(0, 64) : '';
     var wiEntryCount = Object.keys(wi.entries).length;
 
-    var cacheKey = messages.length + '|' + lastContentHash + '|' + wiEntryCount;
+    // 简单指纹：取前3条和后3条消息的角色+内容前20字符的哈希，防止中间删除/编辑导致缓存污染
+    var fingerprint = '';
+    var checkPoints = [0, 1, 2, messages.length-3, messages.length-2, messages.length-1];
+    checkPoints.forEach(function(idx) {
+        if (idx >= 0 && idx < messages.length) {
+            var m = messages[idx];
+            fingerprint += (m.role || '') + ':' + (m.content || '').slice(0, 20) + '|';
+        }
+    });
+
+    var cacheKey = messages.length + '|' + lastContentHash + '|' + wiEntryCount + '|' + fingerprint;
 
     if (conv._wiCache && conv._wiCache.key === cacheKey) {
         return conv._wiCache.result;
@@ -3627,9 +3691,12 @@ function autoSummarize() {
     }
     if (unsummarized.length < threshold) return;
 
-    // Summarize oldest unsummarized messages, leaving ~10 recent messages
-    var toSummarize = unsummarized.slice(0, unsummarized.length - 10);
-    if (toSummarize.length < 2) return;
+    // Keep the most recent messages unsummarized to preserve context
+    var KEEP_RECENT = 10;
+    var MIN_TO_SUMMARIZE = 2;
+
+    var toSummarize = unsummarized.slice(0, Math.max(0, unsummarized.length - KEEP_RECENT));
+    if (toSummarize.length < MIN_TO_SUMMARIZE) return;
 
     var startIdx = regularMsgs.indexOf(toSummarize[0]);
     var endIdx = regularMsgs.indexOf(toSummarize[toSummarize.length - 1]);
@@ -3763,6 +3830,8 @@ function newConversation() {
     state.conversationOrder.unshift(conv.id);
     state.activeConvId = conv.id;
     if (conv._wiBudgetWarning) conv._wiBudgetWarning = false;
+    conv._lastRenderedVisibleCount = 0;   // 新对话，增量状态重置
+    conv._showAllMessages = false;
     persistState();
     // activeConvId change will handle most renders
     renderWorldInfoBudgetWarning();
@@ -3776,6 +3845,14 @@ function loadConversation(id) {
     }
     saveCurrentConversation();
     state.activeConvId = id;           // triggers granular renders via subscription
+
+    // 切换对话时重置增量渲染状态和“显示全部消息”状态
+    var newConv = getActiveConv();
+    if (newConv) {
+        newConv._showAllMessages = false;
+        newConv._lastRenderedVisibleCount = 0;   // 关键：重置增量计数，避免跨对话污染
+    }
+
     persistState();
     if (isMobile()) closeSidebar();
 }
@@ -3993,17 +4070,26 @@ function renderMessages() {
 
     // === 增量 DOM 更新 + Windowed Rendering ===
     var MAX_VISIBLE = 80;
-    var startIdx = Math.max(0, allMessages.length - MAX_VISIBLE);
+
+    // 如果用户显式要求查看所有历史消息，则跳过截断
+    var showAll = !!conv._showAllMessages;
+    var startIdx = showAll ? 0 : Math.max(0, allMessages.length - MAX_VISIBLE);
     var visibleMessages = allMessages.slice(startIdx);
 
     // 尝试增量追加（最常见场景：只收到新消息）
     var lastRenderedCount = conv._lastRenderedVisibleCount || 0;
     var currentVisibleCount = visibleMessages.length;
 
-    // 只有在“纯追加”且没有删除/重试时才做增量更新
-    if (currentVisibleCount > lastRenderedCount &&
-        !state.isGenerating && // 流式中不走增量
-        container.querySelectorAll('.msg-wrapper').length === lastRenderedCount) {
+    // 增量追加条件：
+    // - 有新消息
+    // - 当前不在流式生成中
+    // - 没有处于“显示全部历史”模式
+    // - 上次渲染的计数有效（由删除/切换对话等操作正确重置）
+    var canIncremental = currentVisibleCount > lastRenderedCount &&
+                         !state.isGenerating &&
+                         !showAll;
+
+    if (canIncremental) {
 
         // 增量追加新消息
         var fragment = document.createDocumentFragment();
@@ -4086,12 +4172,13 @@ function renderMessages() {
 
     conv._lastRenderedVisibleCount = currentVisibleCount;
 
-    // Wire the "load earlier" button (currently just shows a hint — full history loading can be added later)
+    // Wire the "load earlier" button
     var loadBtn = document.getElementById('loadEarlierBtn');
     if (loadBtn) {
         loadBtn.addEventListener('click', function() {
-            // For now, just render everything (simple fallback)
-            // In a future version this can load from a separate archive or paginated source
+            // 标记用户希望查看完整历史
+            conv._showAllMessages = true;
+            conv._lastRenderedVisibleCount = 0;   // 全量历史模式下增量计数失效
             container.innerHTML = '';
             renderMessagesFullHistory(conv);
         });
@@ -4100,6 +4187,9 @@ function renderMessages() {
 
 // Fallback: render all messages (used when user explicitly wants older history)
 function renderMessagesFullHistory(conv) {
+    if (conv) {
+        conv._lastRenderedVisibleCount = 0;   // 全量渲染后增量计数失效
+    }
     var container = dom.messagesContainer;
     var messages = conv.messages.filter(function(m) { return m.role !== 'system'; });
 
@@ -4248,10 +4338,11 @@ function saveCharacterEdits() {
     persistState();
     dom.charEditorModal.classList.add('hidden');
 
-    // Targeted updates instead of full renderAll
+    // 角色信息变更后显式触发相关渲染
     renderCharacterUI();
     renderMessagesOnly();
     renderConversationListOnly();
+    appStore.notify('conversations'); // 对话列表可能显示角色名
 }
 
 function exportCharacter() {
@@ -4378,6 +4469,10 @@ function deleteMessage(actualIdx) {
         conv.messages.splice(actualIdx, 1);
     }
     conv.updated = Date.now();
+    if (conv) {
+        conv._wiCache = null;
+        conv._lastRenderedVisibleCount = 0;   // 消息被删除 → 增量状态失效
+    }
     persistState();
     renderMessagesOnly();
     renderConversationListOnly();
@@ -4392,6 +4487,10 @@ function regenerateMessage(actualIdx) {
     // Remove this AI message
     conv.messages.splice(actualIdx, 1);
     conv.updated = Date.now();
+    if (conv) {
+        conv._wiCache = null;
+        conv._lastRenderedVisibleCount = 0;   // 消息被移除 → 增量状态失效
+    }
     persistState();
     renderMessagesOnly();
     renderConversationListOnly(); // title/date may change
@@ -4427,7 +4526,8 @@ function regenerateMessage(actualIdx) {
                 persistState();
             }
             state.isGenerating = false;
-            renderMessagesOnly();                 // 显式重新渲染消息列表（关键修复）
+            // 使用增量追加而不是全量渲染，避免用户浏览历史时被强制滚到底部
+            appendFinalAssistantMessage(c, fullContent);
             renderTokenBar();                     // lightweight
             setTimeout(function() { autoSummarize(); }, 500);
         },
@@ -4496,7 +4596,8 @@ function sendMessage() {
                 persistState();
             }
             state.isGenerating = false;
-            renderMessagesOnly();                 // 显式重新渲染消息列表（关键修复）
+            // 使用增量追加而不是全量渲染，避免用户浏览历史时被强制滚到底部
+            appendFinalAssistantMessage(conv, fullContent);
             renderTokenBar();
             setTimeout(function() { autoSummarize(); }, 500);
         },
@@ -4658,7 +4759,9 @@ function bindEvents() {
 
         persistState();
         dom.settingsModal.classList.add('hidden');
-        // 'settings' change will trigger targeted renders via subscription
+
+        // 显式通知 settings 变更（因为已移除自动响应式）
+        appStore.notify('settings');
     }
     dom.sidebarSettingsBtn.addEventListener('click', openSettings);
     dom.topSettingsBtn.addEventListener('click', openSettings);
