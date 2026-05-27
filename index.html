@@ -171,18 +171,46 @@ body {
         border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
-    /* Header buttons more compact and wrap-friendly */
+    /* Extra breathing room for search bar below the (now taller) button row */
+    #worldBookModal .w-72 > div:first-child {
+        padding-top: 10px !important;
+    }
+
+    /* ===== Header: Force two-row layout on mobile to prevent overlap ===== */
     #worldBookModal .px-5.py-3 {
-        padding: 6px 8px !important;
-        gap: 3px !important;
-        flex-wrap: wrap;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        padding: 8px 10px 12px !important;   /* more bottom padding so wrapped buttons don't crowd the search */
+        gap: 6px !important;
+    }
+
+    /* Title + book name row */
+    #worldBookModal .px-5.py-3 > div:first-child {
+        flex-direction: row !important;
+        align-items: center !important;
+        margin-bottom: 2px;
+    }
+
+    /* Buttons row - wrap safely, with breathing room above search */
+    #worldBookModal .px-5.py-3 > div:last-child {
+        flex-wrap: wrap !important;
+        gap: 4px !important;
+        justify-content: flex-start !important;
+        padding-bottom: 4px; /* extra space before the entry list / search bar */
     }
 
     #worldBookModal button {
-        font-size: 10px !important;
-        padding: 4px 7px !important;
-        min-height: 28px;
+        font-size: 11px !important;
+        padding: 5px 8px !important;
+        min-height: 30px;
         line-height: 1;
+    }
+
+    /* Make book name input much smaller on mobile */
+    #worldBookModal #wiBookName {
+        max-width: 110px !important;
+        font-size: 12px !important;
+        padding: 4px 8px !important;
     }
 
     #worldBookModal .text-lg {
