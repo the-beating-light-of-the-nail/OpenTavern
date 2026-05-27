@@ -148,6 +148,14 @@ body {
     }
     .mobile-hide-sm { display: none !important; }
 
+    /* Mobile adaptation for summarize button (icon only) */
+    #summarizeBtn {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        font-size: 16px;
+    }
+
     /* Mobile: character editor single column */
     #charEditorModal .grid.grid-cols-2 { grid-template-columns: 1fr; }
 
@@ -963,7 +971,13 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
                     <button class="lang-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 text-zinc-400" data-lang="zh-TW">繁</button>
                     <button class="lang-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 text-zinc-400" data-lang="en">EN</button>
                 </div>
-                <button id="summarizeBtn" class="mobile-hide-sm px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-500 glass hover:text-zinc-300 hover:bg-white/10 transition-all" data-i18n="summary_btn" data-i18n-title="summary_manager_title">🧠 总结</button>
+                <button id="summarizeBtn" 
+                        class="px-2 sm:px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-500 glass hover:text-zinc-300 hover:bg-white/10 transition-all flex items-center justify-center"
+                        data-i18n-title="summary_manager_title">
+                    <!-- Desktop: full text | Mobile: emoji only (适配移动端) -->
+                    <span data-i18n="summary_btn" class="hidden sm:inline">🧠 总结</span>
+                    <span class="sm:hidden text-base leading-none">🧠</span>
+                </button>
                 <button id="archiveBtn" class="mobile-hide-sm px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-500 glass hover:text-zinc-300 hover:bg-white/10 transition-all" data-i18n="archive" data-i18n-title="archive_title">📋 Archive</button>
                 <button id="topSettingsBtn" class="w-8 h-8 rounded-xl glass flex items-center justify-center text-zinc-400 hover:text-zinc-200 transition-colors">⚙️</button>
 
