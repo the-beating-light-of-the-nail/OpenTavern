@@ -140,6 +140,29 @@ body {
         max-height: 92vh;
     }
 
+    /* Announcement modal mobile refinements */
+    #announceModal .glass.rounded-3xl {
+        padding: 18px 16px 16px;
+        max-height: 88vh;
+    }
+    #announceModal h2 { font-size: 18px; }
+    #announceModal .text-xl { font-size: 18px; }
+    #announceModal .space-y-3 > div { padding: 10px 12px; }
+    #announceModal .text-2xl { font-size: 22px; margin-bottom: 2px; }
+
+    /* Make language switcher in announcement more compact on mobile */
+    #announceModal .announce-lang-btn {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+        padding-top: 4px !important;
+        padding-bottom: 4px !important;
+        font-size: 11px !important;
+        min-width: 24px;
+    }
+    #announceModal .flex.items-center.justify-center.gap-2 {
+        gap: 6px !important;
+    }
+
     .hamburger-btn {
         display: flex !important;
     }
@@ -326,6 +349,15 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
 .lang-btn.active {
     background: var(--accent);
     color: #000;
+}
+
+/* Announcement modal language switcher - slightly more visible on glass background */
+.announce-lang-btn {
+    min-width: 28px;
+    text-align: center;
+}
+.announce-lang-btn.active {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 </style>
 </head>
@@ -928,6 +960,82 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
     </div>
 </div>
 
+<!-- ===== Announcement / Quick Start Modal (多语言支持) ===== -->
+<div id="announceModal" class="modal-overlay fixed inset-0 z-[200] flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-md" id="announceBackdrop"></div>
+    <div class="relative glass rounded-3xl w-[92%] max-w-lg p-6 shadow-2xl animate-fade-in max-h-[92vh] overflow-y-auto border border-white/10">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-3">
+            <div>
+                <div class="text-2xl mb-1">✨</div>
+                <h2 class="text-xl font-bold text-zinc-100" data-i18n="announce_title">欢迎使用 OpenTavern</h2>
+                <p class="text-xs text-zinc-400 mt-0.5" data-i18n="announce_subtitle">快速开始指南 · 3 步上手</p>
+            </div>
+            <button id="announceCloseBtn" class="w-9 h-9 rounded-full glass flex items-center justify-center text-xl text-zinc-400 hover:text-zinc-200 transition-colors leading-none" aria-label="关闭">&times;</button>
+        </div>
+
+        <!-- Language switcher for first-time users (very important for non-Chinese speakers) -->
+        <div class="flex items-center justify-center gap-2 mb-4">
+            <span class="text-[10px] text-zinc-500 flex-shrink-0" data-i18n="announce_lang_label">语言 / Language</span>
+            <div class="flex items-center glass rounded-xl p-0.5 border-white/5">
+                <button class="announce-lang-btn lang-btn px-2.5 py-1 rounded-lg text-xs font-semibold transition-all duration-200" data-lang="zh-CN">简</button>
+                <button class="announce-lang-btn lang-btn px-2.5 py-1 rounded-lg text-xs font-semibold transition-all duration-200" data-lang="zh-TW">繁</button>
+                <button class="announce-lang-btn lang-btn px-2.5 py-1 rounded-lg text-xs font-semibold transition-all duration-200" data-lang="en">EN</button>
+            </div>
+        </div>
+
+        <!-- Quick Start Steps -->
+        <div class="space-y-3 mb-5 text-sm">
+            <div class="flex gap-3 p-3 glass rounded-2xl">
+                <div class="w-6 h-6 flex-shrink-0 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs font-bold">1</div>
+                <div class="flex-1">
+                    <div class="font-medium text-zinc-200" data-i18n="announce_step1_title">导入角色卡</div>
+                    <div class="text-xs text-zinc-400 mt-0.5" data-i18n="announce_step1_desc">点击左侧「导入」按钮，上传 SillyTavern 格式的 .json 角色卡（推荐）</div>
+                </div>
+            </div>
+            <div class="flex gap-3 p-3 glass rounded-2xl">
+                <div class="w-6 h-6 flex-shrink-0 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs font-bold">2</div>
+                <div class="flex-1">
+                    <div class="font-medium text-zinc-200" data-i18n="announce_step2_title">或手动创建角色</div>
+                    <div class="text-xs text-zinc-400 mt-0.5" data-i18n="announce_step2_desc">点击「新建」按钮，快速创建一个简单角色并开始对话</div>
+                </div>
+            </div>
+            <div class="flex gap-3 p-3 glass rounded-2xl">
+                <div class="w-6 h-6 flex-shrink-0 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs font-bold">3</div>
+                <div class="flex-1">
+                    <div class="font-medium text-zinc-200" data-i18n="announce_step3_title">配置 API（关键）</div>
+                    <div class="text-xs text-zinc-400 mt-0.5" data-i18n="announce_step3_desc">点击右上角 ⚙️ 设置，填入 API Endpoint 和 Key（支持 OpenAI 及兼容接口）</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-[11px] text-zinc-400 mb-4 px-1" data-i18n="announce_hint">
+            对话支持自动总结、世界书（World Info）、多对话管理等功能。祝你玩得开心！
+        </div>
+
+        <!-- Do not show checkbox -->
+        <label class="flex items-center gap-2 text-sm text-zinc-300 cursor-pointer select-none mb-4 px-1">
+            <input type="checkbox" id="announceDontShow" class="accent-amber-500 w-4 h-4 flex-shrink-0">
+            <span data-i18n="announce_dont_show">下次不再显示此公告</span>
+        </label>
+
+        <!-- Primary action -->
+        <button id="announceGotItBtn"
+                class="w-full px-4 py-3 rounded-2xl text-sm font-semibold bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-white shadow-lg shadow-amber-500/20 transition-all"
+                data-i18n="announce_got_it">
+            开始使用
+        </button>
+
+        <!-- Credits -->
+        <div class="mt-5 pt-4 border-t border-white/10 text-center">
+            <div class="text-[10px] text-zinc-500 leading-tight">
+                <span data-i18n="announce_credits_main">主要开发：哈基米德Hajimides</span><br>
+                <span data-i18n="announce_credits_test">辅助测试：一粒伊利尔</span>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- ===== Main Layout ===== -->
 <div class="flex h-screen relative z-10">
     <!-- Left Sidebar -->
@@ -1309,7 +1417,22 @@ var i18n = {
         settings_summarize_api_key: 'API Key',
         settings_summarize_model: 'Model',
         settings_save_api_key: '将 API Key 保存到浏览器本地存储',
-        settings_save_api_key_warn: '⚠️ 请仅在您完全信任的私人设备上启用此选项。API Key 将以明文形式存储在浏览器 localStorage 中，存在被他人访问或脚本窃取的风险。在公共电脑、网吧或共享设备上请勿勾选！'
+        settings_save_api_key_warn: '⚠️ 请仅在您完全信任的私人设备上启用此选项。API Key 将以明文形式存储在浏览器 localStorage 中，存在被他人访问或脚本窃取的风险。在公共电脑、网吧或共享设备上请勿勾选！',
+        // Announcement modal
+        announce_title: '欢迎使用 OpenTavern',
+        announce_subtitle: '快速开始指南 · 3 步上手',
+        announce_step1_title: '导入角色卡',
+        announce_step1_desc: '点击左侧「导入」按钮，上传 SillyTavern 格式的 .json 角色卡（推荐）',
+        announce_step2_title: '或手动创建角色',
+        announce_step2_desc: '点击「新建」按钮，快速创建一个简单角色并开始对话',
+        announce_step3_title: '配置 API（关键）',
+        announce_step3_desc: '点击右上角 ⚙️ 设置，填入 API Endpoint 和 Key（支持 OpenAI 及兼容接口）',
+        announce_hint: '对话支持自动总结、世界书（World Info）、多对话管理等功能。祝你玩得开心！',
+        announce_dont_show: '下次不再显示此公告',
+        announce_got_it: '开始使用',
+        announce_credits_main: '主要开发：哈基米德Hajimides',
+        announce_credits_test: '辅助测试：一粒伊利尔',
+        announce_lang_label: '语言 / Language'
     },
     'zh-TW': {
         app_subtitle: 'AI 角色聊天',
@@ -1515,7 +1638,22 @@ var i18n = {
         settings_summarize_api_key: 'API Key',
         settings_summarize_model: 'Model',
         settings_save_api_key: '將 API Key 儲存到瀏覽器本地',
-        settings_save_api_key_warn: '⚠️ 請僅在您完全信任的私人裝置上啟用此選項。API Key 將以明文形式儲存在瀏覽器 localStorage 中，存在被他人存取或腳本竊取的風險。在公共電腦、網吧或共享裝置上請勿勾選！'
+        settings_save_api_key_warn: '⚠️ 請僅在您完全信任的私人裝置上啟用此選項。API Key 將以明文形式儲存在瀏覽器 localStorage 中，存在被他人存取或腳本竊取的風險。在公共電腦、網吧或共享裝置上請勿勾選！',
+        // Announcement modal
+        announce_title: '歡迎使用 OpenTavern',
+        announce_subtitle: '快速開始指南 · 3 步上手',
+        announce_step1_title: '匯入角色卡',
+        announce_step1_desc: '點擊左側「匯入」按鈕，上傳 SillyTavern 格式的 .json 角色卡（推薦）',
+        announce_step2_title: '或手動建立角色',
+        announce_step2_desc: '點擊「新建」按鈕，快速建立一個簡單角色並開始對話',
+        announce_step3_title: '設定 API（關鍵）',
+        announce_step3_desc: '點擊右上角 ⚙️ 設定，填入 API Endpoint 和 Key（支援 OpenAI 及相容介面）',
+        announce_hint: '對話支援自動總結、世界書（World Info）、多對話管理等功能。祝你玩得開心！',
+        announce_dont_show: '下次不再顯示此公告',
+        announce_got_it: '開始使用',
+        announce_credits_main: '主要開發：哈基米德Hajimides',
+        announce_credits_test: '輔助測試：一粒伊利尔',
+        announce_lang_label: '語言 / Language'
     },
     'en': {
         app_subtitle: 'AI Character Chat',
@@ -1720,7 +1858,22 @@ var i18n = {
         settings_summarize_api_key: 'API Key',
         settings_summarize_model: 'Model',
         settings_save_api_key: 'Save API Key to browser local storage',
-        settings_save_api_key_warn: '⚠️ Only enable on devices you fully trust. The API Key will be stored in plaintext in browser localStorage and can be read by anyone with physical access or via XSS attacks. Do NOT enable on public computers, internet cafes, or shared devices!'
+        settings_save_api_key_warn: '⚠️ Only enable on devices you fully trust. The API Key will be stored in plaintext in browser localStorage and can be read by anyone with physical access or via XSS attacks. Do NOT enable on public computers, internet cafes, or shared devices!',
+        // Announcement modal
+        announce_title: 'Welcome to OpenTavern',
+        announce_subtitle: 'Quick Start Guide · Get going in 3 steps',
+        announce_step1_title: 'Import a Character Card',
+        announce_step1_desc: 'Click the "Import" button on the left to upload a SillyTavern .json character card (recommended)',
+        announce_step2_title: 'Or create one manually',
+        announce_step2_desc: 'Click "Create" to quickly build a simple character and start chatting right away',
+        announce_step3_title: 'Configure your API (Important)',
+        announce_step3_desc: 'Click the ⚙️ icon in the top right to enter your API Endpoint and Key (OpenAI and compatible providers supported)',
+        announce_hint: 'Features include auto-summarization, World Book (World Info), multi-conversation management, and more. Have fun!',
+        announce_dont_show: 'Do not show this again',
+        announce_got_it: 'Get Started',
+        announce_credits_main: 'Main Developer: 哈基米德Hajimides',
+        announce_credits_test: 'Testing Assistance: 一粒伊利尔',
+        announce_lang_label: 'Language'
     }
 };
 
@@ -2282,6 +2435,8 @@ function setLanguage(lang) {
     });
     persistState();
     applyTranslations();
+    applyAnnouncementTranslations();   // 如果公告弹窗当前可见，同步更新语言
+    updateAnnouncementLangButtons();   // 同步公告栏内的语言按钮高亮状态
 
     // 语言变更影响范围很大，使用全量渲染
     appStore.notify('settings');
@@ -4522,7 +4677,9 @@ function cacheDom() {
         'worldInfoBudgetEnabled','worldInfoBudget','worldInfoBudgetVal',
         'wiBudgetWarning','wiBudgetWarningText','wiBudgetWarningDismiss',
         'summarizeUseMainAPI','summarizeApiEndpoint','summarizeApiKey','summarizeModel',
-        'summarizeCustomApiSection'
+        'summarizeCustomApiSection',
+        // Announcement modal
+        'announceModal','announceBackdrop','announceCloseBtn','announceDontShow','announceGotItBtn'
     ];
     ids.forEach(function(id) { dom[id] = document.getElementById(id); });
 }
@@ -5046,6 +5203,67 @@ function toggleSidebar() {
     } else {
         openSidebar();
     }
+}
+
+// ==================== Announcement Modal (快速开始引导) ====================
+var ANNOUNCE_KEY = 'opentavern_announce_dismissed_v1';
+
+function shouldShowAnnouncement() {
+    try {
+        return localStorage.getItem(ANNOUNCE_KEY) !== '1';
+    } catch (e) {
+        return true;
+    }
+}
+
+function showAnnouncementModal() {
+    if (!dom.announceModal) return;
+    // 每次打开默认不勾选，让用户主动决定是否永久关闭
+    if (dom.announceDontShow) dom.announceDontShow.checked = false;
+    applyAnnouncementTranslations();   // 应用当前语言
+    updateAnnouncementLangButtons();   // 高亮当前语言按钮
+    dom.announceModal.classList.remove('hidden');
+}
+
+function hideAnnouncementModal() {
+    if (!dom.announceModal) return;
+    dom.announceModal.classList.add('hidden');
+}
+
+function dismissAnnouncement(permanent) {
+    if (permanent) {
+        try { localStorage.setItem(ANNOUNCE_KEY, '1'); } catch (e) {}
+    }
+    hideAnnouncementModal();
+}
+
+function applyAnnouncementTranslations() {
+    if (!dom.announceModal) return;
+
+    dom.announceModal.querySelectorAll('[data-i18n]').forEach(function(el) {
+        var key = el.getAttribute('data-i18n');
+        var text = t(key);
+        if (text) {
+            // Credits contain full lines (label + name). Use textContent for safety.
+            el.textContent = text;
+        }
+    });
+}
+
+function updateAnnouncementLangButtons() {
+    if (!dom.announceModal) return;
+    var currentLang = state.settings.lang || 'zh-CN';
+
+    dom.announceModal.querySelectorAll('.announce-lang-btn').forEach(function(btn) {
+        var btnLang = btn.getAttribute('data-lang');
+        if (btnLang === currentLang) {
+            btn.classList.add('active', 'text-zinc-900');
+            btn.classList.remove('text-zinc-400');
+        } else {
+            btn.classList.remove('active', 'text-zinc-900');
+            btn.classList.add('text-zinc-400');
+        }
+    });
 }
 
 function escapeHtml(text) {
@@ -5602,6 +5820,35 @@ function bindEvents() {
         dom.summarizeUseMainAPI.addEventListener('change', toggleSummarizeCustomSection);
     }
 
+    // Announcement modal bindings
+    if (dom.announceCloseBtn) {
+        dom.announceCloseBtn.addEventListener('click', function() {
+            hideAnnouncementModal(); // 仅关闭，不永久记录
+        });
+    }
+    if (dom.announceBackdrop) {
+        dom.announceBackdrop.addEventListener('click', function() {
+            hideAnnouncementModal(); // 仅关闭，不永久记录
+        });
+    }
+    if (dom.announceGotItBtn) {
+        dom.announceGotItBtn.addEventListener('click', function() {
+            var dontShow = !!(dom.announceDontShow && dom.announceDontShow.checked);
+            dismissAnnouncement(dontShow); // 勾选则永久关闭，否则仅本次关闭
+        });
+    }
+
+    // Announcement language switcher buttons (for first-time international users)
+    document.querySelectorAll('.announce-lang-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var lang = this.getAttribute('data-lang');
+            if (lang) {
+                setLanguage(lang);
+                // setLanguage already calls updateAnnouncementLangButtons() via the hook below
+            }
+        });
+    });
+
     // Escape to close modals / sidebar
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
@@ -5615,6 +5862,7 @@ function bindEvents() {
             if (dom.summaryHistoryModal && !dom.summaryHistoryModal.classList.contains('hidden')) dom.summaryHistoryModal.classList.add('hidden');
             if (dom.summaryManagerModal && !dom.summaryManagerModal.classList.contains('hidden')) dom.summaryManagerModal.classList.add('hidden');
             if (!dom.worldBookModal.classList.contains('hidden')) closeWorldBookModal();
+            if (!dom.announceModal.classList.contains('hidden')) hideAnnouncementModal();
         }
     });
 }
@@ -5663,6 +5911,22 @@ function init() {
             persistState();
             renderAll();
         }
+    }
+
+    // 显示公告引导（除非用户已永久关闭）
+    if (shouldShowAnnouncement()) {
+        setTimeout(function() {
+            // 只有在没有任何其他弹窗打开时才显示，避免冲突
+            var hasOtherModalOpen = 
+                (dom.settingsModal && !dom.settingsModal.classList.contains('hidden')) ||
+                (dom.importModal && !dom.importModal.classList.contains('hidden')) ||
+                (dom.charEditorModal && !dom.charEditorModal.classList.contains('hidden')) ||
+                (dom.summaryManagerModal && !dom.summaryManagerModal.classList.contains('hidden')) ||
+                (dom.worldBookModal && !dom.worldBookModal.classList.contains('hidden'));
+            if (!hasOtherModalOpen) {
+                showAnnouncementModal();
+            }
+        }, 680);
     }
 }
 
