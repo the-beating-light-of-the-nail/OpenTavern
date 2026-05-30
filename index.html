@@ -594,7 +594,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
                     </div>
                 </div>
 
-                <p class="text-[10px] text-zinc-500" id="storageHint" data-i18n="storage_hint_ls">当前使用 localStorage 作为兼容层。支持 IndexedDB 后可获得更大容量与更好性能（自动迁移）。</p>
+                <p class="text-[10px] text-zinc-500" id="storageHint" data-i18n="storage_hint_opfs">正在使用 OPFS（Origin Private File System），容量大、性能好，推荐长期使用。</p>
             </div>
 
             <!-- World Info Budget -->
@@ -1169,7 +1169,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
                     <div id="storageStatus" 
                          class="text-[9px] px-1.5 py-px rounded bg-white/5 text-zinc-400 font-mono cursor-pointer select-none hover:bg-white/10 transition-colors"
                          title="存储后端">
-                        LS
+                        OPFS
                     </div>
                 </div>
                 <p class="text-[10px] text-zinc-500 leading-tight" data-i18n="app_subtitle">AI Character Chat</p>
@@ -1568,7 +1568,8 @@ var i18n = {
         storage_backend: '存储后端',
         storage_used_space: '已用空间',
         storage_hint_idb: '正在使用 IndexedDB，可支持多个角色卡与大型世界书。',
-        storage_hint_ls: '当前使用 localStorage 兼容层。支持 IndexedDB 后可获得更大容量与更好性能（会自动迁移）。',
+        storage_hint_ls: '推荐使用 IndexedDB（容量大得多）。当前默认开启，localStorage 仅用于迁移。',
+        storage_hint_opfs: '正在使用 OPFS（Origin Private File System），容量大、性能好，推荐长期使用。',
         storage_usage_calculating: '计算中...',
         storage_high_warning: '存储空间紧张，建议尽快备份！',
 
@@ -1823,6 +1824,7 @@ var i18n = {
         storage_used_space: '已用空間',
         storage_hint_idb: '正在使用 IndexedDB，可支援多個角色卡與大型世界書。',
         storage_hint_ls: '目前使用 localStorage 兼容層。支援 IndexedDB 後可獲得更大容量與更好效能（會自動遷移）。',
+        storage_hint_opfs: '正在使用 OPFS（Origin Private File System），容量大、性能佳，推薦長期使用。',
         storage_usage_calculating: '計算中...',
         storage_high_warning: '儲存空間緊張，建議盡快備份！',
 
@@ -2065,7 +2067,8 @@ var i18n = {
         storage_backend: 'Storage Backend',
         storage_used_space: 'Used Space',
         storage_hint_idb: 'Using IndexedDB, supports multiple character cards and large world books.',
-        storage_hint_ls: 'Using localStorage compatibility layer. IndexedDB support enabled for larger capacity and better performance (auto-migration when possible).',
+        storage_hint_ls: 'IndexedDB recommended (much higher capacity). Enabled by default; localStorage used only for migration.',
+        storage_hint_opfs: 'Using OPFS (Origin Private File System) — large capacity and good performance. Recommended for long-term use.',
         storage_usage_calculating: 'Calculating...',
         storage_high_warning: 'Storage space is tight. Please back up soon!',
 
@@ -2268,13 +2271,10 @@ if (gl) {
 var STORAGE_KEY = 'opentavern-data-v1';
 
 // ==================== 存储说明 ====================
-// 2026 重构：已使用正确 promisify 的 idb 封装重新支持 IndexedDB。
-// 启动时会智能检测：
-//   - 如果 IndexedDB 已有数据 → 直接使用 IDB
-//   - 如果 IDB 为空但 localStorage 有数据 → 自动迁移到 IDB
-//   - 任何阶段失败都安全回退到 localStorage，不会丢数据
-// 主存储 key：localStorage['opentavern-data-v1']（作为兼容/备份）
-// IndexedDB 数据库：OpenTavernDB（v2，stores: settings, conversations, worldBooks, metadata）
+// 默认使用 OPFS（Origin Private File System），容量大、可靠性高。
+// 非常适合 GitHub Pages / Cloudflare Pages 静态部署。
+// 旧 localStorage 数据会在首次启动时自动迁移到 OPFS。
+// 所有保存数据都带 lastSaved 时间戳。
 
 // ==================== idb 库（正确实现的极小版本） ====================
 // 基于 https://github.com/jakearchibald/idb 思路，完全重写以确保可靠。
@@ -2361,47 +2361,145 @@ var STORAGE_KEY = 'opentavern-data-v1';
     };
 })();
 
-// ==================== StorageService 抽象层 ====================
-// 目标：让上层代码不需要关心到底用 localStorage 还是 IndexedDB
-var StorageService = {
-    // 支持 localStorage + IndexedDB 双后端。
-    // 启动时会智能决定使用哪个（见 initState）。
-    // 只要底层的 idb 封装正确，IDB 就能提供更大容量和更好性能。
-    _useIndexedDB: false,
+// ==================== OPFS Storage（推荐新后端 - 容量大、可靠性高） ====================
+// 使用 Origin Private File System，适合 GitHub Pages / Cloudflare Pages 静态部署
+// 数据以单个 JSON 文件形式存储（opentavern-data.json）
+const OPFSStorage = {
+    _root: null,
+    _fileName: 'opentavern-data.json',
 
-    // 当前实现：稳定使用 localStorage
+    async _getRoot() {
+        if (this._root) return this._root;
+        if (!navigator.storage || !navigator.storage.getDirectory) {
+            throw new Error('OPFS not supported in this browser');
+        }
+        this._root = await navigator.storage.getDirectory();
+        return this._root;
+    },
+
     async loadAll() {
         try {
-            var raw = localStorage.getItem(STORAGE_KEY);
-            return raw ? JSON.parse(raw) : null;
+            const root = await this._getRoot();
+            let fileHandle;
+            try {
+                fileHandle = await root.getFileHandle(this._fileName);
+            } catch (e) {
+                return null; // 文件不存在
+            }
+            const file = await fileHandle.getFile();
+            const text = await file.text();
+            if (!text) return null;
+            const data = JSON.parse(text);
+            // 兼容旧数据
+            if (!data.lastSaved) data.lastSaved = Date.now();
+            return data;
         } catch (e) {
-            console.error('[Storage] loadAll failed:', e);
+            console.error('[OPFS] loadAll failed:', e);
             return null;
         }
     },
 
     async saveAll(data) {
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            const root = await this._getRoot();
+            const fileHandle = await root.getFileHandle(this._fileName, { create: true });
+            const writable = await fileHandle.createWritable();
+            // 使用紧凑 JSON 节省空间
+            await writable.write(JSON.stringify(data));
+            await writable.close();
         } catch (e) {
-            console.error('[Storage] saveAll failed:', e);
-            // TODO: 未来这里可以尝试降级或提示用户存储已满
+            console.error('[OPFS] saveAll failed:', e);
+            throw e;
+        }
+    },
+
+    async getStorageInfo() {
+        try {
+            if (navigator.storage && navigator.storage.estimate) {
+                const estimate = await navigator.storage.estimate();
+                return {
+                    backend: 'opfs',
+                    used: estimate.usage,
+                    quota: estimate.quota
+                };
+            }
+        } catch (e) {}
+        return { backend: 'opfs', used: null, quota: null };
+    },
+
+    async clear() {
+        try {
+            const root = await this._getRoot();
+            await root.removeEntry(this._fileName);
+        } catch (e) {}
+    }
+};
+
+// ==================== StorageService 抽象层（已切换为 OPFS 优先） ====================
+// 目标：让上层代码不需要关心存储细节
+var StorageService = {
+    // =====================================================
+    // 当前主存储：OPFS（Origin Private File System）
+    // 容量大、性能好，适合 GitHub Pages / Cloudflare Pages
+    // localStorage 仅用于首次从旧版本迁移
+    // =====================================================
+    _useOPFS: true,
+
+    async loadAll() {
+        if (this._useOPFS) {
+            try {
+                const opfsData = await OPFSStorage.loadAll();
+                if (opfsData) {
+                    return opfsData;
+                }
+            } catch (e) {
+                console.warn('[Storage] OPFS load failed, falling back to localStorage for migration');
+            }
+        }
+
+        // 降级：尝试从旧 localStorage 读取（用于迁移）
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) {
+                const oldData = JSON.parse(raw);
+                // 检测到旧数据，自动迁移到 OPFS
+                if (oldData && (Object.keys(oldData.conversations || {}).length > 0 || oldData.lastSaved)) {
+                    console.log('[Storage] Detected old localStorage data, migrating to OPFS...');
+                    await OPFSStorage.saveAll(oldData);
+                    // 可选：迁移成功后清理旧 localStorage（保守起见先注释）
+                    // localStorage.removeItem(STORAGE_KEY);
+                    return oldData;
+                }
+            }
+        } catch (e) {
+            console.error('[Storage] localStorage fallback failed:', e);
+        }
+
+        return null;
+    },
+
+    async saveAll(data) {
+        if (this._useOPFS) {
+            await OPFSStorage.saveAll(data);
+        } else {
+            // 极端降级
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) {
+                console.error('[Storage] localStorage save failed:', e);
+            }
         }
     },
 
     // 检测当前使用哪种后端
     getBackend() {
-        return this._useIndexedDB ? 'indexeddb' : 'localStorage';
+        return this._useOPFS ? 'opfs' : 'localStorage';
     },
 
-    // 手动启用 IndexedDB 模式（迁移成功后会自动调用）
-    async enableIndexedDB() {
-        const success = await this.initIndexedDB();
-        if (success) {
-            this._useIndexedDB = true;
-            console.log('[Storage] Switched to IndexedDB backend');
-        }
-        return success;
+    async enableOPFS() {
+        this._useOPFS = true;
+        console.log('[Storage] Switched to OPFS backend');
+        return true;
     },
 
     // ==================== IndexedDB 后端实现（使用 idb） ====================
@@ -2457,12 +2555,18 @@ var StorageService = {
 
         try {
             // 新封装已正确 promisify，所有 await 都能拿到真实 .result
-            const [settings, conversationsRaw, worldBooksRaw, metadata] = await Promise.all([
+            // 更健壮：即使部分 store 读取失败，也尽量返回能拿到的数据
+            const results = await Promise.allSettled([
                 db.get('settings', 'main'),
                 db.getAll('conversations').catch(() => []),
                 db.getAll('worldBooks').catch(() => []),
                 db.get('metadata', 'main')
             ]);
+
+            const settings = results[0].status === 'fulfilled' ? results[0].value : null;
+            const conversationsRaw = results[1].status === 'fulfilled' ? results[1].value : [];
+            const worldBooksRaw = results[2].status === 'fulfilled' ? results[2].value : [];
+            const metadata = results[3].status === 'fulfilled' ? results[3].value : null;
 
             const conversations = Array.isArray(conversationsRaw) ? conversationsRaw : [];
             const worldBooks = Array.isArray(worldBooksRaw) ? worldBooksRaw : [];
@@ -2479,10 +2583,12 @@ var StorageService = {
                 worldBooks: wbObj,
                 conversationOrder: (metadata && metadata.conversationOrder) || [],
                 activeConvId: (metadata && metadata.activeConvId) || null,
-                dataVersion: (metadata && metadata.dataVersion) || 2
+                dataVersion: (metadata && metadata.dataVersion) || 2,
+                lastSaved: (metadata && metadata.lastSaved) || null,
+                _loadedFrom: 'idb'
             };
         } catch (err) {
-            console.error('[Storage] loadAllFromIDB failed:', err);
+            console.error('[Storage] loadAllFromIDB failed (returning null):', err);
             return null;
         }
     },
@@ -2521,7 +2627,7 @@ var StorageService = {
                 conversationOrder: data.conversationOrder || [],
                 activeConvId: data.activeConvId || null,
                 dataVersion: 2,
-                lastSaved: Date.now()
+                lastSaved: data.lastSaved || Date.now()
             }, 'main');
 
             // 等待整个事务真正提交（使用我们新封装提供的 helper）
@@ -2532,44 +2638,10 @@ var StorageService = {
         }
     },
 
-    // ==================== 迁移工具函数（Phase 2 核心） ====================
+    // ==================== 迁移工具函数（当前已禁用） ====================
     async migrateFromLocalStorage() {
-        console.log('[Storage] Starting migration from localStorage to IndexedDB...');
-
-        const oldData = loadAll(); // 读取旧的 localStorage 数据
-        if (!oldData) {
-            console.log('[Storage] No old data in localStorage to migrate.');
-            this._useIndexedDB = true;
-            return true;
-        }
-
-        try {
-            const newData = {
-                settings: oldData.settings || {},
-                conversations: oldData.conversations || {},
-                conversationOrder: oldData.conversationOrder || [],
-                activeConvId: oldData.activeConvId || null,
-                worldBooks: {}
-            };
-
-            // Phase 2 迁移：把旧的 per-conv worldInfo 转成全局可复用的 worldBooks
-            const migratedBooks = this._migrateLegacyWorldInfoToGlobal(newData.conversations);
-            newData.worldBooks = migratedBooks;
-
-            await this.saveAllToIDB(newData);
-
-            this._useIndexedDB = true;
-
-            // 迁移成功后可以选择清理 localStorage（当前保守起见先不删，留作备份）
-            // localStorage.removeItem(STORAGE_KEY);
-
-            console.log('[Storage] Migration from localStorage to IndexedDB completed successfully.');
-            return true;
-        } catch (err) {
-            console.error('[Storage] Migration failed:', err);
-            // 失败时不要切换后端，保持 localStorage
-            return false;
-        }
+        console.warn('[Storage] migrateFromLocalStorage 当前已禁用（仅 localStorage 模式稳定运行中）');
+        return false;
     },
 
     // Phase 2: 将旧的对话内嵌世界书转换为全局独立世界书
@@ -2628,29 +2700,22 @@ var StorageService = {
         return worldBooks;
     },
 
-    // ==================== 统一对外接口（推荐使用） ====================
+    // ==================== 统一对外接口（当前强制 localStorage） ====================
     async loadAll() {
-        if (this._useIndexedDB) {
-            return await this.loadAllFromIDB();
-        } else {
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                return raw ? JSON.parse(raw) : null;
-            } catch (e) {
-                return null;
-            }
+        // 强制只走 localStorage，IDB 暂时完全不参与
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+            return null;
         }
     },
 
     async saveAll(data) {
-        if (this._useIndexedDB) {
-            await this.saveAllToIDB(data);
-        } else {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            } catch (e) {
-                console.error('[Storage] localStorage save failed:', e);
-            }
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {
+            console.error('[Storage] localStorage save failed:', e);
         }
     },
 
@@ -2735,15 +2800,24 @@ function updateStorageStatusUI() {
     if (!el) return;
 
     const backend = StorageService.getBackend();
+    const isOPFS = backend === 'opfs';
     const isIDB = backend === 'indexeddb';
 
-    el.textContent = isIDB ? 'IDB' : 'LS';
-    el.style.background = isIDB ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)';
-    el.style.color = isIDB ? '#4ade80' : '#fbbf24';
+    el.textContent = isOPFS ? 'OPFS' : (isIDB ? 'IDB' : 'LS');
+    if (isOPFS) {
+        el.style.background = 'rgba(16,185,129,0.15)';
+        el.style.color = '#4ade80';
+    } else if (isIDB) {
+        el.style.background = 'rgba(16,185,129,0.15)';
+        el.style.color = '#4ade80';
+    } else {
+        el.style.background = 'rgba(245,158,11,0.15)';
+        el.style.color = '#fbbf24';
+    }
 
-    // 更新 tooltip + 用量 (Phase 4 增强，使用 i18n)
+    // 更新 tooltip + 用量 (使用 i18n)
     StorageService.getStorageInfo().then(info => {
-        let tip = isIDB ? t('storage_hint_idb') : t('storage_hint_ls');
+        let tip = isOPFS ? t('storage_hint_opfs') : (isIDB ? t('storage_hint_idb') : t('storage_hint_ls'));
 
         if (info && info.used != null && info.quota != null) {
             const usedMB = (info.used / 1024 / 1024).toFixed(1);
@@ -2762,7 +2836,7 @@ function updateStorageStatusUI() {
         }
         el.title = tip;
     }).catch(() => {
-        el.title = isIDB ? t('storage_hint_idb') : t('storage_hint_ls');
+        el.title = isOPFS ? t('storage_hint_opfs') : (isIDB ? t('storage_hint_idb') : t('storage_hint_ls'));
     });
 
     // 点击直接打开设置（Phase 1 补充，绕过按钮绑定问题）
@@ -3126,46 +3200,57 @@ function renderCharacterUI() {
 }
 
 async function initState() {
-    // Phase 1: 智能初始化存储后端
-    // 优先尝试 IndexedDB，只有在 IDB 里有数据 或 迁移成功时才切换后端。
-    // 任何阶段出错都安全回退到 localStorage，不会导致数据丢失。
-    let migrationResult = { attempted: false, success: false, backend: 'localStorage' };
+    // =====================================================
+    // 安全启动逻辑（IDB 优先 + lastSaved 时间戳保护）
+    // 1. 优先尝试从 IndexedDB 加载（容量大）
+    // 2. 如果 IDB 为空但 localStorage 有数据（含 lastSaved），自动迁移一次
+    // 3. 所有后续写入走选中的后端
+    // =====================================================
+    let migrationResult = { backend: 'localStorage', attempted: false, success: false };
 
-    try {
-        const idbReady = await StorageService.initIndexedDB();
-        if (idbReady) {
+    let saved = null;
+    let usedIDB = false;
+
+    // 优先读 IDB
+    if (StorageService._useIndexedDB) {
+        try {
             const idbData = await StorageService.loadAllFromIDB();
-            const hasConversations = idbData && Object.keys(idbData.conversations || {}).length > 0;
+            if (idbData && (Object.keys(idbData.conversations || {}).length > 0 || idbData.lastSaved)) {
+                saved = idbData;
+                usedIDB = true;
+                console.log('[Storage] Loaded from IndexedDB (lastSaved:', new Date(idbData.lastSaved || 0), ')');
+            }
+        } catch (e) {
+            console.warn('[Storage] IDB load error, will try localStorage');
+        }
+    }
 
-            if (hasConversations) {
-                // IDB 里有真实数据，直接使用
-                StorageService._useIndexedDB = true;
-                migrationResult.backend = 'indexeddb';
-                console.log('[Storage] Using existing IndexedDB data');
-            } else {
-                // IDB 为空，尝试从 localStorage 迁移
-                console.log('[Storage] IndexedDB is empty, attempting migration from localStorage...');
+    // 如果 IDB 没数据，读 localStorage 并考虑迁移
+    if (!saved) {
+        const lsData = loadAll();
+        if (lsData) {
+            saved = lsData;
+
+            // 自动安全迁移到 IDB（如果用户开启了 IDB 模式）
+            if (StorageService._useIndexedDB && !usedIDB) {
+                console.log('[Storage] Auto-migrating from localStorage to IndexedDB...');
                 migrationResult.attempted = true;
-
-                const migrated = await StorageService.migrateFromLocalStorage();
-                migrationResult.success = migrated;
-                migrationResult.backend = migrated ? 'indexeddb' : 'localStorage';
-
-                if (migrated) {
+                try {
+                    await StorageService.saveAllToIDB({
+                        ...lsData,
+                        lastSaved: Date.now()
+                    });
+                    migrationResult.success = true;
+                    usedIDB = true;
+                    console.log('[Storage] Migration to IndexedDB completed.');
                     window._showStorageMigrationNotice = true;
+                } catch (e) {
+                    console.error('[Storage] Auto-migration to IDB failed, staying on localStorage', e);
+                    // 失败就继续用 LS 数据
                 }
             }
         }
-    } catch (err) {
-        console.warn('[Storage] IndexedDB init/migration failed, safely falling back to localStorage:', err);
-        migrationResult.backend = 'localStorage';
-        migrationResult.migrationFailed = true;
-        // 确保后端标志是关闭的
-        StorageService._useIndexedDB = false;
     }
-
-    // 根据当前后端加载数据
-    const saved = await StorageService.loadAll();
 
     if (saved) {
         if (saved.settings) {
@@ -3181,17 +3266,20 @@ async function initState() {
         if (saved.worldBooks) {
             state.worldBooks = saved.worldBooks;
         }
+    } else {
+        console.log('[Storage] No previous data found, starting fresh');
     }
 
-    // 迁移成功后额外保存一次（确保格式一致）
-    if (migrationResult.success) {
-        await StorageService.saveAll({
-            settings: getSafeSettingsForPersist(),
-            conversations: state.conversations,
-            conversationOrder: state.conversationOrder,
-            activeConvId: state.activeConvId,
-            worldBooks: state.worldBooks || {}
-        });
+    // 调试辅助：记录最终加载结果
+    console.log('[Storage] Final load state after init:', {
+        conversationsCount: Object.keys(state.conversations || {}).length,
+        activeConvId: state.activeConvId,
+        usedIDB: usedIDB,
+        migrationResult
+    });
+
+    if (usedIDB) {
+        migrationResult.backend = 'indexeddb';
     }
 
     state._storageMigration = migrationResult;
@@ -3209,17 +3297,35 @@ async function initState() {
         state.settings.summarizeApiKey = '';
     }
 
-    // If no active conversation, create one
-    if (!state.activeConvId || !state.conversations[state.activeConvId]) {
-        var conv = defaultConversation();
-        state.conversations[conv.id] = conv;
-        state.conversationOrder.unshift(conv.id);
-        state.activeConvId = conv.id;
-    }
+    // === 更健壮的默认对话处理（防止加载好数据后却被重置为默认） ===
+    const hasAnyConv = Object.keys(state.conversations || {}).length > 0;
 
-    // 加载/创建完成后立即持久化一次
-    if (typeof persistState === 'function') {
-        persistState(true);
+    if (!state.activeConvId || !state.conversations[state.activeConvId]) {
+        if (hasAnyConv) {
+            // 有对话但 activeConvId 无效 → 尝试恢复第一个（按 conversationOrder 或任意一个）
+            const order = Array.isArray(state.conversationOrder) ? state.conversationOrder : [];
+            const firstId = order.find(id => state.conversations[id]) || Object.keys(state.conversations)[0];
+            if (firstId) {
+                state.activeConvId = firstId;
+                console.log('[Storage] Recovered activeConvId from existing conversations:', firstId);
+            } else {
+                state.activeConvId = null;
+            }
+        }
+
+        // 只有在真正完全没有对话时，才创建全新的默认对话
+        if (!state.activeConvId || !state.conversations[state.activeConvId]) {
+            console.log('[Storage] No valid conversations found, creating a brand new default one');
+            var conv = defaultConversation();
+            state.conversations[conv.id] = conv;
+            state.conversationOrder.unshift(conv.id);
+            state.activeConvId = conv.id;
+
+            // 只有真正新建了默认对话，才需要立即落盘一次
+            if (typeof persistState === 'function') {
+                persistState(true);
+            }
+        }
     }
 }
 
@@ -3232,7 +3338,8 @@ function persistState(immediate) {
         conversations: state.conversations,
         conversationOrder: state.conversationOrder,
         activeConvId: state.activeConvId,
-        worldBooks: state.worldBooks || {}   // Phase 2: persist global world books
+        worldBooks: state.worldBooks || {},   // Phase 2: persist global world books
+        lastSaved: Date.now()                  // 用于双后端冲突解决和判断新鲜度（关键）
     };
 
     if (immediate) {
@@ -3240,7 +3347,7 @@ function persistState(immediate) {
             clearTimeout(_persistTimeout);
             _persistTimeout = null;
         }
-        // 使用 StorageService（会自动根据当前后端决定用 localStorage 还是 IndexedDB）
+        // 保存到当前选中的后端（默认 IndexedDB，容量大）
         StorageService.saveAll(dataToSave);
         return;
     }
@@ -6849,14 +6956,17 @@ function bindEvents() {
         const backend = StorageService.getBackend();
 
         if (backendEl) {
-            backendEl.textContent = backend === 'indexeddb' ? t('storage_backend') + ' (IDB)' : t('storage_backend') + ' (LS)';
-            if (backend === 'indexeddb') {
+            let label = t('storage_backend');
+            if (backend === 'opfs') {
+                label += ' (OPFS)';
                 backendEl.style.background = 'rgba(16,185,129,0.15)';
                 backendEl.style.color = '#4ade80';
             } else {
+                label += ' (LS)';
                 backendEl.style.background = 'rgba(255,255,255,0.05)';
                 backendEl.style.color = '';
             }
+            backendEl.textContent = label;
         }
 
         // 获取并显示存储用量 + 进度条 (Phase 3)
@@ -6894,7 +7004,10 @@ function bindEvents() {
         // 动态调整提示文案 (使用 i18n)
         const hintEl = document.getElementById('storageHint');
         if (hintEl) {
-            const hintKey = backend === 'indexeddb' ? 'storage_hint_idb' : 'storage_hint_ls';
+            let hintKey = 'storage_hint_ls';
+            if (backend === 'opfs') {
+                hintKey = 'storage_hint_opfs';
+            }
             hintEl.textContent = t(hintKey);
         }
 
