@@ -2278,22 +2278,34 @@ var STORAGE_KEY = 'opentavern-data-v1';
     function createStore(dbName, storeName) {
         return {
             get: function(key) {
-                return instance.transaction(storeName).objectStore(storeName).get(key);
+                return promisifyRequest(
+                    instance.transaction(storeName).objectStore(storeName).get(key)
+                );
             },
             set: function(key, value) {
-                return instance.transaction(storeName, 'readwrite').objectStore(storeName).put(value, key);
+                return promisifyRequest(
+                    instance.transaction(storeName, 'readwrite').objectStore(storeName).put(value, key)
+                );
             },
             delete: function(key) {
-                return instance.transaction(storeName, 'readwrite').objectStore(storeName).delete(key);
+                return promisifyRequest(
+                    instance.transaction(storeName, 'readwrite').objectStore(storeName).delete(key)
+                );
             },
             clear: function() {
-                return instance.transaction(storeName, 'readwrite').objectStore(storeName).clear();
+                return promisifyRequest(
+                    instance.transaction(storeName, 'readwrite').objectStore(storeName).clear()
+                );
             },
             getAll: function() {
-                return instance.transaction(storeName).objectStore(storeName).getAll();
+                return promisifyRequest(
+                    instance.transaction(storeName).objectStore(storeName).getAll()
+                );
             },
             getAllKeys: function() {
-                return instance.transaction(storeName).objectStore(storeName).getAllKeys();
+                return promisifyRequest(
+                    instance.transaction(storeName).objectStore(storeName).getAllKeys()
+                );
             }
         };
     }
@@ -2438,20 +2450,18 @@ var StorageService = {
         try {
             const [settings, conversationsRaw, worldBooksRaw, metadata] = await Promise.all([
                 db.get('settings', 'main'),
-                db.getAll('conversations').catch(() => []),
-                db.getAll('worldBooks').catch(() => []),
+                db.getAll('conversations'),
+                db.getAll('worldBooks'),
                 db.get('metadata', 'main')
             ]);
 
-            // 防御性处理：确保是数组
+            // 防御性处理
             const conversations = Array.isArray(conversationsRaw) ? conversationsRaw : [];
             const worldBooks = Array.isArray(worldBooksRaw) ? worldBooksRaw : [];
 
-            // 重建 conversations 对象
             const convObj = {};
             conversations.forEach(c => { if (c && c.id) convObj[c.id] = c; });
 
-            // 重建 worldBooks 对象
             const wbObj = {};
             worldBooks.forEach(w => { if (w && w.id) wbObj[w.id] = w; });
 
