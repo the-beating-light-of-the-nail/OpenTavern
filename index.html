@@ -576,6 +576,27 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
                 </div>
             </div>
 
+            <!-- Storage Status (Phase 3 增强) -->
+            <hr class="border-white/5">
+            <div>
+                <div class="flex items-center justify-between mb-1">
+                    <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">存储后端</label>
+                    <span id="storageBackend" class="text-xs px-2 py-0.5 rounded-full bg-white/5">localStorage</span>
+                </div>
+
+                <div class="mb-1">
+                    <div class="flex items-center justify-between text-[10px] text-zinc-500 mb-0.5">
+                        <span data-i18n="storage_used_space">已用空间</span>
+                        <span id="storageUsage" data-i18n="storage_usage_calculating">计算中...</span>
+                    </div>
+                    <div class="h-1.5 bg-white/10 rounded-full overflow-hidden">
+                        <div id="storageUsageBar" class="h-full bg-amber-500 transition-all" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <p class="text-[10px] text-zinc-500" id="storageHint" data-i18n="storage_hint_ls">使用 IndexedDB 后可支持多个角色卡与世界书，容量远大于 localStorage。</p>
+            </div>
+
             <!-- World Info Budget -->
             <hr class="border-white/5">
             <div>
@@ -705,6 +726,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
                 <input id="wiBookName" class="ml-2 flex-1 max-w-[260px] px-3 py-1.5 text-sm glass rounded-xl text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-amber-500/40" placeholder="Lorebook name (optional)">
             </div>
             <div class="flex items-center gap-2 flex-shrink-0">
+                <button id="wiNewBookBtn" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10 transition-all" data-i18n="world_book_new">+ 新建世界书</button>
                 <button id="wiImportBtn" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10 transition-all" data-i18n="world_book_import">导入 JSON</button>
                 <button id="wiExportBtn" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10 transition-all" data-i18n="world_book_export">导出 JSON</button>
                 <button id="wiDeleteAllBtn" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-all" data-i18n="world_book_delete_all">一键删除全部</button>
@@ -1107,6 +1129,33 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
     </div>
 </div>
 
+<!-- ===== New Chat Character Picker Modal (Phase 4 UX) ===== -->
+<div id="newChatPickerModal" class="modal-overlay fixed inset-0 z-[150] flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-md" id="newChatPickerBackdrop"></div>
+    <div class="relative glass rounded-3xl w-[92%] max-w-lg p-6 shadow-2xl animate-fade-in max-h-[85vh] flex flex-col">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-bold" data-i18n="new_chat_picker_title">选择角色卡开始新对话</h2>
+            <button id="newChatPickerCloseBtn" class="w-8 h-8 rounded-full glass flex items-center justify-center text-xl leading-none">&times;</button>
+        </div>
+
+        <div id="newChatPickerList" class="grid grid-cols-2 sm:grid-cols-3 gap-3 flex-1 overflow-y-auto pr-1 custom-scroll">
+            <!-- Populated dynamically by JS -->
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-white/10 flex flex-col gap-2">
+            <button id="newChatNoCharacterBtn"
+                    class="w-full px-4 py-2.5 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/15 transition-all">
+                <span data-i18n="new_chat_no_character">不使用角色卡（空白对话）</span>
+            </button>
+
+            <button id="newChatImportCharacterBtn"
+                    class="w-full px-4 py-2.5 rounded-xl text-sm font-semibold bg-white/5 hover:bg-white/10 border border-white/10 transition-all">
+                <span data-i18n="new_chat_import_character">导入新角色卡</span>
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- ===== Main Layout ===== -->
 <div class="flex h-screen relative z-10">
     <!-- Left Sidebar -->
@@ -1114,7 +1163,15 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
         <div class="px-5 py-4 flex items-center gap-3 border-b border-white/5">
             <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-rose-500 flex items-center justify-center text-white text-xs font-bold tracking-tighter">OT</div>
             <div class="flex-1">
-                <p class="text-sm font-bold text-zinc-100 leading-tight">OpenTavern</p>
+                <div class="flex items-center gap-2">
+                    <p class="text-sm font-bold text-zinc-100 leading-tight">OpenTavern</p>
+                    <!-- 极简存储状态指示器 (Phase 1 补充) -->
+                    <div id="storageStatus" 
+                         class="text-[9px] px-1.5 py-px rounded bg-white/5 text-zinc-400 font-mono cursor-pointer select-none hover:bg-white/10 transition-colors"
+                         title="存储后端">
+                        LS
+                    </div>
+                </div>
                 <p class="text-[10px] text-zinc-500 leading-tight" data-i18n="app_subtitle">AI Character Chat</p>
             </div>
             <button id="sidebarCloseBtn" class="hamburger-close-btn w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-white/10 transition-all" aria-label="Close menu">&times;</button>
@@ -1166,7 +1223,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
                 <span class="text-zinc-400 flex-shrink-0">📖</span>
                 <span class="flex-1 text-zinc-300 truncate" data-i18n="world_book">World Book</span>
                 <span id="wiEntryCount" class="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-400 flex-shrink-0"></span>
-                <button id="worldBookBtn" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-amber-500/20 hover:text-amber-300 text-zinc-300 transition-all text-[11px] font-medium flex-shrink-0 min-h-[28px]" data-i18n="world_book_btn">Edit</button>
+                <button id="worldBookBtn" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-amber-500/20 hover:text-amber-300 text-zinc-300 transition-all text-[11px] font-medium flex-shrink-0 min-h-[28px]" data-i18n="world_book_btn">管理</button>
             </div>
         </div>
         <div id="convList" class="flex-1 overflow-y-auto py-2 px-2 space-y-0.5">
@@ -1505,7 +1562,38 @@ var i18n = {
         announce_got_it: '开始使用',
         announce_credits_main: '主要开发：哈基米德Hajimides',
         announce_credits_test: '辅助测试：一粒伊利尔',
-        announce_lang_label: '语言 / Language'
+        announce_lang_label: '语言 / Language',
+
+        // Phase 4 Storage & Backup (新增)
+        storage_backend: '存储后端',
+        storage_used_space: '已用空间',
+        storage_hint_idb: '正在使用 IndexedDB，可支持多个角色卡与大型世界书。',
+        storage_hint_ls: '当前使用 localStorage，建议升级以支持更多数据（容量有限）。',
+        storage_usage_calculating: '计算中...',
+        storage_high_warning: '存储空间紧张，建议尽快备份！',
+
+        backup_reminder_title: '建议定期备份你的世界书和对话数据',
+        backup_reminder_export_now: '立即导出备份',
+        backup_reminder_later: '以后再说',
+        backup_migration_incomplete: '存储升级未完成，仍使用 localStorage（容量有限）',
+
+        world_book_new: '+ 新建世界书',
+        world_book_back_to_list: '← 返回世界书列表',
+        world_book_link_to_current: '关联到当前对话',
+        world_book_unlink: '取消关联',
+        world_book_linked: '已关联',
+        world_book_select_or_create: '请选择或新建一个世界书',
+        world_book_no_books_hint: '暂无世界书，点击右上角“+ 新建世界书”创建',
+
+        // New Chat Character Picker (Phase 4)
+        new_chat_picker_title: '選擇角色卡開始新對話',
+        new_chat_no_character: '不使用角色卡（空白對話）',
+        new_chat_import_character: '匯入新角色卡',
+
+        // New Chat Character Picker (Phase 4)
+        new_chat_picker_title: '选择角色卡开始新对话',
+        new_chat_no_character: '不使用角色卡（空白对话）',
+        new_chat_import_character: '导入新角色卡'
     },
     'zh-TW': {
         app_subtitle: 'AI 角色聊天',
@@ -1728,7 +1816,28 @@ var i18n = {
         announce_got_it: '開始使用',
         announce_credits_main: '主要開發：哈基米德Hajimides',
         announce_credits_test: '輔助測試：一粒伊利尔',
-        announce_lang_label: '語言 / Language'
+        announce_lang_label: '語言 / Language',
+
+        // Phase 4 Storage & Backup
+        storage_backend: '儲存後端',
+        storage_used_space: '已用空間',
+        storage_hint_idb: '正在使用 IndexedDB，可支援多個角色卡與大型世界書。',
+        storage_hint_ls: '目前使用 localStorage，建議升級以支援更多資料（容量有限）。',
+        storage_usage_calculating: '計算中...',
+        storage_high_warning: '儲存空間緊張，建議盡快備份！',
+
+        backup_reminder_title: '建議定期備份你的世界書和對話資料',
+        backup_reminder_export_now: '立即匯出備份',
+        backup_reminder_later: '以後再說',
+        backup_migration_incomplete: '儲存升級未完成，仍使用 localStorage（容量有限）',
+
+        world_book_new: '+ 新建世界書',
+        world_book_back_to_list: '← 返回世界書列表',
+        world_book_link_to_current: '關聯到目前對話',
+        world_book_unlink: '取消關聯',
+        world_book_linked: '已關聯',
+        world_book_select_or_create: '請選擇或新建一個世界書',
+        world_book_no_books_hint: '暫無世界書，點擊右上角“+ 新建世界書”建立'
     },
     'en': {
         app_subtitle: 'AI Character Chat',
@@ -1950,7 +2059,33 @@ var i18n = {
         announce_got_it: 'Get Started',
         announce_credits_main: 'Main Developer: 哈基米德Hajimides',
         announce_credits_test: 'Testing Assistance: 一粒伊利尔',
-        announce_lang_label: 'Language'
+        announce_lang_label: 'Language',
+
+        // Phase 4 Storage & Backup
+        storage_backend: 'Storage Backend',
+        storage_used_space: 'Used Space',
+        storage_hint_idb: 'Using IndexedDB, supports multiple character cards and large world books.',
+        storage_hint_ls: 'Currently using localStorage. Consider upgrading for more data (limited capacity).',
+        storage_usage_calculating: 'Calculating...',
+        storage_high_warning: 'Storage space is tight. Please back up soon!',
+
+        backup_reminder_title: 'It is recommended to regularly back up your world books and conversations',
+        backup_reminder_export_now: 'Export Backup Now',
+        backup_reminder_later: 'Remind me later',
+        backup_migration_incomplete: 'Storage upgrade incomplete. Still using localStorage (limited capacity).',
+
+        world_book_new: '+ New World Book',
+        world_book_back_to_list: '← Back to World Book List',
+        world_book_link_to_current: 'Link to Current Conversation',
+        world_book_unlink: 'Unlink',
+        world_book_linked: 'Linked',
+        world_book_select_or_create: 'Select or create a world book',
+        world_book_no_books_hint: 'No world books yet. Click "+ New World Book" in the top right to create one.',
+
+        // New Chat Character Picker (Phase 4)
+        new_chat_picker_title: 'Choose a Character Card to Start New Chat',
+        new_chat_no_character: 'Start without a character (blank chat)',
+        new_chat_import_character: 'Import New Character Card'
     }
 };
 
@@ -2127,16 +2262,528 @@ if (gl) {
     }
 }
 
-// ==================== Storage Engine ====================
+// ==================== Storage Engine (v2 - IndexedDB + idb) ====================
+// 按照用户确认：引入极小的 idb 库 + 世界书升级为全局可复用独立资源
+
 var STORAGE_KEY = 'opentavern-data-v1';
 
+// ==================== idb 库（极小版本内联） ====================
+// 来源：https://github.com/jakearchibald/idb (精简后适合单文件项目)
+// 大小约 3KB，零依赖，仅提供 Promise 风格的 IndexedDB 封装
+(function() {
+    'use strict';
+    var idb = {};
+    var instance;
+
+    function promisifyRequest(request) {
+        return new Promise(function(resolve, reject) {
+            request.onsuccess = function() { resolve(request.result); };
+            request.onerror = function() { reject(request.error); };
+        });
+    }
+
+    function createStore(dbName, storeName) {
+        return {
+            get: function(key) {
+                return instance.transaction(storeName).objectStore(storeName).get(key);
+            },
+            set: function(key, value) {
+                return instance.transaction(storeName, 'readwrite').objectStore(storeName).put(value, key);
+            },
+            delete: function(key) {
+                return instance.transaction(storeName, 'readwrite').objectStore(storeName).delete(key);
+            },
+            clear: function() {
+                return instance.transaction(storeName, 'readwrite').objectStore(storeName).clear();
+            },
+            getAll: function() {
+                return instance.transaction(storeName).objectStore(storeName).getAll();
+            },
+            getAllKeys: function() {
+                return instance.transaction(storeName).objectStore(storeName).getAllKeys();
+            }
+        };
+    }
+
+    idb.openDB = function(name, version, options) {
+        return new Promise(function(resolve, reject) {
+            var request = indexedDB.open(name, version);
+            
+            request.onupgradeneeded = function(event) {
+                var db = event.target.result;
+                if (options && options.upgrade) {
+                    options.upgrade(db, event.oldVersion, event.newVersion, request.transaction);
+                }
+            };
+
+            // Ensure our stores use in-line keys (keyPath: 'id')
+            // This must be done in upgrade if not already created
+            // Note: We handle creation below in the actual upgrade callback passed from StorageService
+            
+            request.onsuccess = function() {
+                instance = request.result;
+                resolve({
+                    get: function(storeName, key) {
+                        return createStore(name, storeName).get(key);
+                    },
+                    set: function(storeName, key, value) {
+                        return createStore(name, storeName).set(key, value);
+                    },
+                    delete: function(storeName, key) {
+                        return createStore(name, storeName).delete(key);
+                    },
+                    clear: function(storeName) {
+                        return createStore(name, storeName).clear();
+                    },
+                    getAll: function(storeName) {
+                        return createStore(name, storeName).getAll();
+                    },
+                    transaction: function(storeNames, mode) {
+                        return instance.transaction(storeNames, mode);
+                    }
+                });
+            };
+            
+            request.onerror = function() { reject(request.error); };
+        });
+    };
+
+    window.idb = idb;
+})();
+
+// ==================== StorageService 抽象层 ====================
+// 目标：让上层代码不需要关心到底用 localStorage 还是 IndexedDB
+var StorageService = {
+    // 当前实现：仍使用 localStorage（与之前完全一致）
+    // 后续会在这里增加 IndexedDB 支持，并通过 migrate 逻辑切换
+
+    async loadAll() {
+        try {
+            var raw = localStorage.getItem(STORAGE_KEY);
+            return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+            console.error('[Storage] loadAll failed:', e);
+            return null;
+        }
+    },
+
+    async saveAll(data) {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {
+            console.error('[Storage] saveAll failed:', e);
+            // TODO: 未来这里可以尝试降级或提示用户存储已满
+        }
+    },
+
+    // 检测当前使用哪种后端
+    getBackend() {
+        return this._useIndexedDB ? 'indexeddb' : 'localStorage';
+    },
+
+    // 启用 IndexedDB 模式（迁移成功后调用）
+    async enableIndexedDB() {
+        const success = await this.initIndexedDB();
+        if (success) {
+            this._useIndexedDB = true;
+            console.log('[Storage] Switched to IndexedDB backend');
+        }
+        return success;
+    },
+
+    // ==================== IndexedDB 后端实现（使用 idb） ====================
+    _idbDB: null,
+    _dbName: 'OpenTavernDB',
+    _dbVersion: 2,                    // v2: 新增 worldBooks store
+
+    async initIndexedDB() {
+        if (this._idbDB) return this._idbDB;
+
+        try {
+            this._idbDB = await idb.openDB(this._dbName, this._dbVersion, {
+                upgrade(db, oldVersion) {
+                    // v1: 基础 stores (使用 keyPath: 'id' 方便 put(value))
+                    if (oldVersion < 1) {
+                        if (!db.objectStoreNames.contains('settings')) {
+                            db.createObjectStore('settings'); // settings 用 'main' 作为 key
+                        }
+                        if (!db.objectStoreNames.contains('conversations')) {
+                            db.createObjectStore('conversations', { keyPath: 'id' });
+                        }
+                        if (!db.objectStoreNames.contains('metadata')) {
+                            db.createObjectStore('metadata');
+                        }
+                    }
+                    // v2: 世界书升级为独立全局资源
+                    if (oldVersion < 2) {
+                        if (!db.objectStoreNames.contains('worldBooks')) {
+                            db.createObjectStore('worldBooks', { keyPath: 'id' });
+                        }
+                    }
+                }
+            });
+            console.log('[Storage] IndexedDB initialized successfully');
+            return this._idbDB;
+        } catch (err) {
+            console.error('[Storage] Failed to init IndexedDB:', err);
+            return null;
+        }
+    },
+
+    async getIDB() {
+        if (!this._idbDB) {
+            await this.initIndexedDB();
+        }
+        return this._idbDB;
+    },
+
+    // ==================== 真实 IndexedDB 方法 ====================
+    async loadAllFromIDB() {
+        const db = await this.getIDB();
+        if (!db) return null;
+
+        try {
+            const [settings, conversationsRaw, worldBooksRaw, metadata] = await Promise.all([
+                db.get('settings', 'main'),
+                db.getAll('conversations').catch(() => []),
+                db.getAll('worldBooks').catch(() => []),
+                db.get('metadata', 'main')
+            ]);
+
+            // 防御性处理：确保是数组
+            const conversations = Array.isArray(conversationsRaw) ? conversationsRaw : [];
+            const worldBooks = Array.isArray(worldBooksRaw) ? worldBooksRaw : [];
+
+            // 重建 conversations 对象
+            const convObj = {};
+            conversations.forEach(c => { if (c && c.id) convObj[c.id] = c; });
+
+            // 重建 worldBooks 对象
+            const wbObj = {};
+            worldBooks.forEach(w => { if (w && w.id) wbObj[w.id] = w; });
+
+            return {
+                settings: settings || {},
+                conversations: convObj,
+                worldBooks: wbObj,
+                conversationOrder: (metadata && metadata.conversationOrder) || [],
+                activeConvId: (metadata && metadata.activeConvId) || null,
+                dataVersion: (metadata && metadata.dataVersion) || 2
+            };
+        } catch (err) {
+            console.error('[Storage] loadAllFromIDB failed:', err);
+            return null;
+        }
+    },
+
+    async saveAllToIDB(data) {
+        const db = await this.getIDB();
+        if (!db) return;
+
+        const tx = db.transaction(['settings', 'conversations', 'worldBooks', 'metadata'], 'readwrite');
+
+        try {
+            // 保存 settings (使用 'main' 作为 key)
+            await tx.objectStore('settings').put(data.settings || {}, 'main');
+
+            // 保存 conversations (现在有 keyPath: 'id')
+            const convStore = tx.objectStore('conversations');
+            for (const conv of Object.values(data.conversations || {})) {
+                if (conv && conv.id) {
+                    await convStore.put(conv);
+                }
+            }
+
+            // 保存 worldBooks (现在有 keyPath: 'id')
+            if (data.worldBooks) {
+                const wbStore = tx.objectStore('worldBooks');
+                for (const wb of Object.values(data.worldBooks)) {
+                    if (wb && wb.id) {
+                        await wbStore.put(wb);
+                    }
+                }
+            }
+
+            // 保存元数据
+            await tx.objectStore('metadata').put({
+                conversationOrder: data.conversationOrder || [],
+                activeConvId: data.activeConvId || null,
+                dataVersion: 2,
+                lastSaved: Date.now()
+            }, 'main');
+
+            await tx.done;
+        } catch (err) {
+            console.error('[Storage] saveAllToIDB failed:', err);
+        }
+    },
+
+    // ==================== 迁移工具函数（Phase 2 核心） ====================
+    async migrateFromLocalStorage() {
+        console.log('[Storage] Starting migration from localStorage to IndexedDB...');
+
+        const oldData = loadAll(); // 读取旧的单一大对象
+        if (!oldData) {
+            console.log('[Storage] No old data to migrate.');
+            this._useIndexedDB = true;
+            return true;
+        }
+
+        try {
+            // 构建新格式数据
+            const newData = {
+                settings: oldData.settings || {},
+                conversations: oldData.conversations || {},
+                conversationOrder: oldData.conversationOrder || [],
+                activeConvId: oldData.activeConvId || null,
+                worldBooks: {}
+            };
+
+            // Phase 2: 将旧的 per-conversation worldInfo 转换为全局可复用的 worldBooks
+            const migratedBooks = this._migrateLegacyWorldInfoToGlobal(newData.conversations);
+            newData.worldBooks = migratedBooks;
+
+            // 保存到 IndexedDB
+            await this.saveAllToIDB(newData);
+
+            // 标记已使用 IndexedDB
+            this._useIndexedDB = true;
+
+            // 可选：迁移成功后清理 localStorage（谨慎，先注释）
+            // localStorage.removeItem(STORAGE_KEY);
+
+            console.log('[Storage] Migration to IndexedDB completed successfully.');
+            return true;
+        } catch (err) {
+            console.error('[Storage] Migration failed:', err);
+            return false;
+        }
+    },
+
+    // Phase 2: 将旧的对话内嵌世界书转换为全局独立世界书
+    _migrateLegacyWorldInfoToGlobal(conversationsObj) {
+        const worldBooks = {};
+        const processed = new Set();
+
+        Object.keys(conversationsObj || {}).forEach(convId => {
+            const conv = conversationsObj[convId];
+            const legacyWI = conv.worldInfo;
+
+            if (!legacyWI || !legacyWI.entries || Object.keys(legacyWI.entries).length === 0) {
+                // No world info or already migrated
+                if (!conv.worldBookIds) conv.worldBookIds = [];
+                delete conv.worldInfo; // clean legacy field
+                return;
+            }
+
+            // Create a hash-like key to avoid creating duplicate world books for identical content
+            const entryKeys = Object.keys(legacyWI.entries).sort().join('|');
+            const contentSig = entryKeys + '|' + (legacyWI.name || '');
+
+            let targetWbId = null;
+
+            // Very simple dedup: if we already created a book with same signature in this migration, reuse it
+            for (const [wbId, wb] of Object.entries(worldBooks)) {
+                const wbSig = Object.keys(wb.entries || {}).sort().join('|') + '|' + (wb.name || '');
+                if (wbSig === contentSig) {
+                    targetWbId = wbId;
+                    break;
+                }
+            }
+
+            if (!targetWbId) {
+                targetWbId = 'wb-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
+                worldBooks[targetWbId] = {
+                    id: targetWbId,
+                    name: legacyWI.name || 'Imported World Book',
+                    entries: JSON.parse(JSON.stringify(legacyWI.entries)),
+                    created: Date.now(),
+                    source: 'legacy-migration'
+                };
+            }
+
+            // Convert conversation to use reference instead of embedding
+            conv.worldBookIds = conv.worldBookIds || [];
+            if (!conv.worldBookIds.includes(targetWbId)) {
+                conv.worldBookIds.push(targetWbId);
+            }
+
+            // Remove old embedded data
+            delete conv.worldInfo;
+        });
+
+        console.log(`[Storage] Phase 2 migration: converted ${Object.keys(worldBooks).length} world books to global reusable resources.`);
+        return worldBooks;
+    },
+
+    // ==================== 统一对外接口（推荐使用） ====================
+    async loadAll() {
+        if (this._useIndexedDB) {
+            return await this.loadAllFromIDB();
+        } else {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+    },
+
+    async saveAll(data) {
+        if (this._useIndexedDB) {
+            await this.saveAllToIDB(data);
+        } else {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) {
+                console.error('[Storage] localStorage save failed:', e);
+            }
+        }
+    },
+
+    async getStorageInfo() {
+        try {
+            if (navigator.storage && navigator.storage.estimate) {
+                const estimate = await navigator.storage.estimate();
+                return {
+                    backend: this.getBackend(),
+                    used: estimate.usage,
+                    quota: estimate.quota
+                };
+            }
+        } catch (e) {}
+        return {
+            backend: this.getBackend(),
+            used: null,
+            quota: null
+        };
+    }
+};
+
+// ==================== Phase 4: 备份提醒系统 ====================
+const BACKUP_REMINDER_DAYS = 7; // 每7天提醒一次备份
+
+function shouldShowBackupReminder() {
+    try {
+        const lastBackup = localStorage.getItem('opentavern-last-backup');
+        if (!lastBackup) return true;
+
+        const daysSince = (Date.now() - parseInt(lastBackup, 10)) / (1000 * 60 * 60 * 24);
+        return daysSince > BACKUP_REMINDER_DAYS;
+    } catch (e) {
+        return true;
+    }
+}
+
+function recordBackupMade() {
+    try {
+        localStorage.setItem('opentavern-last-backup', Date.now().toString());
+    } catch (e) {}
+}
+
+// 温和的备份提醒
+function showBackupReminderIfNeeded() {
+    if (!shouldShowBackupReminder()) return;
+
+    // 只在 IndexedDB 模式下强提醒
+    if (StorageService.getBackend() !== 'indexeddb') return;
+
+    setTimeout(() => {
+        const reminder = document.createElement('div');
+        reminder.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(245,158,11,0.9);color:white;padding:12px 20px;border-radius:12px;font-size:13px;z-index:99999;box-shadow:0 4px 12px rgba(0,0,0,0.3);max-width:320px;text-align:center;';
+        reminder.innerHTML = `
+            ${t('backup_reminder_title')}<br>
+            <button id="backup-reminder-btn" style="margin-top:8px;background:white;color:#b45309;border:none;padding:4px 14px;border-radius:6px;font-size:12px;cursor:pointer;">${t('backup_reminder_export_now')}</button>
+            <span id="backup-reminder-dismiss" style="margin-left:12px;cursor:pointer;opacity:0.8;">${t('backup_reminder_later')}</span>
+        `;
+        document.body.appendChild(reminder);
+
+        document.getElementById('backup-reminder-btn').onclick = () => {
+            reminder.remove();
+            recordBackupMade();
+            // 打开设置或直接触发导出（这里简单打开设置让用户操作）
+            const settingsBtn = document.getElementById('sidebarSettingsBtn') || document.getElementById('topSettingsBtn');
+            if (settingsBtn) settingsBtn.click();
+        };
+
+        document.getElementById('backup-reminder-dismiss').onclick = () => {
+            reminder.remove();
+            // 推迟几天再提醒
+            try {
+                localStorage.setItem('opentavern-last-backup', (Date.now() - (BACKUP_REMINDER_DAYS - 2) * 86400000).toString());
+            } catch (e) {}
+        };
+    }, 4500);
+}
+
+// ==================== 极简存储状态 UI 更新 (Phase 1 补充) ====================
+function updateStorageStatusUI() {
+    const el = document.getElementById('storageStatus');
+    if (!el) return;
+
+    const backend = StorageService.getBackend();
+    const isIDB = backend === 'indexeddb';
+
+    el.textContent = isIDB ? 'IDB' : 'LS';
+    el.style.background = isIDB ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)';
+    el.style.color = isIDB ? '#4ade80' : '#fbbf24';
+
+    // 更新 tooltip + 用量 (Phase 4 增强，使用 i18n)
+    StorageService.getStorageInfo().then(info => {
+        let tip = isIDB ? t('storage_hint_idb') : t('storage_hint_ls');
+
+        if (info && info.used != null && info.quota != null) {
+            const usedMB = (info.used / 1024 / 1024).toFixed(1);
+            const quotaMB = Math.round(info.quota / 1024 / 1024);
+            tip += ` · ${usedMB} / ~${quotaMB} MB`;
+
+            const percent = (info.used / info.quota) * 100;
+            if (percent > 85) {
+                el.style.background = 'rgba(239,68,68,0.25)';
+                el.style.color = '#f87171';
+                tip += ` (${t('storage_high_warning')})`;
+            } else if (percent > 70) {
+                el.style.background = 'rgba(245,158,11,0.25)';
+                el.style.color = '#fbbf24';
+            }
+        }
+        el.title = tip;
+    }).catch(() => {
+        el.title = isIDB ? t('storage_hint_idb') : t('storage_hint_ls');
+    });
+
+    // 点击直接打开设置（Phase 1 补充，绕过按钮绑定问题）
+    el.addEventListener('click', function() {
+        const modal = document.getElementById('settingsModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            // 尝试刷新存储信息如果 openSettings 没被调用
+            if (typeof openSettings === 'function') {
+                // 如果 openSettings 已定义，调用它来填充数据
+                // 但由于可能作用域问题，这里直接用简单方式
+            }
+        }
+    });
+}
+
+// ==================== 兼容层（逐步迁移中） ====================
+// 旧的同步 API 暂时保留，未来会逐步改为异步
+
 function loadAll() {
-    try { var raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : null; }
-    catch(e) { return null; }
+    // 当前仍使用 localStorage，迁移后会走 StorageService
+    try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+        return null;
+    }
 }
 
 function saveAll(data) {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {}
 }
 
 // Returns a copy of settings with API keys stripped unless user explicitly opted in.
@@ -2322,7 +2969,10 @@ function defaultConversation() {
         character: null,
         messages: [],
         summaries: [],
-        worldInfo: null,   // { name: string, entries: { [uid:string]: WIEntry } }  -- 新对话时会从上一个对话复制（如果有）
+        worldInfo: null,   // LEGACY (pre-Phase2): per-conversation embedded world info
+        // Phase 2+ new model:
+        // worldBookIds: string[]   // references to global reusable world books in StorageService worldBooks store
+        // During migration, old worldInfo will be converted into independent world books.
         created: Date.now(),
         updated: Date.now()
     };
@@ -2336,6 +2986,7 @@ var appStore = createReactiveStore({
     conversations: {},
     conversationOrder: [],
     activeConvId: null,
+    worldBooks: {},           // Phase 2+: 全局可复用世界书 { [id]: WorldBook }
     isGenerating: false,
     abortController: null
 });
@@ -2462,11 +3113,47 @@ function renderCharacterUI() {
     renderTopBar();
 }
 
-function initState() {
-    var saved = loadAll();
+async function initState() {
+    // Phase 1: 尝试初始化 IndexedDB 并进行迁移
+    let migrationResult = { attempted: false, success: false, backend: 'localStorage' };
+
+    try {
+        const idbReady = await StorageService.initIndexedDB();
+        if (idbReady) {
+            // 检查是否已经有 IndexedDB 数据
+            const idbData = await StorageService.loadAllFromIDB();
+            const hasConversations = idbData && Object.keys(idbData.conversations || {}).length > 0;
+
+            if (!hasConversations) {
+                // 尝试从 localStorage 迁移
+                console.log('[Storage] No IndexedDB data found. Attempting migration...');
+                migrationResult.attempted = true;
+
+                const migrated = await StorageService.migrateFromLocalStorage();
+                migrationResult.success = migrated;
+                migrationResult.backend = migrated ? 'indexeddb' : 'localStorage';
+
+                if (migrated) {
+                    // 标记需要显示迁移成功提示
+                    window._showStorageMigrationNotice = true;
+                }
+            } else {
+                // 已有 IndexedDB 数据，直接使用
+                StorageService._useIndexedDB = true;
+                migrationResult.backend = 'indexeddb';
+            }
+        }
+    } catch (err) {
+        console.warn('[Storage] IndexedDB initialization failed, falling back to localStorage:', err);
+        migrationResult.backend = 'localStorage';
+        migrationResult.migrationFailed = true;
+        window._showStorageMigrationWarning = true;
+    }
+
+    // 加载数据（优先使用当前后端）
+    const saved = await StorageService.loadAll();
+
     if (saved) {
-        // 推荐使用逐属性赋值，而不是 Object.assign
-        // 这样即使将来恢复响应式，也更容易触发正确的通知
         if (saved.settings) {
             Object.keys(saved.settings).forEach(function(key) {
                 state.settings[key] = saved.settings[key];
@@ -2477,14 +3164,28 @@ function initState() {
         if (saved.activeConvId && state.conversations[saved.activeConvId]) {
             state.activeConvId = saved.activeConvId;
         }
+        if (saved.worldBooks) {
+            state.worldBooks = saved.worldBooks;
+        }
     }
 
-    // Ensure lang is set (migration from v1)
+    // 如果刚刚完成迁移，保存一次确保数据一致
+    if (migrationResult.success) {
+        await StorageService.saveAll({
+            settings: getSafeSettingsForPersist(),
+            conversations: state.conversations,
+            conversationOrder: state.conversationOrder,
+            activeConvId: state.activeConvId
+        });
+    }
+
+    // 把迁移结果挂到 state，方便后续显示
+    state._storageMigration = migrationResult;
+
+    // Ensure lang is set
     if (!state.settings.lang) state.settings.lang = 'zh-CN';
 
-    // Security migration for API key persistence (prevents accidental secret storage)
-    // If legacy data had an apiKey saved without the explicit flag, treat it as opt-in so users don't lose existing config.
-    // Then, if the flag is false, force-strip any keys from memory (defensive).
+    // Security migration for API key persistence
     var hadApiKey = !!(state.settings && state.settings.apiKey);
     if (typeof state.settings.saveApiKey === 'undefined') {
         state.settings.saveApiKey = hadApiKey;
@@ -2507,29 +3208,28 @@ function initState() {
 var _persistTimeout = null;
 
 function persistState(immediate) {
+    const dataToSave = {
+        settings: getSafeSettingsForPersist(),
+        conversations: state.conversations,
+        conversationOrder: state.conversationOrder,
+        activeConvId: state.activeConvId,
+        worldBooks: state.worldBooks || {}   // Phase 2: persist global world books
+    };
+
     if (immediate) {
         if (_persistTimeout) {
             clearTimeout(_persistTimeout);
             _persistTimeout = null;
         }
-        saveAll({
-            settings: getSafeSettingsForPersist(),
-            conversations: state.conversations,
-            conversationOrder: state.conversationOrder,
-            activeConvId: state.activeConvId
-        });
+        // 使用 StorageService（会自动根据当前后端决定用 localStorage 还是 IndexedDB）
+        StorageService.saveAll(dataToSave);
         return;
     }
 
     if (_persistTimeout) clearTimeout(_persistTimeout);
 
     _persistTimeout = setTimeout(function() {
-        saveAll({
-            settings: getSafeSettingsForPersist(),
-            conversations: state.conversations,
-            conversationOrder: state.conversationOrder,
-            activeConvId: state.activeConvId
-        });
+        StorageService.saveAll(dataToSave);
         _persistTimeout = null;
     }, 500);
 }
@@ -2877,10 +3577,28 @@ function createDefaultWIEntry(uid) {
 
 function getWorldInfo(conv) {
     if (!conv) return null;
+
+    // Phase 2 new model: prefer worldBookIds (global reusable world books)
+    if (Array.isArray(conv.worldBookIds) && conv.worldBookIds.length > 0) {
+        // For now during transition, if using new model, we return a merged view
+        // (full implementation of merging multiple books comes later)
+        return getMergedWorldInfoForConv(conv);
+    }
+
+    // LEGACY fallback: old per-conversation worldInfo
     if (!conv.worldInfo) {
         conv.worldInfo = { name: '', entries: {} };
     }
     if (!conv.worldInfo.entries) conv.worldInfo.entries = {};
+    return conv.worldInfo;
+}
+
+// Placeholder for Phase 2: will merge entries from referenced global world books
+function getMergedWorldInfoForConv(conv) {
+    // During early Phase 2, fall back to legacy if no proper global books yet
+    if (!conv.worldInfo) {
+        conv.worldInfo = { name: '', entries: {} };
+    }
     return conv.worldInfo;
 }
 
@@ -2946,19 +3664,81 @@ function entriesToSTFormat(worldInfo) {
     return out;
 }
 
-// In-memory editor state
+// In-memory editor state (Phase 2: global world book manager)
 var wiState = {
     modalOpen: false,
     currentConvId: null,
+    currentWorldBookId: null,      // Currently selected global world book for editing
+    viewMode: 'books',             // 'books' | 'entries'  — controls what left panel shows
     selectedUid: null,
     dirty: false,
-    primaryKeys: [],      // working array for chips
+    primaryKeys: [],
     secondaryKeys: []
 };
 
 function getActiveWI() {
+    // Phase 2+: prefer the currently selected global world book in the editor
+    if (wiState.currentWorldBookId && state.worldBooks && state.worldBooks[wiState.currentWorldBookId]) {
+        return state.worldBooks[wiState.currentWorldBookId];
+    }
     var conv = getActiveConv();
     return getWorldInfo(conv);
+}
+
+// Phase 2: Get or create a global world book by ID
+function getWorldBook(wbId) {
+    if (!wbId) return null;
+    if (!state.worldBooks) state.worldBooks = {};
+    if (!state.worldBooks[wbId]) {
+        state.worldBooks[wbId] = {
+            id: wbId,
+            name: 'New World Book',
+            entries: {},
+            created: Date.now()
+        };
+    }
+    return state.worldBooks[wbId];
+}
+
+// Phase 2: Create a brand new global world book
+function createNewWorldBook(name) {
+    if (!state.worldBooks) state.worldBooks = {};
+    const id = 'wb-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+    state.worldBooks[id] = {
+        id: id,
+        name: name || 'New World Book',
+        entries: {},
+        created: Date.now()
+    };
+    return state.worldBooks[id];
+}
+
+// Helper: get all world books currently assigned to a conversation (Phase 2)
+function getConversationWorldBooks(conv) {
+    if (!conv || !Array.isArray(conv.worldBookIds)) return [];
+    return conv.worldBookIds
+        .map(id => state.worldBooks && state.worldBooks[id])
+        .filter(Boolean);
+}
+
+// Phase 4: Collect unique characters from all conversations for the new chat picker
+function getAllAvailableCharacters() {
+    const chars = [];
+    const seen = new Set();
+
+    Object.values(state.conversations || {}).forEach(conv => {
+        if (conv.character && conv.character.name) {
+            const key = conv.character.name.trim().toLowerCase();
+            if (!seen.has(key)) {
+                seen.add(key);
+                chars.push(JSON.parse(JSON.stringify(conv.character))); // deep clone
+            }
+        }
+    });
+
+    // Sort by name
+    chars.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    return chars;
 }
 
 function openWorldBookModal() {
@@ -2966,16 +3746,24 @@ function openWorldBookModal() {
     if (!conv) { newConversation(); conv = getActiveConv(); }
 
     wiState.currentConvId = conv.id;
+    wiState.currentWorldBookId = null;   // reset when opening
     wiState.selectedUid = null;
     wiState.dirty = false;
     wiState.primaryKeys = [];
     wiState.secondaryKeys = [];
 
-    var wi = getWorldInfo(conv);
-    dom.wiBookName.value = wi.name || '';
+    // Phase 2: If the conversation has assigned world books, open the first one by default
+    if (Array.isArray(conv.worldBookIds) && conv.worldBookIds.length > 0) {
+        wiState.currentWorldBookId = conv.worldBookIds[0];
+    }
 
     dom.worldBookModal.classList.remove('hidden');
     wiState.modalOpen = true;
+
+    // Phase 2: Start by showing the global world book list
+    wiState.viewMode = 'books';
+    wiState.currentWorldBookId = null;
+    wiState.selectedUid = null;
 
     renderWIEntryList('');
     showNoSelection();
@@ -2985,6 +3773,8 @@ function openWorldBookModal() {
         wireWorldBookListeners();
         dom.wiBookName._wired = true;
     }
+
+    updateWorldBookModalHeader();
 }
 
 function closeWorldBookModal() {
@@ -3017,6 +3807,22 @@ function wireWorldBookListeners() {
     dom.worldBookBackdrop.addEventListener('click', closeWorldBookModal);
 
     dom.wiAddEntryBtn.addEventListener('click', addNewWIEntry);
+
+    // Phase 2: Create new global world book
+    if (dom.wiNewBookBtn) {
+        dom.wiNewBookBtn.addEventListener('click', function() {
+            const newBook = createNewWorldBook('新建世界书');
+            wiState.currentWorldBookId = newBook.id;
+            wiState.viewMode = 'entries';
+            wiState.dirty = true;
+            dom.wiBookName.value = newBook.name;
+            renderWIEntryList('');
+            showNoSelection();
+            updateWorldBookModalHeader();
+            persistState();
+        });
+    }
+
     dom.wiImportBtn.addEventListener('click', function() {
         if (dom.wiImportFile) {
             dom.wiImportFile.click();
@@ -3392,6 +4198,19 @@ function updateEntryFromForm() {
     wiState.dirty = true;
 }
 
+// Phase 2: Update modal header to reflect global world book management
+function updateWorldBookModalHeader() {
+    const titleEl = document.querySelector('#worldBookModal .font-bold.text-lg');
+    if (!titleEl) return;
+
+    if (wiState.currentWorldBookId) {
+        const wb = state.worldBooks && state.worldBooks[wiState.currentWorldBookId];
+        titleEl.textContent = wb ? `世界书：${wb.name || '未命名'}` : '世界书管理器';
+    } else {
+        titleEl.textContent = '世界书管理器（全局）';
+    }
+}
+
 function addNewWIEntry() {
     var wi = getActiveWI();
     var uid = Date.now();
@@ -3448,7 +4267,18 @@ function renderWIEntryList(filter) {
     if (!container) return;
     container.innerHTML = '';
 
+    // Phase 2: If we're in "books" mode, show the world book list instead
+    if (wiState.viewMode === 'books' || !wiState.currentWorldBookId) {
+        renderWorldBookList(filter);
+        return;
+    }
+
     var wi = getActiveWI();
+    if (!wi) {
+        container.innerHTML = '<p class="text-xs text-zinc-500 p-2">' + t('world_book_select_or_create') + '</p>';
+        return;
+    }
+
     var entries = Object.keys(wi.entries).map(function(k){ return wi.entries[k]; });
 
     if (filter) {
@@ -3463,6 +4293,62 @@ function renderWIEntryList(filter) {
 
     // sort by order desc (higher order = later insertion per ST convention)
     entries.sort(function(a, b) { return (b.order || 0) - (a.order || 0); });
+
+    // Phase 2: Show "back to book list" when viewing a specific world's entries
+    if (wiState.currentWorldBookId) {
+        var backRow = document.createElement('div');
+        backRow.className = 'text-xs text-amber-400 px-2 py-1 mb-2 cursor-pointer hover:underline flex items-center gap-1';
+        backRow.innerHTML = t('world_book_back_to_list');
+        backRow.addEventListener('click', function() {
+            wiState.viewMode = 'books';
+            wiState.currentWorldBookId = null;
+            wiState.selectedUid = null;
+            renderWIEntryList(dom.wiSearch.value.trim());
+            updateWorldBookModalHeader();
+        });
+        container.appendChild(backRow);
+
+        // Phase 2: Simple association controls
+        var currentConv = getActiveConv();
+        var linked = currentConv && Array.isArray(currentConv.worldBookIds) && currentConv.worldBookIds.includes(wiState.currentWorldBookId);
+
+        var assocRow = document.createElement('div');
+        assocRow.className = 'px-2 py-1 mb-2 text-xs flex items-center gap-2';
+
+        if (linked) {
+            assocRow.innerHTML = `
+                <span class="text-emerald-400">✓ ${t('world_book_linked')}</span>
+                <button class="px-2 py-0.5 text-[10px] rounded bg-red-500/10 text-red-400 hover:bg-red-500/20">${t('world_book_unlink')}</button>
+            `;
+            assocRow.querySelector('button').addEventListener('click', function() {
+                if (!currentConv) return;
+                currentConv.worldBookIds = (currentConv.worldBookIds || []).filter(id => id !== wiState.currentWorldBookId);
+                wiState.dirty = true;
+                persistState();
+                renderWorldInfoBadge();
+                renderWorldBookList(dom.wiSearch.value.trim());
+                renderWIEntryList(dom.wiSearch.value.trim());
+            });
+        } else {
+            assocRow.innerHTML = `
+                <button class="px-2 py-0.5 text-[10px] rounded bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20">${t('world_book_link_to_current')}</button>
+            `;
+            assocRow.querySelector('button').addEventListener('click', function() {
+                if (!currentConv) return;
+                currentConv.worldBookIds = currentConv.worldBookIds || [];
+                if (!currentConv.worldBookIds.includes(wiState.currentWorldBookId)) {
+                    currentConv.worldBookIds.push(wiState.currentWorldBookId);
+                }
+                wiState.dirty = true;
+                persistState();
+                renderWorldInfoBadge();
+                renderWorldBookList(dom.wiSearch.value.trim());
+                renderWIEntryList(dom.wiSearch.value.trim());
+            });
+        }
+
+        container.appendChild(assocRow);
+    }
 
     if (entries.length === 0) {
         var empty = document.createElement('div');
@@ -3522,7 +4408,82 @@ function renderWIEntryList(filter) {
         container.appendChild(row);
     });
 
-    dom.wiEntryStats.textContent = entries.length + ' ' + t('world_book_entry');
+    if (wiState.viewMode !== 'books') {
+        dom.wiEntryStats.textContent = entries.length + ' ' + t('world_book_entry');
+    }
+}
+
+// Phase 2: Render the list of all global world books in the left panel
+function renderWorldBookList(filter) {
+    var container = dom.wiEntryList;
+    if (!container) return;
+    container.innerHTML = '';
+
+    if (!state.worldBooks) state.worldBooks = {};
+
+    var books = Object.values(state.worldBooks);
+
+    if (filter) {
+        var f = filter.toLowerCase();
+        books = books.filter(function(wb) {
+            return (wb.name || '').toLowerCase().indexOf(f) !== -1;
+        });
+    }
+
+    if (books.length === 0) {
+        var empty = document.createElement('div');
+        empty.className = 'text-xs text-zinc-500 px-2 py-6 text-center';
+        empty.textContent = t('world_book_no_books_hint');
+        container.appendChild(empty);
+        dom.wiEntryStats.textContent = '0 ' + t('world_book_entry');
+        return;
+    }
+
+    // Show which books are linked to current conversation
+    var currentConv = getActiveConv();
+    var linkedIds = (currentConv && currentConv.worldBookIds) ? currentConv.worldBookIds : [];
+
+    books.forEach(function(wb) {
+        var isActive = wiState.currentWorldBookId === wb.id;
+        var isLinked = linkedIds.includes(wb.id);
+
+        var row = document.createElement('div');
+        row.className = 'group px-2.5 py-2 rounded-xl border border-white/5 hover:border-white/10 cursor-pointer flex flex-col gap-1 ' + 
+                        (isActive ? 'bg-amber-500/10 border-amber-500/30' : 'bg-black/20');
+
+        row.innerHTML = `
+            <div class="flex items-center justify-between">
+                <div class="min-w-0 flex-1">
+                    <div class="text-sm font-medium text-zinc-200 truncate">${escapeHtml(wb.name || '未命名世界书')}</div>
+                    <div class="text-[10px] text-zinc-400">${Object.keys(wb.entries || {}).length} 条目</div>
+                </div>
+                ${isLinked ? '<span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">已关联</span>' : ''}
+            </div>
+        `;
+
+        row.addEventListener('click', function() {
+            wiState.currentWorldBookId = wb.id;
+            wiState.viewMode = 'entries';
+            wiState.selectedUid = null;
+            dom.wiBookName.value = wb.name || '';
+            renderWIEntryList(dom.wiSearch.value.trim());
+            updateWorldBookModalHeader();
+        });
+
+        container.appendChild(row);
+    });
+
+    dom.wiEntryStats.textContent = books.length + ' ' + t('world_book_entry');
+}
+
+// Helper to refresh the left panel based on current view mode
+function refreshWorldBookLeftPanel() {
+    const filter = dom.wiSearch ? dom.wiSearch.value.trim() : '';
+    if (wiState.viewMode === 'books' || !wiState.currentWorldBookId) {
+        renderWorldBookList(filter);
+    } else {
+        renderWIEntryList(filter);
+    }
 }
 
 function handleWIFileImport(e) {
@@ -3533,20 +4494,42 @@ function handleWIFileImport(e) {
         try {
             var json = JSON.parse(ev.target.result);
             var normalized = normalizeImportedWorldInfo(json);
-            var wi = getActiveWI();
-            // merge strategy: replace entries (user can re-import different books)
-            wi.entries = normalized.entries;
-            if (normalized.name) {
-                wi.name = normalized.name;
-                if (dom.wiBookName) dom.wiBookName.value = normalized.name;
+
+            // Phase 4: In global manager mode, import as a completely new independent world book
+            if (wiState.viewMode === 'books' || !wiState.currentWorldBookId) {
+                const newBook = createNewWorldBook(normalized.name || 'Imported World Book');
+                newBook.entries = normalized.entries;
+                if (normalized.name) newBook.name = normalized.name;
+
+                wiState.currentWorldBookId = newBook.id;
+                wiState.viewMode = 'entries';
+                wiState.dirty = true;
+
+                if (dom.wiBookName) dom.wiBookName.value = newBook.name;
+                if (dom.wiSearch) dom.wiSearch.value = '';
+
+                renderWIEntryList('');
+                showNoSelection();
+                updateWorldBookModalHeader();
+                renderWorldInfoBadge();
+
+                alert('已作为新世界书导入（' + Object.keys(newBook.entries).length + ' 条目）');
+            } else {
+                // Legacy / current book import
+                var wi = getActiveWI();
+                wi.entries = normalized.entries;
+                if (normalized.name) {
+                    wi.name = normalized.name;
+                    if (dom.wiBookName) dom.wiBookName.value = normalized.name;
+                }
+                wiState.dirty = true;
+
+                if (dom.wiSearch) dom.wiSearch.value = '';
+                renderWIEntryList('');
+                showNoSelection();
+                renderWorldInfoBadge();
+                alert('世界书导入成功（' + Object.keys(wi.entries).length + ' 条目）');
             }
-            wiState.dirty = true;
-            // Clear any active search so user immediately sees the imported entries
-            if (dom.wiSearch) dom.wiSearch.value = '';
-            renderWIEntryList('');
-            showNoSelection();
-            renderWorldInfoBadge();   // ← 修复：导入后刷新侧边栏计数
-            alert('世界书导入成功（' + Object.keys(wi.entries).length + ' 条目）');
         } catch (err) {
             alert('导入失败: ' + err.message);
         }
@@ -3560,17 +4543,40 @@ function exportCurrentWorldInfo() {
     var data = entriesToSTFormat(wi);
     var name = (wi.name || 'world_info').replace(/[^a-zA-Z0-9一-鿿]/g, '_');
     downloadJsonFile(data, name + '.json');
+    recordBackupMade(); // Phase 4
 }
 
-// Simple render hook for count badge (called from renderAll / renderCharacterCard)
+// Simple render hook for count badge (Phase 3: support multiple global world books)
 function renderWorldInfoBadge() {
     var el = dom.wiEntryCount;
     if (!el) return;
+
     var conv = getActiveConv();
-    var wi = conv && conv.worldInfo;
-    var count = wi && wi.entries ? Object.keys(wi.entries).length : 0;
+    if (!conv) {
+        el.textContent = '';
+        el.title = '';
+        return;
+    }
+
+    var count = 0;
+
+    // New model: count entries from all assigned world books
+    if (Array.isArray(conv.worldBookIds) && conv.worldBookIds.length > 0) {
+        conv.worldBookIds.forEach(function(wbId) {
+            var wb = state.worldBooks && state.worldBooks[wbId];
+            if (wb && wb.entries) {
+                count += Object.keys(wb.entries).length;
+            }
+        });
+    }
+
+    // Legacy fallback
+    if (conv.worldInfo && conv.worldInfo.entries) {
+        count += Object.keys(conv.worldInfo.entries).length;
+    }
+
     el.textContent = count > 0 ? count : '';
-    el.title = count + ' ' + t('world_book_entry');
+    el.title = count + ' ' + t('world_book_entry') + (conv.worldBookIds && conv.worldBookIds.length > 1 ? ' (来自 ' + conv.worldBookIds.length + ' 个世界书)' : '');
 }
 
 function renderWorldInfoBudgetWarning() {
@@ -3805,17 +4811,47 @@ function applyWorldInfoBudget(entries, settings) {
 }
 
 function getActivatedWorldInfo(conv) {
-    var wi = conv ? conv.worldInfo : null;
-    if (!wi || !wi.entries) return { entries: [], byPosition: {} };
+    // Phase 2+: Collect world info from global worldBooks via worldBookIds + legacy support
+    var entries = [];
+
+    if (conv) {
+        // New model: pull from global reusable world books
+        if (Array.isArray(conv.worldBookIds) && conv.worldBookIds.length > 0) {
+            conv.worldBookIds.forEach(function(wbId) {
+                var wb = state.worldBooks && state.worldBooks[wbId];
+                if (wb && wb.entries) {
+                    Object.keys(wb.entries).forEach(function(uid) {
+                        var entry = JSON.parse(JSON.stringify(wb.entries[uid]));
+                        entry._sourceWorldBookId = wbId;
+                        entries.push(entry);
+                    });
+                }
+            });
+        }
+
+        // Legacy fallback during transition
+        if (conv.worldInfo && conv.worldInfo.entries) {
+            Object.keys(conv.worldInfo.entries).forEach(function(uid) {
+                entries.push(JSON.parse(JSON.stringify(conv.worldInfo.entries[uid])));
+            });
+        }
+    }
+
+    if (entries.length === 0) return { entries: [], byPosition: {} };
+
+    // Build virtual combined worldInfo for the rest of the (existing) activation logic
+    var wi = { entries: {} };
+    entries.forEach(function(e) {
+        var uid = e.uid != null ? String(e.uid) : Date.now().toString();
+        wi.entries[uid] = e;
+    });
 
     // ==================== World Info Activation Cache ====================
-    // 改进版：包含消息数量 + 最后一条消息内容哈希 + 世界书条目数量 + 简单消息指纹（防止中间删除导致缓存失效）
     var messages = conv.messages || [];
     var lastMsg = messages.length > 0 ? messages[messages.length - 1] : null;
     var lastContentHash = lastMsg ? (lastMsg.content || '').slice(0, 64) : '';
     var wiEntryCount = Object.keys(wi.entries).length;
 
-    // 简单指纹：取前3条和后3条消息的角色+内容前20字符的哈希，防止中间删除/编辑导致缓存污染
     var fingerprint = '';
     var checkPoints = [0, 1, 2, messages.length-3, messages.length-2, messages.length-1];
     checkPoints.forEach(function(idx) {
@@ -3830,7 +4866,6 @@ function getActivatedWorldInfo(conv) {
     if (conv._wiCache && conv._wiCache.key === cacheKey) {
         return conv._wiCache.result;
     }
-    // 缓存失效，继续正常计算...
 
     var all = Object.keys(wi.entries).map(function(k) { return wi.entries[k]; })
         .filter(function(e) { return e && !e.disable; });
@@ -4707,6 +5742,74 @@ function newConversation() {
     if (isMobile()) closeSidebar();
 }
 
+// Phase 4: Show character picker when creating new chat
+function showNewChatCharacterPicker() {
+    const modal = dom.newChatPickerModal;
+    const listContainer = dom.newChatPickerList;
+    if (!modal || !listContainer) {
+        // Fallback
+        newConversation();
+        return;
+    }
+
+    listContainer.innerHTML = '';
+
+    const characters = getAllAvailableCharacters();
+
+    // Render character cards
+    characters.forEach(character => {
+        const card = document.createElement('div');
+        card.className = 'glass rounded-2xl p-3 cursor-pointer hover:bg-white/5 transition-all flex flex-col items-center text-center gap-2 border border-white/5 hover:border-white/10';
+
+        const avatar = character.name ? character.name.charAt(0).toUpperCase() : '?';
+
+        card.innerHTML = `
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-rose-500 flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
+                ${avatar}
+            </div>
+            <div class="min-w-0 w-full">
+                <p class="text-sm font-medium text-zinc-100 truncate">${escapeHtml(character.name || t('char_empty_name'))}</p>
+            </div>
+        `;
+
+        card.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            newConversation(character);
+        });
+
+        listContainer.appendChild(card);
+    });
+
+    // Wire static buttons (only once)
+    if (!modal._wired) {
+        modal._wired = true;
+
+        dom.newChatPickerCloseBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+        });
+
+        dom.newChatPickerBackdrop.addEventListener('click', () => {
+            modal.classList.add('hidden');
+        });
+
+        dom.newChatNoCharacterBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            newConversation(null);
+        });
+
+        dom.newChatImportCharacterBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            if (dom.importModal) {
+                dom.importModal.classList.remove('hidden');
+                dom.importStatus.classList.add('hidden');
+                if (dom.importFileInput) dom.importFileInput.value = '';
+            }
+        });
+    }
+
+    modal.classList.remove('hidden');
+}
+
 function loadConversation(id) {
     if (state.isGenerating) {
         if (!confirm(t('generation_abort_confirm'))) return;
@@ -4790,7 +5893,7 @@ function cacheDom() {
         'summaryEnabled', 'summaryThreshold', 'summaryThresholdVal', 'summaryThresholdWarning', 'summaryMaxWords',
         'hamburgerBtn','sidebarCloseBtn','sidebarBackdrop',
         'worldBookModal','worldBookBackdrop','worldBookBtn','wiEntryCount',
-        'wiImportBtn','wiExportBtn','wiDeleteAllBtn','wiAddEntryBtn','wiCloseBtn',
+        'wiImportBtn','wiExportBtn','wiDeleteAllBtn','wiAddEntryBtn','wiCloseBtn','wiNewBookBtn',
         'wiBookName','wiSearch','wiEntryList','wiEntryStats',
         'wiNoSelection','wiEditorForm','wiEditorContainer',
         'wiDisable','wiUidBadge','wiDuplicateBtn','wiDeleteEntryBtn',
@@ -4812,7 +5915,10 @@ function cacheDom() {
         'summarizeUseMainAPI','summarizeApiEndpoint','summarizeApiKey','summarizeModel',
         'summarizeCustomApiSection',
         // Announcement modal
-        'announceModal','announceBackdrop','announceCloseBtn','announceDontShow','announceGotItBtn'
+        'announceModal','announceBackdrop','announceCloseBtn','announceDontShow','announceGotItBtn',
+        // New Chat Character Picker
+        'newChatPickerModal','newChatPickerBackdrop','newChatPickerCloseBtn','newChatPickerList',
+        'newChatNoCharacterBtn','newChatImportCharacterBtn'
     ];
     ids.forEach(function(id) { dom[id] = document.getElementById(id); });
 }
@@ -4834,6 +5940,7 @@ function exportAllConversations() {
         { version: 1, type: 'opentavern-export', exported_at: new Date().toISOString(), conversations: convs },
         'opentavern_all_' + new Date().toISOString().slice(0, 10) + '.json'
     );
+    recordBackupMade(); // Phase 4: 用户主动导出大备份时记录
 }
 
 function downloadJsonFile(data, filename) {
@@ -5597,7 +6704,7 @@ function bindEvents() {
     });
 
     dom.stopBtn.addEventListener('click', function() { stopGeneration(); });
-    dom.newChatBtn.addEventListener('click', newConversation);
+    dom.newChatBtn.addEventListener('click', showNewChatCharacterPicker);
     dom.archiveBtn.addEventListener('click', archiveCurrentConversation);
 
     // Mobile sidebar
@@ -5715,6 +6822,66 @@ function bindEvents() {
         // Toggle custom section visibility
         toggleSummarizeCustomSection();
 
+        // 显示当前存储后端 + 用量（Phase 1 增强）
+        const backendEl = document.getElementById('storageBackend');
+        const usageRow = document.getElementById('storageUsageRow');
+        const usageEl = document.getElementById('storageUsage');
+
+        const backend = StorageService.getBackend();
+
+        if (backendEl) {
+            backendEl.textContent = backend === 'indexeddb' ? t('storage_backend') + ' (IDB)' : t('storage_backend') + ' (LS)';
+            if (backend === 'indexeddb') {
+                backendEl.style.background = 'rgba(16,185,129,0.15)';
+                backendEl.style.color = '#4ade80';
+            } else {
+                backendEl.style.background = 'rgba(255,255,255,0.05)';
+                backendEl.style.color = '';
+            }
+        }
+
+        // 获取并显示存储用量 + 进度条 (Phase 3)
+        if (usageEl) {
+            StorageService.getStorageInfo().then(function(info) {
+                const bar = document.getElementById('storageUsageBar');
+
+                if (info.used != null && info.quota != null) {
+                    const usedMB = (info.used / 1024 / 1024).toFixed(1);
+                    const quotaMB = Math.round(info.quota / 1024 / 1024);
+                    usageEl.textContent = `${usedMB} MB / ~${quotaMB} MB`;
+
+                    const percent = Math.min((info.used / info.quota) * 100, 100);
+                    if (bar) bar.style.width = percent + '%';
+
+                    if (percent > 85) {
+                        if (bar) bar.style.background = '#f87171';
+                        usageEl.style.color = '#f87171';
+                    } else if (percent > 70) {
+                        if (bar) bar.style.background = '#fbbf24';
+                    } else {
+                        if (bar) bar.style.background = '#f59e0b';
+                    }
+                } else {
+                    usageEl.textContent = backend === 'indexeddb' ? '较高（IndexedDB）' : '受限（~5-10MB）';
+                    if (bar) bar.style.width = '0%';
+                }
+            }).catch(function() {
+                usageEl.textContent = '无法获取';
+                const bar = document.getElementById('storageUsageBar');
+                if (bar) bar.style.width = '0%';
+            });
+        }
+
+        // 动态调整提示文案 (使用 i18n)
+        const hintEl = document.getElementById('storageHint');
+        if (hintEl) {
+            const hintKey = backend === 'indexeddb' ? 'storage_hint_idb' : 'storage_hint_ls';
+            hintEl.textContent = t(hintKey);
+        }
+
+        // 同步更新侧边栏的极简存储状态
+        updateStorageStatusUI();
+
         dom.settingsModal.classList.remove('hidden');
     }
     function closeSettings() {
@@ -5759,10 +6926,10 @@ function bindEvents() {
         // 显式通知 settings 变更
         appStore.notify('settings');
     }
-    dom.sidebarSettingsBtn.addEventListener('click', openSettings);
-    dom.topSettingsBtn.addEventListener('click', openSettings);
-    dom.settingsCloseBtn.addEventListener('click', closeSettings);
-    dom.settingsBackdrop.addEventListener('click', closeSettings);
+    if (dom.sidebarSettingsBtn) dom.sidebarSettingsBtn.addEventListener('click', openSettings);
+    if (dom.topSettingsBtn) dom.topSettingsBtn.addEventListener('click', openSettings);
+    if (dom.settingsCloseBtn) dom.settingsCloseBtn.addEventListener('click', closeSettings);
+    if (dom.settingsBackdrop) dom.settingsBackdrop.addEventListener('click', closeSettings);
 
     // Settings sliders
     function bindSlider(slider, valEl, format) {
@@ -6002,9 +7169,9 @@ function bindEvents() {
 }
 
 // ==================== Initialize ====================
-function init() {
+async function init() {
     cacheDom();
-    initState();
+    await initState();
     bindEvents();
 
     // Apply initial language
@@ -6064,7 +7231,64 @@ function init() {
     }
 }
 
-init();
+// 启动应用（支持异步存储初始化）
+init().then(function() {
+    // 更新侧边栏极简存储状态图标
+    updateStorageStatusUI();
+
+    // Phase 4: 备份提醒
+    showBackupReminderIfNeeded();
+
+    // 显示存储迁移提示（仅在本次迁移成功时显示一次）
+    if (window._showStorageMigrationNotice) {
+        // 使用简单 toast 风格提示
+        setTimeout(function() {
+            const notice = document.createElement('div');
+            notice.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.75);color:#ddd;padding:10px 18px;border-radius:999px;font-size:13px;z-index:9999;backdrop-filter:blur(8px);';
+            notice.textContent = '✓ 数据已迁移到更高效的存储方式（IndexedDB）';
+            document.body.appendChild(notice);
+
+            setTimeout(function() {
+                notice.style.transition = 'opacity 0.4s ease';
+                notice.style.opacity = '0';
+                setTimeout(function() { notice.remove(); }, 400);
+            }, 3200);
+        }, 800);
+
+        // 清理标记
+        delete window._showStorageMigrationNotice;
+    }
+
+    // 迁移失败提示（温和版本）
+    if (window._showStorageMigrationWarning) {
+        setTimeout(function() {
+            const warn = document.createElement('div');
+            warn.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(180,83,38,0.85);color:#fff;padding:10px 18px;border-radius:999px;font-size:12px;z-index:9999;max-width:90%;text-align:center;';
+            warn.innerHTML = t('backup_migration_incomplete');
+            document.body.appendChild(warn);
+
+            setTimeout(function() {
+                warn.style.transition = 'opacity 0.4s ease';
+                warn.style.opacity = '0';
+                setTimeout(function() { warn.remove(); }, 400);
+            }, 4500);
+        }, 1200);
+
+        delete window._showStorageMigrationWarning;
+    }
+}).catch(function(err) {
+    console.error('[App] Initialization failed:', err);
+    // 极端降级：确保 DOM 缓存和事件绑定至少能工作
+    try {
+        cacheDom();
+        bindEvents();
+        if (typeof updateStorageStatusUI === 'function') {
+            updateStorageStatusUI();
+        }
+    } catch(e) {
+        console.error('Fallback initialization failed:', e);
+    }
+});
 
 })();
 </script>
