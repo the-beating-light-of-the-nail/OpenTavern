@@ -595,6 +595,13 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
                 </div>
 
                 <p class="text-[10px] text-zinc-500" id="storageHint" data-i18n="storage_hint_opfs">正在使用 OPFS（Origin Private File System），容量大、性能好，推荐长期使用。</p>
+
+                <!-- OPFS 清理按钮 -->
+                <button id="clearOPFSBtn"
+                        class="mt-2 w-full px-3 py-1.5 text-xs rounded-lg bg-red-500/10 hover:bg-red-500/20 active:bg-red-500/30 text-red-400 border border-red-500/20 transition-all font-medium flex items-center justify-center gap-1"
+                        data-i18n="clear_opfs_data">
+                    <!-- 文字由 JS 通过 t('clear_opfs_data') 动态设置，支持 i18n -->
+                </button>
             </div>
 
             <!-- World Info Budget -->
@@ -1570,6 +1577,7 @@ var i18n = {
         storage_hint_idb: '正在使用 IndexedDB，可支持多个角色卡与大型世界书。',
         storage_hint_ls: '推荐使用 IndexedDB（容量大得多）。当前默认开启，localStorage 仅用于迁移。',
         storage_hint_opfs: '正在使用 OPFS（Origin Private File System），容量大、性能好，推荐长期使用。',
+        clear_opfs_data: '🗑️ 清除 OPFS 所有数据（不可恢复）',
         storage_usage_calculating: '计算中...',
         storage_high_warning: '存储空间紧张，建议尽快备份！',
 
@@ -1825,6 +1833,7 @@ var i18n = {
         storage_hint_idb: '正在使用 IndexedDB，可支援多個角色卡與大型世界書。',
         storage_hint_ls: '目前使用 localStorage 兼容層。支援 IndexedDB 後可獲得更大容量與更好效能（會自動遷移）。',
         storage_hint_opfs: '正在使用 OPFS（Origin Private File System），容量大、性能佳，推薦長期使用。',
+        clear_opfs_data: '🗑️ 清除 OPFS 所有資料（不可恢復）',
         storage_usage_calculating: '計算中...',
         storage_high_warning: '儲存空間緊張，建議盡快備份！',
 
@@ -2069,6 +2078,7 @@ var i18n = {
         storage_hint_idb: 'Using IndexedDB, supports multiple character cards and large world books.',
         storage_hint_ls: 'IndexedDB recommended (much higher capacity). Enabled by default; localStorage used only for migration.',
         storage_hint_opfs: 'Using OPFS (Origin Private File System) — large capacity and good performance. Recommended for long-term use.',
+        clear_opfs_data: '🗑️ Clear all OPFS data (irreversible)',
         storage_usage_calculating: 'Calculating...',
         storage_high_warning: 'Storage space is tight. Please back up soon!',
 
@@ -6991,7 +7001,13 @@ function bindEvents() {
                         if (bar) bar.style.background = '#f59e0b';
                     }
                 } else {
-                    usageEl.textContent = backend === 'indexeddb' ? '较高（IndexedDB）' : '受限（~5-10MB）';
+                    if (backend === 'opfs') {
+                        usageEl.textContent = 'OPFS（浏览器私有文件系统）';
+                    } else if (backend === 'indexeddb') {
+                        usageEl.textContent = '较高（IndexedDB）';
+                    } else {
+                        usageEl.textContent = '受限（~5-10MB）';
+                    }
                     if (bar) bar.style.width = '0%';
                 }
             }).catch(function() {
@@ -7013,6 +7029,39 @@ function bindEvents() {
 
         // 同步更新侧边栏的极简存储状态
         updateStorageStatusUI();
+
+        // OPFS 清理按钮（仅在 OPFS 模式下显示）
+        const clearBtn = document.getElementById('clearOPFSBtn');
+        if (clearBtn) {
+            if (backend === 'opfs') {
+                clearBtn.style.display = 'flex';
+                // 使用 i18n 设置按钮文字
+                clearBtn.textContent = t('clear_opfs_data');
+            } else {
+                clearBtn.style.display = 'none';
+            }
+
+            clearBtn.onclick = async function() {
+                if (!confirm('确定要永久删除 OPFS 中的所有数据吗？\n此操作不可恢复，页面将重新加载。')) {
+                    return;
+                }
+
+                try {
+                    if (typeof OPFSStorage !== 'undefined' && OPFSStorage.clear) {
+                        await OPFSStorage.clear();
+                    }
+
+                    // 清理 localStorage 中的旧数据（可选）
+                    try { localStorage.removeItem('opentavern-data-v1'); } catch (e) {}
+
+                    alert('OPFS 数据已清除。页面即将重新加载...');
+                    location.reload();
+                } catch (err) {
+                    console.error('[Storage] 清除 OPFS 失败:', err);
+                    alert('清除失败：' + (err.message || err));
+                }
+            };
+        }
 
         dom.settingsModal.classList.remove('hidden');
     }
