@@ -594,7 +594,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
                     </div>
                 </div>
 
-                <p class="text-[10px] text-zinc-500" id="storageHint" data-i18n="storage_hint_ls">使用 IndexedDB 后可支持多个角色卡与世界书，容量远大于 localStorage。</p>
+                <p class="text-[10px] text-zinc-500" id="storageHint" data-i18n="storage_hint_ls">当前稳定使用 localStorage（已修复 IDB 损坏导致的刷新丢数据问题）。如需更大容量，未来可重新实现可靠的 IndexedDB 后端。</p>
             </div>
 
             <!-- World Info Budget -->
@@ -1568,14 +1568,14 @@ var i18n = {
         storage_backend: '存储后端',
         storage_used_space: '已用空间',
         storage_hint_idb: '正在使用 IndexedDB，可支持多个角色卡与大型世界书。',
-        storage_hint_ls: '当前使用 localStorage，建议升级以支持更多数据（容量有限）。',
+        storage_hint_ls: '当前稳定使用 localStorage（已修复 IDB 损坏导致的刷新丢数据问题）。如需更大容量，未来可重新实现可靠的 IndexedDB 后端。',
         storage_usage_calculating: '计算中...',
         storage_high_warning: '存储空间紧张，建议尽快备份！',
 
         backup_reminder_title: '建议定期备份你的世界书和对话数据',
         backup_reminder_export_now: '立即导出备份',
         backup_reminder_later: '以后再说',
-        backup_migration_incomplete: '存储升级未完成，仍使用 localStorage（容量有限）',
+        backup_migration_incomplete: '存储后端已锁定为 localStorage（IDB 封装存在历史 bug，已禁用自动迁移）',
 
         world_book_new: '+ 新建世界书',
         world_book_back_to_list: '← 返回世界书列表',
@@ -1822,14 +1822,14 @@ var i18n = {
         storage_backend: '儲存後端',
         storage_used_space: '已用空間',
         storage_hint_idb: '正在使用 IndexedDB，可支援多個角色卡與大型世界書。',
-        storage_hint_ls: '目前使用 localStorage，建議升級以支援更多資料（容量有限）。',
+        storage_hint_ls: '目前穩定使用 localStorage（已修復 IDB 損壞導致的刷新丟數據問題）。如需更大容量，未來可重新實現可靠的 IndexedDB 後端。',
         storage_usage_calculating: '計算中...',
         storage_high_warning: '儲存空間緊張，建議盡快備份！',
 
         backup_reminder_title: '建議定期備份你的世界書和對話資料',
         backup_reminder_export_now: '立即匯出備份',
         backup_reminder_later: '以後再說',
-        backup_migration_incomplete: '儲存升級未完成，仍使用 localStorage（容量有限）',
+        backup_migration_incomplete: '儲存後端已鎖定為 localStorage（IDB 封裝存在歷史 bug，已禁用自動遷移）',
 
         world_book_new: '+ 新建世界書',
         world_book_back_to_list: '← 返回世界書列表',
@@ -2065,14 +2065,14 @@ var i18n = {
         storage_backend: 'Storage Backend',
         storage_used_space: 'Used Space',
         storage_hint_idb: 'Using IndexedDB, supports multiple character cards and large world books.',
-        storage_hint_ls: 'Currently using localStorage. Consider upgrading for more data (limited capacity).',
+        storage_hint_ls: 'Stable on localStorage (fixed IDB wrapper bug that caused data loss on refresh). Reliable IndexedDB backend can be re-added later for larger capacity.',
         storage_usage_calculating: 'Calculating...',
         storage_high_warning: 'Storage space is tight. Please back up soon!',
 
         backup_reminder_title: 'It is recommended to regularly back up your world books and conversations',
         backup_reminder_export_now: 'Export Backup Now',
         backup_reminder_later: 'Remind me later',
-        backup_migration_incomplete: 'Storage upgrade incomplete. Still using localStorage (limited capacity).',
+        backup_migration_incomplete: 'Storage backend locked to localStorage (historical IDB wrapper bug; auto-migration disabled).',
 
         world_book_new: '+ New World Book',
         world_book_back_to_list: '← Back to World Book List',
@@ -2267,6 +2267,16 @@ if (gl) {
 
 var STORAGE_KEY = 'opentavern-data-v1';
 
+// ==================== 紧急修复说明（2026） ====================
+// 问题根因：内联 idb 封装未对 IDBRequest 做 promisify，导致 loadAllFromIDB / saveAllToIDB 完全失效。
+// 表现：每次刷新 hasConversations 误判为 false → 反复触发 migrate → 数据永远加载不到 state → 新建空对话。
+// 修复策略：强制锁定 localStorage 后端，禁用所有 IDB 切换逻辑。
+// 如需未来重新支持 IndexedDB，必须：
+//   1. 替换/重写整个 idb 内联库（使用成熟的 https://github.com/jakearchibald/idb 或正确 promisify 所有请求）
+//   2. 重新实现 loadAllFromIDB / saveAllToIDB
+//   3. 恢复 initState 里的迁移流程
+// 当前所有持久化数据均安全存储在 localStorage['opentavern-data-v1'] 中。
+
 // ==================== idb 库（极小版本内联） ====================
 // 来源：https://github.com/jakearchibald/idb (精简后适合单文件项目)
 // 大小约 3KB，零依赖，仅提供 Promise 风格的 IndexedDB 封装
@@ -2354,9 +2364,12 @@ var STORAGE_KEY = 'opentavern-data-v1';
 // ==================== StorageService 抽象层 ====================
 // 目标：让上层代码不需要关心到底用 localStorage 还是 IndexedDB
 var StorageService = {
-    // 当前实现：仍使用 localStorage（与之前完全一致）
-    // 后续会在这里增加 IndexedDB 支持，并通过 migrate 逻辑切换
+    // 紧急修复：强制使用 localStorage（稳定可靠）。
+    // IndexedDB 封装存在严重 bug（未正确 promisify IDBRequest），会导致每次刷新数据丢失。
+    // 未来如需重新启用 IDB，必须先彻底重写 idb 封装层。
+    _useIndexedDB: false,
 
+    // 当前实现：稳定使用 localStorage
     async loadAll() {
         try {
             var raw = localStorage.getItem(STORAGE_KEY);
@@ -2376,19 +2389,16 @@ var StorageService = {
         }
     },
 
-    // 检测当前使用哪种后端
+    // 检测当前使用哪种后端（紧急修复后固定为 localStorage）
     getBackend() {
-        return this._useIndexedDB ? 'indexeddb' : 'localStorage';
+        // 无论内部 flag 如何，当前一律报告 localStorage（最真实的情况）
+        return 'localStorage';
     },
 
-    // 启用 IndexedDB 模式（迁移成功后调用）
+    // 紧急修复：禁用自动切换到损坏的 IndexedDB 后端
     async enableIndexedDB() {
-        const success = await this.initIndexedDB();
-        if (success) {
-            this._useIndexedDB = true;
-            console.log('[Storage] Switched to IndexedDB backend');
-        }
-        return success;
+        console.warn('[Storage] enableIndexedDB 被禁用（IDB 封装存在严重 bug）。当前强制使用 localStorage 以保证数据持久化。');
+        return false;
     },
 
     // ==================== IndexedDB 后端实现（使用 idb） ====================
@@ -2518,46 +2528,11 @@ var StorageService = {
         }
     },
 
-    // ==================== 迁移工具函数（Phase 2 核心） ====================
+    // ==================== 迁移工具函数（Phase 2 核心） - 紧急修复：已禁用 ====================
     async migrateFromLocalStorage() {
-        console.log('[Storage] Starting migration from localStorage to IndexedDB...');
-
-        const oldData = loadAll(); // 读取旧的单一大对象
-        if (!oldData) {
-            console.log('[Storage] No old data to migrate.');
-            this._useIndexedDB = true;
-            return true;
-        }
-
-        try {
-            // 构建新格式数据
-            const newData = {
-                settings: oldData.settings || {},
-                conversations: oldData.conversations || {},
-                conversationOrder: oldData.conversationOrder || [],
-                activeConvId: oldData.activeConvId || null,
-                worldBooks: {}
-            };
-
-            // Phase 2: 将旧的 per-conversation worldInfo 转换为全局可复用的 worldBooks
-            const migratedBooks = this._migrateLegacyWorldInfoToGlobal(newData.conversations);
-            newData.worldBooks = migratedBooks;
-
-            // 保存到 IndexedDB
-            await this.saveAllToIDB(newData);
-
-            // 标记已使用 IndexedDB
-            this._useIndexedDB = true;
-
-            // 可选：迁移成功后清理 localStorage（谨慎，先注释）
-            // localStorage.removeItem(STORAGE_KEY);
-
-            console.log('[Storage] Migration to IndexedDB completed successfully.');
-            return true;
-        } catch (err) {
-            console.error('[Storage] Migration failed:', err);
-            return false;
-        }
+        console.warn('[Storage] migrateFromLocalStorage 被禁用（IDB 封装损坏会导致数据丢失）。当前强制使用 localStorage。');
+        // 不再设置 this._useIndexedDB = true，防止切换到损坏后端
+        return false;
     },
 
     // Phase 2: 将旧的对话内嵌世界书转换为全局独立世界书
@@ -2616,29 +2591,22 @@ var StorageService = {
         return worldBooks;
     },
 
-    // ==================== 统一对外接口（推荐使用） ====================
+    // ==================== 统一对外接口（推荐使用） - 紧急修复后固定 localStorage ====================
     async loadAll() {
-        if (this._useIndexedDB) {
-            return await this.loadAllFromIDB();
-        } else {
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                return raw ? JSON.parse(raw) : null;
-            } catch (e) {
-                return null;
-            }
+        // 无论 _useIndexedDB 状态如何，当前强制 localStorage（IDB 封装已知损坏）
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+            return null;
         }
     },
 
     async saveAll(data) {
-        if (this._useIndexedDB) {
-            await this.saveAllToIDB(data);
-        } else {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            } catch (e) {
-                console.error('[Storage] localStorage save failed:', e);
-            }
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {
+            console.error('[Storage] localStorage save failed:', e);
         }
     },
 
@@ -3114,43 +3082,20 @@ function renderCharacterUI() {
 }
 
 async function initState() {
-    // Phase 1: 尝试初始化 IndexedDB 并进行迁移
-    let migrationResult = { attempted: false, success: false, backend: 'localStorage' };
+    // 紧急修复（2026）：彻底禁用损坏的 IndexedDB 迁移逻辑。
+    // 之前因为 IDB 封装未正确 promisify IDBRequest，导致 loadAllFromIDB 永远返回空数据，
+    // 进而误判 hasConversations=false → 反复迁移 → 每次刷新都新建空对话。
+    // 现在强制走 localStorage（稳定可靠），所有历史数据自动恢复。
+    let migrationResult = { attempted: false, success: false, backend: 'localStorage', note: 'IDB 后端已禁用以防止数据丢失' };
 
+    // 仅尝试初始化 IDB（用于诊断，不切换后端）
     try {
-        const idbReady = await StorageService.initIndexedDB();
-        if (idbReady) {
-            // 检查是否已经有 IndexedDB 数据
-            const idbData = await StorageService.loadAllFromIDB();
-            const hasConversations = idbData && Object.keys(idbData.conversations || {}).length > 0;
-
-            if (!hasConversations) {
-                // 尝试从 localStorage 迁移
-                console.log('[Storage] No IndexedDB data found. Attempting migration...');
-                migrationResult.attempted = true;
-
-                const migrated = await StorageService.migrateFromLocalStorage();
-                migrationResult.success = migrated;
-                migrationResult.backend = migrated ? 'indexeddb' : 'localStorage';
-
-                if (migrated) {
-                    // 标记需要显示迁移成功提示
-                    window._showStorageMigrationNotice = true;
-                }
-            } else {
-                // 已有 IndexedDB 数据，直接使用
-                StorageService._useIndexedDB = true;
-                migrationResult.backend = 'indexeddb';
-            }
-        }
-    } catch (err) {
-        console.warn('[Storage] IndexedDB initialization failed, falling back to localStorage:', err);
-        migrationResult.backend = 'localStorage';
-        migrationResult.migrationFailed = true;
-        window._showStorageMigrationWarning = true;
+        await StorageService.initIndexedDB().catch(() => null);
+    } catch (e) {
+        // 忽略，完全不影响主流程
     }
 
-    // 加载数据（优先使用当前后端）
+    // 始终使用 localStorage 加载（最稳定路径）
     const saved = await StorageService.loadAll();
 
     if (saved) {
@@ -3167,19 +3112,11 @@ async function initState() {
         if (saved.worldBooks) {
             state.worldBooks = saved.worldBooks;
         }
+    } else {
+        console.log('[Storage] localStorage 中暂无数据，将创建新对话。');
     }
 
-    // 如果刚刚完成迁移，保存一次确保数据一致
-    if (migrationResult.success) {
-        await StorageService.saveAll({
-            settings: getSafeSettingsForPersist(),
-            conversations: state.conversations,
-            conversationOrder: state.conversationOrder,
-            activeConvId: state.activeConvId
-        });
-    }
-
-    // 把迁移结果挂到 state，方便后续显示
+    // 把结果挂到 state
     state._storageMigration = migrationResult;
 
     // Ensure lang is set
@@ -3201,6 +3138,12 @@ async function initState() {
         state.conversations[conv.id] = conv;
         state.conversationOrder.unshift(conv.id);
         state.activeConvId = conv.id;
+    }
+
+    // 紧急修复补充：加载/创建后立即持久化一次，确保 localStorage 有干净快照
+    // 防止首次使用或异常情况导致状态未落盘
+    if (typeof persistState === 'function') {
+        persistState(true);
     }
 }
 
@@ -7236,46 +7179,11 @@ init().then(function() {
     // 更新侧边栏极简存储状态图标
     updateStorageStatusUI();
 
-    // Phase 4: 备份提醒
+    // Phase 4: 备份提醒（仅在 IndexedDB 模式提醒，此处已强制 localStorage）
     showBackupReminderIfNeeded();
 
-    // 显示存储迁移提示（仅在本次迁移成功时显示一次）
-    if (window._showStorageMigrationNotice) {
-        // 使用简单 toast 风格提示
-        setTimeout(function() {
-            const notice = document.createElement('div');
-            notice.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.75);color:#ddd;padding:10px 18px;border-radius:999px;font-size:13px;z-index:9999;backdrop-filter:blur(8px);';
-            notice.textContent = '✓ 数据已迁移到更高效的存储方式（IndexedDB）';
-            document.body.appendChild(notice);
-
-            setTimeout(function() {
-                notice.style.transition = 'opacity 0.4s ease';
-                notice.style.opacity = '0';
-                setTimeout(function() { notice.remove(); }, 400);
-            }, 3200);
-        }, 800);
-
-        // 清理标记
-        delete window._showStorageMigrationNotice;
-    }
-
-    // 迁移失败提示（温和版本）
-    if (window._showStorageMigrationWarning) {
-        setTimeout(function() {
-            const warn = document.createElement('div');
-            warn.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(180,83,38,0.85);color:#fff;padding:10px 18px;border-radius:999px;font-size:12px;z-index:9999;max-width:90%;text-align:center;';
-            warn.innerHTML = t('backup_migration_incomplete');
-            document.body.appendChild(warn);
-
-            setTimeout(function() {
-                warn.style.transition = 'opacity 0.4s ease';
-                warn.style.opacity = '0';
-                setTimeout(function() { warn.remove(); }, 400);
-            }, 4500);
-        }, 1200);
-
-        delete window._showStorageMigrationWarning;
-    }
+    // 紧急修复说明：原 IDB 迁移提示已禁用（IDB 封装存在严重 bug）。
+    // 如需查看当前存储后端，可在控制台执行：StorageService.getBackend()
 }).catch(function(err) {
     console.error('[App] Initialization failed:', err);
     // 极端降级：确保 DOM 缓存和事件绑定至少能工作
