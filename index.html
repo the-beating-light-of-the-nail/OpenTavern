@@ -3343,7 +3343,13 @@ function buildGroupSystemPrompt(conv, wiByPos) {
 
     let parts = [];
 
-    // ========== 群组多角色严格指令（最高优先级） ==========
+    // 首先尊重用户在设置中填写的自定义系统提示词
+    var customSysPrompt = state.settings.systemPrompt;
+    if (customSysPrompt && customSysPrompt.trim()) {
+        parts.push(replacePlaceholders(customSysPrompt.trim(), 'Assistant', userName));
+    }
+
+    // ========== 群组多角色严格指令（放在自定义提示词之后） ==========
     let groupInstruction = '';
     if (lang === 'zh-TW') {
         groupInstruction = `你正在進行一個多角色群組對話。以下是本群組中所有角色的**完整、未經刪減**的角色資料。你必須嚴格按照每個角色提供的完整資料進行扮演，絕對不能混淆任何角色的性格、背景、說話方式或知識。
