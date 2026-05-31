@@ -525,8 +525,8 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
                     触发阈值高于当前上下文长度，部分早期消息可能因上下文裁剪而无法被总结。
                 </div>
                 <p class="mt-1 text-[10px] text-zinc-500">
-                    建议值：设为上下文长度的 <strong>50%~70%</strong> 左右（例如上下文 20 条，阈值建议 10~14）。
-                    阈值太接近或超过上下文长度，自动总结会很难触发或效果很差。
+                    建议值：设为上下文长度的 <strong>50%~70%</strong> 左右（例如上下文 20 条，阈值建议 12~14）。
+                    中途修改阈值后会尝试立即响应（尤其是调低时）。阈值太接近或超过上下文长度，效果会变差。
                 </p>
             </div>
 
@@ -3030,7 +3030,7 @@ function defaultSettings() {
         summaryEnabled: true,
         // 每次 AI 回复后自动触发总结检查（默认关闭，由用户自行决定是否启用自动生成）
         autoSummarizeOnReply: false,
-        summaryThreshold: 10,
+        summaryThreshold: 12,
         summaryMaxWords: 0,
         // World Info (World Book) budget control
         worldInfoBudgetEnabled: true,
@@ -5887,12 +5887,13 @@ function isUnderContextPressure(messageCount) {
 }
 
 /**
- * 更彻底的重构后的自动总结逻辑（2026）
+ * 自动总结核心逻辑（混合轻量版 - 2026 最终调整）
  *
  * 设计目标：
- * - 让用户调整「上下文长度」和「总结阈值」后，在已进行中的对话里也能明显感受到效果。
- * - 自动总结的核心职责是控制「真正发给模型的原始消息数量」。
- * - 减少对历史小块总结（lastCovered）的强依赖，让阈值变更更具响应性。
+ * - 让用户在中途修改「总结阈值」后，在已进行中的对话里也能明显感受到效果（解决严重 bug）。
+ * - 主要判断仍使用轻量的 lastCovered 计算（性能友好）。
+ * - 增加轻量兜底：当用户界面底部实际显示的 Context 数字已超过阈值时，强制检查。
+ * - 简化主公式，让「阈值」设置更贴近用户直观预期（调到16就接近16条可见时触发）。
  */
 function autoSummarize() {
     if (!state.settings.summaryEnabled) return;
@@ -5903,30 +5904,38 @@ function autoSummarize() {
     var allRegular = conv.messages.filter(function(m) { return m.role !== 'system'; });
     if (allRegular.length < 5) return;
 
-    var contextLen = state.settings.contextLength || 20;
-    var threshold = state.settings.summaryThreshold || 20;
+    var threshold = state.settings.summaryThreshold || 12;
 
-    // 计算当前真正会发给模型的原始消息数量（已考虑历史总结的裁剪）
+    // === 主路径：轻量计算（基于历史总结的 lastCovered）===
     var lastCovered = getMaxSummaryCoveredEnd(conv.summaries || []);
     var currentVisibleCount = Math.max(0, allRegular.length - lastCovered - 1);
 
-    // 目标保留窗口：根据当前上下文长度和阈值动态计算
-    // 让用户改设置后能明显影响“允许上下文长到多大才开始压缩”
-    var targetKeep = Math.max(
-        5,
-        Math.min(
-            Math.floor(contextLen * 0.65),
-            Math.floor(threshold * 0.8)
-        )
-    );
+    // 简化后的目标保留值：让用户设置的 threshold 更直接生效
+    // 以前是 threshold * 0.8 + 固定 buffer 4，现在更直观
+    var targetKeep = Math.max(5, Math.floor(threshold * 0.65));
+    var buffer = 2; // 适当缓冲，避免过于频繁的小总结
 
-    var buffer = 4; // 留一点缓冲，避免频繁小总结
+    var shouldSummarize = false;
 
-    if (currentVisibleCount <= targetKeep + buffer) {
-        return; // 当前可见上下文还在可接受范围内，不需要再总结
+    // 条件1：主路径判断
+    if (currentVisibleCount > targetKeep + buffer) {
+        shouldSummarize = true;
     }
 
-    // 需要压缩：把 lastCovered 之后、直到“只保留 targetKeep 条”为止的内容总结掉
+    // 条件2：轻量混合兜底（解决“中途改阈值后完全不触发”的核心问题）
+    // 当用户在界面底部看到的实际可见消息数（接近 token bar 显示值）已经明显超过阈值时，强制触发检查
+    if (!shouldSummarize) {
+        var actualVisible = getActualVisibleCountForSummary();
+        if (actualVisible >= threshold + 1) {
+            shouldSummarize = true;
+        }
+    }
+
+    if (!shouldSummarize) {
+        return;
+    }
+
+    // 需要压缩：把 lastCovered 之后，直到只保留 targetKeep 条为止的内容总结掉
     var newCoveredEnd = allRegular.length - targetKeep - 1;
 
     if (newCoveredEnd <= lastCovered) return;
@@ -5950,6 +5959,34 @@ function getMaxSummaryCoveredEnd(summaries) {
         }
     });
     return max;
+}
+
+/**
+ * 轻量版“当前实际可见消息数”计算（用于自动总结兜底判断）
+ * 
+ * 目的：
+ * - 尽量接近用户在界面底部看到的 “Context: X msgs” 数字
+ * - 比 buildMessagesForAPI() 轻很多（不构建完整 system prompt、世界书、群聊逻辑）
+ * - 解决“中途修改总结阈值后，即使界面显示数字很高也完全不触发”的问题
+ */
+function getActualVisibleCountForSummary() {
+    var conv = getActiveConv();
+    if (!conv) return 0;
+
+    var regularMsgs = conv.messages.filter(function(m) { return m.role !== 'system'; });
+    var lastCovered = getMaxSummaryCoveredEnd(conv.summaries || []);
+
+    // 先按历史总结裁剪
+    var visible = (lastCovered >= 0)
+        ? Math.max(0, regularMsgs.length - lastCovered - 1)
+        : regularMsgs.length;
+
+    // 再模拟 buildMessagesForAPI 里的 contextLength 硬截断（用户实际看到的就是这个数字）
+    var max = state.settings.contextLength || 20;
+    if (visible > max) {
+        visible = max;
+    }
+    return visible;
 }
 
 function renderSummaryHistory() {
@@ -6552,6 +6589,12 @@ function loadConversation(id) {
 
     // 确保切换对话时进度条也实时更新
     renderTokenBar();
+
+    // 关键修复：切换到历史对话时，主动用当前阈值检查一次自动总结
+    // 解决用户打开旧对话后修改阈值（尤其是调低）却不触发的问题
+    if (state.settings.summaryEnabled) {
+        setTimeout(function() { autoSummarize(); }, 650);
+    }
 
     if (isMobile()) closeSidebar();
 }
@@ -7587,9 +7630,9 @@ function bindEvents() {
         dom.systemPrompt.value = state.settings.systemPrompt;
         dom.summaryEnabled.checked = state.settings.summaryEnabled !== false;
         if (dom.summaryThreshold) {
-            dom.summaryThreshold.value = state.settings.summaryThreshold || 20;
+            dom.summaryThreshold.value = state.settings.summaryThreshold || 12;
             if (dom.summaryThresholdVal) {
-                dom.summaryThresholdVal.textContent = state.settings.summaryThreshold || 20;
+                dom.summaryThresholdVal.textContent = state.settings.summaryThreshold || 12;
             }
             updateSummaryThresholdWarning();
         }
@@ -7734,7 +7777,7 @@ function bindEvents() {
         state.settings.systemPrompt = dom.systemPrompt.value.trim();
         state.settings.summaryEnabled = dom.summaryEnabled.checked;
         if (dom.summaryThreshold) {
-            state.settings.summaryThreshold = parseInt(dom.summaryThreshold.value) || 20;
+            state.settings.summaryThreshold = parseInt(dom.summaryThreshold.value) || 12;
         }
         if (dom.summaryMaxWords) {
             state.settings.summaryMaxWords = parseInt(dom.summaryMaxWords.value) || 0;
@@ -7759,6 +7802,12 @@ function bindEvents() {
             conv._wiCache = null;
         }
         renderTokenBar();
+
+        // 关键修复：用户在中途修改总结阈值后，关闭设置时主动检查一次
+        // 让改阈值能立即对当前对话产生效果（尤其是调低阈值时）
+        if (state.settings.summaryEnabled) {
+            setTimeout(function() { autoSummarize(); }, 120);
+        }
 
         // 显式通知 settings 变更
         appStore.notify('settings');
@@ -7798,8 +7847,8 @@ function bindEvents() {
     }
     if (dom.summaryThreshold) {
         dom.summaryThreshold.addEventListener('input', function() {
-            // 方案 A：实时更新 state.settings，让已打开对话的下一次 AI 回复能立刻使用新阈值
-            state.settings.summaryThreshold = parseInt(this.value) || 20;
+            // 实时更新 state.settings + 关闭设置时会主动调用 autoSummarize() 兜底检查
+            state.settings.summaryThreshold = parseInt(this.value) || 12;
             if (dom.summaryThresholdVal) {
                 dom.summaryThresholdVal.textContent = state.settings.summaryThreshold;
             }
