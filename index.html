@@ -3124,8 +3124,8 @@ function defaultConversation() {
         messages: [],
         summaries: [],
         worldInfo: null,          // LEGACY
-        // Phase 2+ world books
-        // worldBookIds: string[],
+        // Phase 2+ world books（支持角色卡内嵌 character_book 自动导入）
+        worldBookIds: [],
 
         // ===== 群组聊天（Group Chat）新增字段 - Stage 1 MVP =====
         // 当 group 存在且 members.length >= 2 时，进入群组模式
@@ -3804,6 +3804,39 @@ function importCharacterCard(jsonData) {
         tags: d.tags || [],
         alternate_greetings: d.alternate_greetings || []
     };
+}
+
+/**
+ * 从 chara_card_v3 的 data.character_book 中提取世界书数据，
+ * 并创建为全局可复用的 World Book，然后返回创建的 book 对象。
+ * 如果没有内嵌世界书或没有有效条目，则返回 null。
+ */
+function importCharacterBookFromCard(jsonData, characterName) {
+    if (!jsonData || !jsonData.data || !jsonData.data.character_book) {
+        return null;
+    }
+
+    var cb = jsonData.data.character_book;
+    // 复用现有的归一化逻辑（支持 entries 为数组或对象）
+    var normalized = normalizeImportedWorldInfo(cb);
+
+    if (!normalized || !normalized.entries || Object.keys(normalized.entries).length === 0) {
+        return null;
+    }
+
+    // 智能命名：优先使用 character_book 自带的 name，其次用角色名 + 后缀
+    var bookName = (cb && cb.name) || (characterName ? (characterName + ' 的世界书') : 'Imported Character Book');
+
+    // 创建全局世界书
+    var book = createNewWorldBook(bookName);
+    book.entries = normalized.entries;
+
+    // 如果 normalized 有名字也尊重它
+    if (normalized.name) {
+        book.name = normalized.name;
+    }
+
+    return book;
 }
 
 function replacePlaceholders(text, charName, userName) {
@@ -7986,8 +8019,9 @@ function bindEvents() {
                 var hasMsgs = conv.messages.some(function(m) { return m.role !== 'system'; });
                 if (hasMsgs) {
                     saveCurrentConversation();
-                    // 捕获旧对话的世界书
+                    // 捕获旧对话的世界书（legacy + 新 global）
                     var oldWorldInfo = conv.worldInfo ? JSON.parse(JSON.stringify(conv.worldInfo)) : null;
+                    var oldWorldBookIds = Array.isArray(conv.worldBookIds) ? conv.worldBookIds.slice() : [];
 
                     var newConv = defaultConversation();
                     state.conversations[newConv.id] = newConv;
@@ -7998,11 +8032,28 @@ function bindEvents() {
                     if (oldWorldInfo) {
                         conv.worldInfo = oldWorldInfo;
                     }
+                    if (oldWorldBookIds.length > 0) {
+                        conv.worldBookIds = oldWorldBookIds;
+                    }
                 }
 
                 conv.character = character;
                 conv.title = t('chat_with') + character.name;
                 conv.messages = [];
+
+                // ===== 新增：自动导入角色卡内嵌的 character_book 并关联到当前对话 =====
+                var embeddedBook = null;
+                try {
+                    embeddedBook = importCharacterBookFromCard(json, character.name);
+                    if (embeddedBook) {
+                        conv.worldBookIds = conv.worldBookIds || [];
+                        if (!conv.worldBookIds.includes(embeddedBook.id)) {
+                            conv.worldBookIds.push(embeddedBook.id);
+                        }
+                    }
+                } catch (e) {
+                    console.warn('导入角色卡内嵌世界书失败（不影响角色导入）:', e);
+                }
 
                 // 注册到全局角色库
                 if (character.name) {
@@ -8023,9 +8074,15 @@ function bindEvents() {
                 renderAll();
                 dom.importModal.classList.add('hidden');
                 dom.importStatus.classList.remove('hidden');
-                dom.importStatus.textContent = t('import_success') + character.name;
+
+                var successText = t('import_success') + character.name;
+                if (embeddedBook) {
+                    var entryCount = Object.keys(embeddedBook.entries || {}).length;
+                    successText += '（已自动关联内嵌世界书 · ' + entryCount + ' 条目）';
+                }
+                dom.importStatus.textContent = successText;
                 dom.importStatus.className = 'text-xs text-emerald-400 mt-3 text-center';
-                setTimeout(function() { dom.importStatus.classList.add('hidden'); }, 2500);
+                setTimeout(function() { dom.importStatus.classList.add('hidden'); }, 2800);
             } catch(err) {
                 dom.importStatus.classList.remove('hidden');
                 dom.importStatus.textContent = t('import_error') + ': ' + err.message;
