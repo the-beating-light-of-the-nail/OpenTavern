@@ -1253,8 +1253,9 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
         </div>
 
         <!-- Search Bar (list view only) -->
-        <div id="cardLibrarySearchContainer" class="px-5 py-3 border-b border-white/10 flex-shrink-0">
-            <input id="cardLibrarySearch" type="text" class="w-full px-4 py-2.5 glass rounded-2xl text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-amber-500/40" data-i18n-placeholder="card_library_search_placeholder" placeholder="搜索名称、标签、描述、作者...">
+        <div id="cardLibrarySearchContainer" class="px-5 py-3 border-b border-white/10 flex-shrink-0 flex items-center gap-3">
+            <input id="cardLibrarySearch" type="text" class="flex-1 px-4 py-2.5 glass rounded-2xl text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-amber-500/40" data-i18n-placeholder="card_library_search_placeholder" placeholder="搜索名称、标签、描述、作者...">
+            <span id="cardLibraryResultCount" class="text-xs text-zinc-400 whitespace-nowrap"></span>
         </div>
 
         <!-- List View -->
@@ -7175,6 +7176,30 @@ const PUBLIC_CARDS = [
 let currentLibraryCard = null;
 let cardLibrarySearchQuery = '';
 
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, function (m) {
+        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
+    });
+}
+
+function highlightMatch(text, query) {
+    if (!query || !text) return escapeHtml(text);
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escaped})`, 'gi');
+    return escapeHtml(text).replace(regex, '<span class="bg-amber-500/30 text-amber-300 rounded px-0.5">$1</span>');
+}
+
+function updateCardLibraryCount(shown, total) {
+    const countEl = dom.cardLibraryResultCount;
+    if (!countEl) return;
+    if (!shown || shown === total) {
+        countEl.textContent = `共 ${total} 个`;
+    } else {
+        countEl.textContent = `找到 ${shown} 个 / 共 ${total}`;
+    }
+}
+
 function openCardLibrary() {
     const modal = dom.cardLibraryModal;
     if (!modal) return;
@@ -7187,17 +7212,20 @@ function openCardLibrary() {
     // 显示列表，隐藏详情
     showCardLibraryListView();
 
-    // 绑定搜索（只绑定一次）
-    if (dom.cardLibrarySearch && !dom.cardLibrarySearch._wired) {
-        dom.cardLibrarySearch._wired = true;
-        dom.cardLibrarySearch.addEventListener('input', function() {
+    // 绑定搜索（每次打开都重新绑定，确保可靠）
+    if (dom.cardLibrarySearch) {
+        // 移除旧监听器（如果有）
+        const oldHandler = dom.cardLibrarySearch._searchHandler;
+        if (oldHandler) {
+            dom.cardLibrarySearch.removeEventListener('input', oldHandler);
+        }
+        const handler = function() {
             cardLibrarySearchQuery = this.value.trim();
             filterCardLibraryList(cardLibrarySearchQuery);
-        });
+        };
+        dom.cardLibrarySearch.addEventListener('input', handler);
+        dom.cardLibrarySearch._searchHandler = handler;
     }
-
-    // 初始用 filter('') 渲染全部（后续输入会只渲染匹配的，实现隐藏不匹配）
-    filterCardLibraryList('');
 
     // 背景点击关闭
     if (dom.cardLibraryBackdrop) {
@@ -7208,6 +7236,9 @@ function openCardLibrary() {
     }
 
     modal.classList.remove('hidden');
+
+    // 初始渲染（在显示后执行，确保 DOM 更新可见）
+    filterCardLibraryList('');
 
     // 确保新 modal 内的 data-i18n 标签被翻译（多语言）
     if (typeof applyTranslations === 'function') {
@@ -7235,7 +7266,7 @@ function showCardLibraryDetailView() {
     if (dom.cardLibraryDetailView) dom.cardLibraryDetailView.classList.remove('hidden');
 }
 
-function createCardLibraryItem(card) {
+function createCardLibraryItem(card, query = '') {
     const item = document.createElement('div');
     item.className = 'glass rounded-2xl p-3 flex gap-3 cursor-pointer hover:bg-white/5 active:bg-white/10 transition-all border border-white/5 hover:border-white/10';
 
@@ -7259,12 +7290,12 @@ function createCardLibraryItem(card) {
 
     const nameEl = document.createElement('div');
     nameEl.className = 'text-sm sm:text-base font-medium text-zinc-100 truncate';
-    nameEl.textContent = card.name || 'Unnamed';
+    nameEl.innerHTML = highlightMatch(card.name || 'Unnamed', query);
 
     const tagsEl = document.createElement('div');
     tagsEl.className = 'text-[10px] sm:text-xs text-zinc-400 mt-0.5 truncate';
-    const tagStr = (card.tags || []).slice(0, 4).join(' · ');
-    tagsEl.textContent = tagStr || '';
+    const tagStr = (card.tags || []).slice(0, 4).map(t => highlightMatch(t, query)).join(' · ');
+    tagsEl.innerHTML = tagStr || '';
 
     content.appendChild(nameEl);
     content.appendChild(tagsEl);
@@ -7289,9 +7320,11 @@ function populateCardLibraryList() {
     if (empty) empty.classList.add('hidden');
 
     PUBLIC_CARDS.forEach(card => {
-        const item = createCardLibraryItem(card);
+        const item = createCardLibraryItem(card, '');
         container.appendChild(item);
     });
+
+    updateCardLibraryCount(PUBLIC_CARDS.length, PUBLIC_CARDS.length);
 }
 
 function filterCardLibraryList(query) {
@@ -7315,13 +7348,16 @@ function filterCardLibraryList(query) {
 
     if (filtered.length === 0) {
         if (empty) empty.classList.remove('hidden');
+        updateCardLibraryCount(0, PUBLIC_CARDS.length);
         return;
     }
 
     filtered.forEach(card => {
-        const item = createCardLibraryItem(card);
+        const item = createCardLibraryItem(card, q);
         container.appendChild(item);
     });
+
+    updateCardLibraryCount(filtered.length, PUBLIC_CARDS.length);
 }
 
 function showCardLibraryDetail(card) {
@@ -7581,7 +7617,8 @@ function cacheDom() {
         'cardLibraryDetailAuthorWrap','cardLibraryDetailAuthor','cardLibraryDetailTags',
         'cardLibraryDetailDesc',
         'cardLibraryBackBtn','cardLibraryImportBtn',
-        'cardLibraryEmpty'
+        'cardLibraryEmpty',
+        'cardLibraryResultCount'
     ];
     ids.forEach(function(id) { dom[id] = document.getElementById(id); });
 }
