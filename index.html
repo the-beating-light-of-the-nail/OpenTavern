@@ -1284,7 +1284,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
             </button>
 
             <!-- Character Card Block -->
-            <div class="glass rounded-xl p-3 space-y-2">
+            <div class="glass rounded-xl px-3 py-2 space-y-1.5">
                 <div class="flex items-center justify-between">
                     <span class="text-[10px] text-zinc-500 uppercase tracking-wider" data-i18n="char_card_title">Character Card</span>
                     <div id="charCardActions" class="flex items-center gap-0.5">
@@ -1296,14 +1296,13 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
 
                 <!-- Preview state -->
                 <div id="charCardPreview" class="hidden">
-                    <div class="flex items-center gap-2 mb-1.5">
+                    <div class="flex items-center gap-2 mb-1">
                         <div id="charCardAvatar" class="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-rose-500 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">?</div>
                         <div class="min-w-0 flex-1">
                             <p id="charCardName" class="text-xs font-medium text-zinc-200 truncate"></p>
                             <p id="charCardTagCount" class="text-[9px] text-zinc-500"></p>
                         </div>
                     </div>
-                    <p id="charCardPersonality" class="text-[10px] text-zinc-500 leading-relaxed line-clamp-2 mb-2"></p>
                 </div>
 
                 <!-- Empty hint -->
@@ -7061,8 +7060,8 @@ function cacheDom() {
         'archiveBtn','tokenInfo','tokenCount','tokenBar','tokenMax','newChatBtn',
         'sidebarSettingsBtn','topSettingsBtn','viewPromptBtn',
         'exportAllBtn','importConvBtn','convImportFile',
-        'charCardEmpty','charCardPreview','charCardActions','charCardAvatar','charCardName',
-        'charCardTagCount','charCardPersonality','charCardEmptyHint',
+        'charCardPreview','charCardActions','charCardAvatar','charCardName',
+        'charCardTagCount','charCardEmptyHint',
         'charImportBtn','charCreateBtn','charEditBtn','charExportBtn','charRemoveBtn',
         'charEditorModal','charEditorBackdrop','charEditorCloseBtn','charEditorCancelBtn','charEditorSaveBtn',
         'charEditName','charEditTags','charEditDescription','charEditPersonality','charEditScenario',
@@ -7554,7 +7553,6 @@ function renderCharacterCard() {
         dom.charCardName.textContent = character.name || t('char_empty_name');
         var tagCount = character.tags ? character.tags.length : 0;
         dom.charCardTagCount.textContent = tagCount + ' tag' + (tagCount !== 1 ? 's' : '');
-        dom.charCardPersonality.textContent = character.personality || character.description ? (character.personality || character.description).slice(0, 120) : '';
     } else {
         dom.charCardPreview.classList.add('hidden');
         dom.charCardEmptyHint.classList.remove('hidden');
