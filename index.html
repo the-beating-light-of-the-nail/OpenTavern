@@ -185,6 +185,21 @@ body {
     .msg-actions { opacity: 1; }
     .msg-action-btn { width: 30px; height: 30px; border-radius: 8px; font-size: 13px; }
 
+    /* Mobile delete buttons on cards: larger tap target, always visible */
+    .char-delete-btn,
+    #myCardsGrid .group button[title="移除角色卡"] {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 18px !important;
+        opacity: 0.75 !important;
+        background: rgba(0,0,0,0.65) !important;
+    }
+    .char-delete-btn:active,
+    #myCardsGrid .group button[title="移除角色卡"]:active {
+        background: rgba(239,68,68,0.85) !important;
+        transform: scale(0.95);
+    }
+
     #messagesContainer { padding: 12px 12px; }
 
     #chatTopBar { padding: 8px 12px; }
@@ -1227,7 +1242,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
 
         <!-- 群组聊天多选提示栏（Stage 1 MVP） -->
         <div id="newChatPickerMultiBar" class="mt-3 hidden px-1 text-xs text-amber-300 flex items-center justify-between">
-            <span id="newChatPickerMultiHint">多选模式：点击角色进行选择</span>
+            <span id="newChatPickerMultiHint" data-i18n="new_chat_multi_hint">多选模式：点击角色进行选择</span>
             <span id="newChatPickerMultiCount" class="font-semibold"></span>
         </div>
 
@@ -1250,20 +1265,23 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
     <div class="absolute inset-0 bg-black/60 backdrop-blur-md" id="quickNewChatBackdrop"></div>
     <div class="relative glass rounded-3xl w-[92%] max-w-sm p-6 shadow-2xl animate-fade-in">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-bold">新对话 / 新群聊</h2>
+            <h2 class="text-lg font-bold" data-i18n="quick_new_chat_title">新对话 / 新群聊</h2>
             <button id="quickNewChatCloseBtn" class="w-8 h-8 rounded-full glass flex items-center justify-center text-xl leading-none text-zinc-400 hover:text-zinc-200 transition-colors">&times;</button>
         </div>
         <div class="space-y-2.5">
             <button id="quickNewChatWithCurrentBtn"
-                    class="w-full px-4 py-3 rounded-2xl text-sm font-semibold bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-black transition-all flex items-center justify-center gap-2">
+                    class="w-full px-4 py-3 rounded-2xl text-sm font-semibold bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-black transition-all flex items-center justify-center gap-2"
+                    data-i18n="quick_new_with_current">
                 💬 与当前角色开启新对话
             </button>
             <button id="quickReturnToLibraryBtn"
-                    class="w-full px-4 py-3 rounded-2xl text-sm font-semibold bg-white/10 hover:bg-white/15 transition-all">
+                    class="w-full px-4 py-3 rounded-2xl text-sm font-semibold bg-white/10 hover:bg-white/15 transition-all"
+                    data-i18n="quick_return_library">
                 ← 返回卡片库
             </button>
             <button id="quickNewGroupChatBtn"
-                    class="w-full px-4 py-3 rounded-2xl text-sm font-semibold bg-white/5 hover:bg-white/10 border border-white/10 transition-all">
+                    class="w-full px-4 py-3 rounded-2xl text-sm font-semibold bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
+                    data-i18n="quick_new_group">
                 👥 创建新群聊（进入选择界面）
             </button>
         </div>
@@ -1804,10 +1822,40 @@ var i18n = {
         new_chat_no_character: '不使用角色卡（空白對話）',
         new_chat_import_character: '匯入新角色卡',
 
+        // Quick New Chat Action Modal
+        quick_new_chat_title: '新對話 / 新群聊',
+        quick_new_with_current: '與當前角色開啟新對話',
+        quick_return_library: '返回卡片庫',
+        quick_new_group: '創建新群聊（進入選擇界面）',
+
+        // Picker multi-select for group
+        new_chat_multi_select: '多選創建群組聊天',
+        new_chat_multi_exit: '退出多選模式',
+        new_chat_multi_hint: '多選模式：點擊角色進行選擇',
+        new_chat_create_group: '創建群組聊天',
+        new_chat_cancel_multi: '取消',
+        new_chat_multi_selected_prefix: '已選',
+        new_chat_multi_people: '人',
+
         // New Chat Character Picker (Phase 4)
         new_chat_picker_title: '选择角色卡开始新对话',
         new_chat_no_character: '不使用角色卡（空白对话）',
         new_chat_import_character: '导入新角色卡',
+
+        // Quick New Chat Action Modal
+        quick_new_chat_title: '新对话 / 新群聊',
+        quick_new_with_current: '与当前角色开启新对话',
+        quick_return_library: '返回卡片库',
+        quick_new_group: '创建新群聊（进入选择界面）',
+
+        // Picker multi-select for group
+        new_chat_multi_select: '多选创建群组聊天',
+        new_chat_multi_exit: '退出多选模式',
+        new_chat_multi_hint: '多选模式：点击角色进行选择',
+        new_chat_create_group: '创建群组聊天',
+        new_chat_cancel_multi: '取消',
+        new_chat_multi_selected_prefix: '已选',
+        new_chat_multi_people: '人',
 
         // Public Card Library
         card_library: '卡片库',
@@ -2381,6 +2429,21 @@ var i18n = {
         new_chat_picker_title: 'Choose a Character Card to Start New Chat',
         new_chat_no_character: 'Start without a character (blank chat)',
         new_chat_import_character: 'Import New Character Card',
+
+        // Quick New Chat Action Modal
+        quick_new_chat_title: 'New Chat / New Group Chat',
+        quick_new_with_current: 'Start New Chat with Current Character',
+        quick_return_library: 'Return to Card Library',
+        quick_new_group: 'Create New Group Chat (enter selection)',
+
+        // Picker multi-select for group
+        new_chat_multi_select: 'Multi-select to Create Group Chat',
+        new_chat_multi_exit: 'Exit Multi-select Mode',
+        new_chat_multi_hint: 'Multi-select mode: click characters to select',
+        new_chat_create_group: 'Create Group Chat',
+        new_chat_cancel_multi: 'Cancel',
+        new_chat_multi_selected_prefix: 'Selected',
+        new_chat_multi_people: '',
 
         // Group Chat @ Mention Feature
         mention_button_title: 'Mention Character (@)',
@@ -7054,7 +7117,9 @@ function showNewChatCharacterPicker() {
         if (multiSelectMode) {
             dom.newChatPickerMultiBar.classList.remove('hidden');
             if (dom.newChatPickerMultiCount) {
-                dom.newChatPickerMultiCount.textContent = `已选 ${selectedKeys.size} 人`;
+                const prefix = t('new_chat_multi_selected_prefix') || '已选';
+                const suffix = t('new_chat_multi_people') || '人';
+                dom.newChatPickerMultiCount.textContent = `${prefix} ${selectedKeys.size} ${suffix}`.trim();
             }
         } else {
             dom.newChatPickerMultiBar.classList.add('hidden');
@@ -7087,13 +7152,15 @@ function showNewChatCharacterPicker() {
                         ${isSelected ? '✓' : ''}
                     </div>
                 ` : `
-                    <button class="char-delete-btn absolute top-1 right-1 w-5 h-5 rounded-full bg-black/50 hover:bg-red-500/80 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all" title="删除角色卡">×</button>
+                    <button class="char-delete-btn absolute top-1 right-1 w-7 h-7 md:w-5 md:h-5 rounded-full bg-black/50 hover:bg-red-500/80 active:bg-red-500/90 text-white text-base md:text-xs flex items-center justify-center opacity-70 md:opacity-0 md:group-hover:opacity-100 transition-all z-10" title="删除角色卡">×</button>
                 `}
             `;
 
-            card.addEventListener('click', () => {
+            card.addEventListener('click', (e) => {
                 if (!multiSelectMode) {
                     // 单选模式：保持原有行为
+                    // Safety for mobile: ignore if delete button was the target
+                    if (e.target.closest('.char-delete-btn') || e.target.closest('button[title="删除角色卡"]')) return;
                     newChatPickerCameFromQuick = false;
                     modal.classList.add('hidden');
                     newConversation(character);
@@ -7140,12 +7207,14 @@ function showNewChatCharacterPicker() {
         if (bottomArea) {
             const toggleBtn = document.createElement('button');
             toggleBtn.className = 'w-full mb-2 px-4 py-2 rounded-xl text-sm font-medium bg-white/5 hover:bg-white/10 border border-white/10 transition-all';
-            toggleBtn.textContent = '多选创建群组聊天';
+            const multiSelectText = t('new_chat_multi_select') || '多选创建群组聊天';
+            const multiExitText = t('new_chat_multi_exit') || '退出多选模式';
+            toggleBtn.textContent = multiSelectText;
 
             toggleBtn.addEventListener('click', () => {
                 multiSelectMode = !multiSelectMode;
                 selectedKeys.clear();
-                toggleBtn.textContent = multiSelectMode ? '退出多选模式' : '多选创建群组聊天';
+                toggleBtn.textContent = multiSelectMode ? multiExitText : multiSelectText;
                 renderCards();
                 updateMultiBar();
 
@@ -7156,14 +7225,16 @@ function showNewChatCharacterPicker() {
                         confirmBar = document.createElement('div');
                         confirmBar.id = 'newChatGroupConfirmBar';
                         confirmBar.className = 'mt-3 flex gap-2';
+                        const createGroupText = t('new_chat_create_group') || '创建群组聊天';
+                        const cancelMultiText = t('new_chat_cancel_multi') || '取消';
                         confirmBar.innerHTML = `
                             <button id="newChatCreateGroupBtn"
                                     class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-amber-500 hover:bg-amber-400 text-black transition-all">
-                                创建群组聊天
+                                ${createGroupText}
                             </button>
                             <button id="newChatCancelMultiBtn"
                                     class="px-4 py-2.5 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/15 transition-all">
-                                取消
+                                ${cancelMultiText}
                             </button>
                         `;
                         bottomArea.parentNode.insertBefore(confirmBar, bottomArea);
@@ -7189,7 +7260,7 @@ function showNewChatCharacterPicker() {
                         cancelBtn.addEventListener('click', () => {
                             multiSelectMode = false;
                             selectedKeys.clear();
-                            toggleBtn.textContent = '多选创建群组聊天';
+                            toggleBtn.textContent = multiSelectText;
                             confirmBar.style.display = 'none';
                             renderCards();
                             updateMultiBar();
@@ -7203,7 +7274,25 @@ function showNewChatCharacterPicker() {
             });
 
             bottomArea.parentNode.insertBefore(toggleBtn, bottomArea);
+            modal._multiToggleBtn = toggleBtn;
         }
+    }
+
+    // If the picker was opened by clicking "创建新群聊" in the quick action dialog,
+    // automatically enter multi-select mode so user doesn't have to manually click the toggle.
+    if (cameFromQuick) {
+        multiSelectMode = false; // ensure the upcoming click will turn it ON
+        if (modal._multiToggleBtn) {
+            modal._multiToggleBtn.click();
+        } else {
+            // fallback (should rarely happen)
+            multiSelectMode = true;
+            selectedKeys.clear();
+            renderCards();
+            updateMultiBar();
+        }
+        // Note: we keep the local cameFromQuick for the header "← 返回" button
+        // so user can still go back to the 3-option quick menu.
     }
 
     // 绑定原有静态按钮（只绑定一次）
@@ -7308,13 +7397,14 @@ function showQuickNewChatModal() {
     const returnBtn = document.getElementById('quickReturnToLibraryBtn');
     const groupBtn = document.getElementById('quickNewGroupChatBtn');
 
-    // Optionally enhance first button with current name
+    // Optionally enhance first button with current name (i18n aware)
     const currentChar = getCurrentChatCharacter();
     if (withCurrentBtn) {
+        const base = t('quick_new_with_current') || '与当前角色开启新对话';
         if (currentChar && currentChar.name) {
-            withCurrentBtn.innerHTML = `💬 与「${escapeHtml(currentChar.name)}」开启新对话`;
+            withCurrentBtn.innerHTML = `💬 ${base}（${escapeHtml(currentChar.name)}）`;
         } else {
-            withCurrentBtn.innerHTML = `💬 与当前角色开启新对话`;
+            withCurrentBtn.innerHTML = `💬 ${base}`;
         }
     }
 
@@ -7841,7 +7931,8 @@ function renderMyCards() {
 
         // Remove button (top-right corner, appears on hover like in picker)
         const delBtn = document.createElement('button');
-        delBtn.className = 'absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/60 hover:bg-red-500/80 text-white text-sm flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-10';
+        // Mobile-friendly: always visible (semi-opaque), larger tap target; desktop uses hover
+        delBtn.className = 'absolute top-1.5 right-1.5 w-7 h-7 md:w-6 md:h-6 rounded-full bg-black/60 hover:bg-red-500/80 active:bg-red-500/90 text-white text-base md:text-sm flex items-center justify-center transition-all opacity-70 md:opacity-0 md:group-hover:opacity-100 z-10';
         delBtn.innerHTML = '×';
         delBtn.title = '移除角色卡';
         delBtn.addEventListener('click', (e) => {
@@ -7874,8 +7965,10 @@ function renderMyCards() {
         cardEl.appendChild(preview);
         cardEl.appendChild(info);
 
-        cardEl.addEventListener('click', () => {
+        cardEl.addEventListener('click', (e) => {
             // For my cards: skip detail, load recent conv or create new
+            // Safety: if delete button was tapped, do nothing (stopProp should already handle it)
+            if (e.target.closest('.char-delete-btn') || e.target.closest('button[title="移除角色卡"]')) return;
             loadOrCreateChatForCharacter(char);
         });
 
