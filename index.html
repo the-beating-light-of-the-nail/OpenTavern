@@ -7186,7 +7186,7 @@ function showNewChatCharacterPicker() {
                     </div>
                 ` : `
                     <!-- Pure × only (no bg/rounded) to avoid visual seams on gradient. Shown on touch-selected or hover. -->
-                    <button class="char-delete-btn absolute top-2 right-2 text-white/80 hover:text-red-400 active:text-red-500 text-xl font-bold leading-none p-1.5 z-10 opacity-0 md:opacity-0 group-hover:opacity-100 md:group-hover:opacity-100 transition-all" title="删除角色卡">×</button>
+                    <button class="char-delete-btn absolute top-1.5 right-1.5 text-white/80 hover:text-red-400 active:text-red-500 text-xl font-bold leading-none p-1.5 z-10 opacity-0 md:opacity-0 group-hover:opacity-100 md:group-hover:opacity-100 transition-all" title="删除角色卡">×</button>
                 `}
             `;
 
@@ -7999,7 +7999,7 @@ function renderMyCards() {
         // CSS .touch-selected rule forces visibility + size.
         // Pure × only, no background circle. Overlay directly on gradient to avoid seams/gaps.
         // Visibility controlled by .touch-selected (touch) or group-hover (desktop).
-        delBtn.className = 'absolute top-2 right-2 text-white/80 hover:text-red-400 active:text-red-500 text-xl font-bold leading-none p-1.5 z-10 transition-all opacity-0 md:opacity-0 group-hover:opacity-100 md:group-hover:opacity-100';
+        delBtn.className = 'absolute top-1.5 right-1.5 text-white/80 hover:text-red-400 active:text-red-500 text-xl font-bold leading-none p-1.5 z-10 transition-all opacity-0 md:opacity-0 group-hover:opacity-100 md:group-hover:opacity-100';
         delBtn.innerHTML = '×';
         delBtn.title = '移除角色卡';
         delBtn.addEventListener('click', (e) => {
