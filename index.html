@@ -8896,13 +8896,13 @@ function renderMessages() {
 
     if (allMessages.length === 0) {
         container.innerHTML = '';
-        dom.emptyState.style.display = '';
-        dom.tokenInfo.classList.add('hidden');
+        if (dom.emptyState) dom.emptyState.style.display = '';
+        if (dom.tokenInfo) dom.tokenInfo.classList.add('hidden');
         return;
     }
 
-    dom.emptyState.style.display = 'none';
-    dom.tokenInfo.classList.remove('hidden');
+    if (dom.emptyState) dom.emptyState.style.display = 'none';
+    if (dom.tokenInfo) dom.tokenInfo.classList.remove('hidden');
 
     // === 增量 DOM 更新 + Windowed Rendering (支持长对话历史) ===
     // 默认只渲染最近 N 条以保持性能；用户向上滚动或点击按钮可加载更早消息
@@ -9068,29 +9068,36 @@ function renderMessagesFullHistory(conv) {
 function renderTopBar() {
     var conv = getActiveConv();
     if (!conv) return;
-    dom.chatTitle.textContent = conv.title || t('new_chat_title');
+    if (dom.chatTitle) dom.chatTitle.textContent = conv.title || t('new_chat_title');
     if (conv.character) {
         const ch = conv.character;
         const src = ch.previewImage || ch.avatar;
-        if (src) {
-            dom.charAvatar.innerHTML = `<img src="${src}" class="w-full h-full object-cover rounded-xl" alt="${ch.name || ''}">`;
-            dom.charAvatar.className = 'w-9 h-9 rounded-xl overflow-hidden bg-zinc-900 flex-shrink-0 border border-white/10';
-        } else {
-            dom.charAvatar.textContent = ch.name.charAt(0).toUpperCase();
-            dom.charAvatar.className = 'w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-rose-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0';
+        if (dom.charAvatar) {
+            if (src) {
+                dom.charAvatar.innerHTML = `<img src="${src}" class="w-full h-full object-cover rounded-xl" alt="${ch.name || ''}">`;
+                dom.charAvatar.className = 'w-9 h-9 rounded-xl overflow-hidden bg-zinc-900 flex-shrink-0 border border-white/10';
+            } else {
+                dom.charAvatar.textContent = ch.name.charAt(0).toUpperCase();
+                dom.charAvatar.className = 'w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-rose-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0';
+            }
         }
-        var sep = t('char_tag_separator');
-        dom.chatSubtitle.textContent = conv.character.tags ? conv.character.tags.slice(0,3).join(sep) : conv.character.name;
+        if (dom.chatSubtitle) {
+            var sep = t('char_tag_separator');
+            dom.chatSubtitle.textContent = conv.character.tags ? conv.character.tags.slice(0,3).join(sep) : conv.character.name;
+        }
     } else {
-        dom.charAvatar.textContent = '💬';
-        dom.charAvatar.className = 'w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-zinc-500 text-sm flex-shrink-0';
-        dom.chatSubtitle.textContent = t('no_character');
+        if (dom.charAvatar) {
+            dom.charAvatar.textContent = '💬';
+            dom.charAvatar.className = 'w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-zinc-500 text-sm flex-shrink-0';
+        }
+        if (dom.chatSubtitle) dom.chatSubtitle.textContent = t('no_character');
     }
 }
 
 function renderTokenBar() {
     var conv = getActiveConv();
     if (!conv) return;
+    if (!dom.tokenCount || !dom.tokenMax || !dom.tokenBar) return;
     // 【核心修复2】必须使用 buildMessagesForAPI 的实际输出，而不是存储层消息总数
     var apiMessages = buildMessagesForAPI();
     var msgCount = apiMessages.filter(function(m) { return m.role !== 'system'; }).length;
@@ -9107,30 +9114,34 @@ function renderCharacterCard() {
     var character = conv && conv.character;
 
     if (character) {
-        dom.charCardPreview.classList.remove('hidden');
-        dom.charCardEmptyHint.classList.add('hidden');
-        dom.charEditBtn.classList.remove('hidden');
-        dom.charExportBtn.classList.remove('hidden');
-        dom.charRemoveBtn.classList.remove('hidden');
+        if (dom.charCardPreview) dom.charCardPreview.classList.remove('hidden');
+        if (dom.charCardEmptyHint) dom.charCardEmptyHint.classList.add('hidden');
+        if (dom.charEditBtn) dom.charEditBtn.classList.remove('hidden');
+        if (dom.charExportBtn) dom.charExportBtn.classList.remove('hidden');
+        if (dom.charRemoveBtn) dom.charRemoveBtn.classList.remove('hidden');
 
         const src = character.previewImage || character.avatar;
-        if (src) {
-            dom.charCardAvatar.innerHTML = `<img src="${src}" class="w-full h-full object-cover rounded-lg" alt="${character.name || ''}">`;
-            dom.charCardAvatar.className = 'w-7 h-7 rounded-lg overflow-hidden bg-zinc-900 flex-shrink-0 border border-white/10';
-        } else {
-            dom.charCardAvatar.textContent = character.name ? character.name.charAt(0).toUpperCase() : '?';
-            dom.charCardAvatar.className = 'w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-rose-500 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0';
+        if (dom.charCardAvatar) {
+            if (src) {
+                dom.charCardAvatar.innerHTML = `<img src="${src}" class="w-full h-full object-cover rounded-lg" alt="${character.name || ''}">`;
+                dom.charCardAvatar.className = 'w-7 h-7 rounded-lg overflow-hidden bg-zinc-900 flex-shrink-0 border border-white/10';
+            } else {
+                dom.charCardAvatar.textContent = character.name ? character.name.charAt(0).toUpperCase() : '?';
+                dom.charCardAvatar.className = 'w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-rose-500 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0';
+            }
         }
 
-        dom.charCardName.textContent = character.name || t('char_empty_name');
-        var tagCount = character.tags ? character.tags.length : 0;
-        dom.charCardTagCount.textContent = tagCount + ' tag' + (tagCount !== 1 ? 's' : '');
+        if (dom.charCardName) dom.charCardName.textContent = character.name || t('char_empty_name');
+        if (dom.charCardTagCount) {
+            var tagCount = character.tags ? character.tags.length : 0;
+            dom.charCardTagCount.textContent = tagCount + ' tag' + (tagCount !== 1 ? 's' : '');
+        }
     } else {
-        dom.charCardPreview.classList.add('hidden');
-        dom.charCardEmptyHint.classList.remove('hidden');
-        dom.charEditBtn.classList.add('hidden');
-        dom.charExportBtn.classList.add('hidden');
-        dom.charRemoveBtn.classList.add('hidden');
+        if (dom.charCardPreview) dom.charCardPreview.classList.add('hidden');
+        if (dom.charCardEmptyHint) dom.charCardEmptyHint.classList.remove('hidden');
+        if (dom.charEditBtn) dom.charEditBtn.classList.add('hidden');
+        if (dom.charExportBtn) dom.charExportBtn.classList.add('hidden');
+        if (dom.charRemoveBtn) dom.charRemoveBtn.classList.add('hidden');
     }
     renderWorldInfoBadge();
 }
