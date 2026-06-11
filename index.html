@@ -4334,6 +4334,126 @@ var WI_POS = {
 };
 var WI_ROLE = { SYSTEM: 0, USER: 1, ASSISTANT: 2 };
 
+/**
+ * Normalize a single world info entry from SillyTavern / character_book format
+ * (which may use "keys", "secondary_keys", "insertion_order", "enabled", string position,
+ * and put advanced fields inside "extensions") into the app's internal schema
+ * (key, keysecondary, order, disable, numeric position, top-level scanDepth etc.).
+ * This fixes "某些字段无法读取" when importing embedded world books.
+ */
+function normalizeWIEntry(raw) {
+    if (!raw || typeof raw !== 'object') return null;
+    var e = JSON.parse(JSON.stringify(raw));
+
+    // Map ST keys to internal key / keysecondary
+    if (Array.isArray(e.keys) && (!e.key || e.key.length === 0)) {
+        e.key = e.keys.slice();
+    }
+    if (!Array.isArray(e.key)) e.key = [];
+
+    if (Array.isArray(e.secondary_keys) && (!e.keysecondary || e.keysecondary.length === 0)) {
+        e.keysecondary = e.secondary_keys.slice();
+    }
+    if (!Array.isArray(e.keysecondary)) e.keysecondary = [];
+
+    // insertion_order → order
+    if (e.insertion_order != null && e.order == null) {
+        e.order = e.insertion_order;
+    }
+    if (e.order == null) e.order = 100;
+
+    // enabled (ST) → disable (internal, inverted)
+    if (e.enabled != null && e.disable == null) {
+        e.disable = !e.enabled;
+    }
+    if (e.disable == null) e.disable = false;
+
+    // position: string (after_char etc) or number → numeric constant
+    if (typeof e.position === 'string') {
+        var p = e.position.toLowerCase().replace(/_/g, '');
+        var posMap = {
+            'beforechar': WI_POS.BEFORE_CHAR,
+            'afterchar': WI_POS.AFTER_CHAR,
+            'beforeex': WI_POS.BEFORE_EX,
+            'beforeexample': WI_POS.BEFORE_EX,
+            'afterex': WI_POS.AFTER_EX,
+            'afterexample': WI_POS.AFTER_EX,
+            'topan': WI_POS.TOP_AN,
+            'bottoman': WI_POS.BOTTOM_AN,
+            'atdepth': WI_POS.AT_DEPTH,
+            'outlet': WI_POS.OUTLET
+        };
+        if (posMap[p] != null) {
+            e.position = posMap[p];
+        }
+    }
+    if (e.position == null || isNaN(parseInt(e.position, 10))) {
+        e.position = WI_POS.AFTER_CHAR;
+    } else {
+        e.position = parseInt(e.position, 10);
+    }
+
+    // Promote fields from extensions (common in ST exports / character_book)
+    if (e.extensions && typeof e.extensions === 'object') {
+        var ext = e.extensions;
+
+        // numeric / core
+        if (ext.scan_depth != null && e.scanDepth == null) e.scanDepth = ext.scan_depth;
+        if (ext.depth != null && e.depth == null) e.depth = ext.depth;
+        if (ext.role != null && e.role == null) e.role = ext.role;
+        if (ext.probability != null && e.probability == null) e.probability = ext.probability;
+        if (ext.useProbability != null && e.useProbability == null) e.useProbability = ext.useProbability;
+        if (ext.selectiveLogic != null && e.selectiveLogic == null) e.selectiveLogic = ext.selectiveLogic;
+
+        // timed
+        if (ext.sticky != null && e.sticky == null) e.sticky = ext.sticky;
+        if (ext.cooldown != null && e.cooldown == null) e.cooldown = ext.cooldown;
+        if (ext.delay != null && e.delay == null) e.delay = ext.delay;
+
+        // recursion
+        if (ext.exclude_recursion != null && e.excludeRecursion == null) e.excludeRecursion = ext.exclude_recursion;
+        if (ext.prevent_recursion != null && e.preventRecursion == null) e.preventRecursion = ext.prevent_recursion;
+        if (ext.delay_until_recursion != null && e.delayUntilRecursion == null) e.delayUntilRecursion = ext.delay_until_recursion;
+
+        // group / outlet
+        if (ext.outlet_name != null && e.outletName == null) e.outletName = ext.outlet_name;
+        if (ext.group != null && e.group == null) e.group = ext.group;
+        if (ext.group_override != null && e.groupOverride == null) e.groupOverride = ext.group_override;
+        if (ext.group_weight != null && e.groupWeight == null) e.groupWeight = ext.group_weight;
+        if (ext.use_group_scoring != null && e.useGroupScoring == null) e.useGroupScoring = ext.use_group_scoring;
+
+        // other
+        if (ext.automation_id != null && e.automationId == null) e.automationId = ext.automation_id;
+        if (ext.triggers && !e.triggers) e.triggers = ext.triggers;
+        if (ext.ignore_budget != null && e.ignoreBudget == null) e.ignoreBudget = ext.ignore_budget;
+
+        // matching flags
+        if (ext.case_sensitive != null && e.caseSensitive == null) e.caseSensitive = ext.case_sensitive;
+        if (ext.match_whole_words != null && e.matchWholeWords == null) e.matchWholeWords = ext.match_whole_words;
+        if (ext.match_character_description != null) e.matchCharacterDescription = ext.match_character_description;
+        if (ext.match_character_personality != null) e.matchCharacterPersonality = ext.match_character_personality;
+        if (ext.match_scenario != null) e.matchScenario = ext.match_scenario;
+        if (ext.match_persona_description != null) e.matchPersonaDescription = ext.match_persona_description;
+        if (ext.match_character_depth_prompt != null) e.matchCharacterDepthPrompt = ext.match_character_depth_prompt;
+        if (ext.match_creator_notes != null) e.matchCreatorNotes = ext.match_creator_notes;
+    }
+
+    // Ensure required arrays / objects
+    if (!Array.isArray(e.key)) e.key = [];
+    if (!Array.isArray(e.keysecondary)) e.keysecondary = [];
+    if (!Array.isArray(e.triggers)) e.triggers = [];
+    if (!e.characterFilter) e.characterFilter = { isExclude: false, names: [], tags: [] };
+
+    // Ensure extensions for round-tripping / ST export
+    if (!e.extensions) e.extensions = {};
+    // keep some in sync
+    e.extensions.position = e.position;
+    if (e.depth != null) e.extensions.depth = e.depth;
+    if (e.role != null) e.extensions.role = e.role;
+
+    return e;
+}
+
 function injectWorldInfoIntoSystem(systemParts, wiByPos, charName, userName) {
     if (!wiByPos) return systemParts;
 
@@ -4635,17 +4755,18 @@ function normalizeImportedWorldInfo(raw) {
     var src = raw.entries || (raw.worldInfo && raw.worldInfo.entries) || raw;
     if (Array.isArray(src)) {
         src.forEach(function(e, idx) {
-            var entry = JSON.parse(JSON.stringify(e));
-            var uid = (entry.uid != null) ? entry.uid : idx;
+            var entry = normalizeWIEntry(e) || JSON.parse(JSON.stringify(e));
+            // uid: support uid / id / index
+            var uid = (entry.uid != null) ? entry.uid : (entry.id != null ? entry.id : idx);
             var parsed = parseInt(uid, 10);
             entry.uid = (parsed === 0 || !isNaN(parsed)) ? parsed : Date.now();
             wi.entries[String(entry.uid)] = entry;
         });
     } else if (src && typeof src === 'object') {
         Object.keys(src).forEach(function(k) {
-            var entry = JSON.parse(JSON.stringify(src[k]));
+            var entry = normalizeWIEntry(src[k]) || JSON.parse(JSON.stringify(src[k]));
             // Preserve uid 0 correctly (common in SillyTavern exports)
-            var uid = (entry.uid != null) ? entry.uid : k;
+            var uid = (entry.uid != null) ? entry.uid : (entry.id != null ? entry.id : k);
             var parsed = parseInt(uid, 10);
             entry.uid = (parsed === 0 || !isNaN(parsed)) ? parsed : Date.now();
             wi.entries[String(entry.uid)] = entry;
@@ -4730,10 +4851,10 @@ function getCharacterBookForExport(conv) {
         return combinedEntries[uid];
     });
 
-    // 按 insertion_order 排序
+    // 按 insertion_order / order 排序 (兼容 normalized 内部格式和原始 ST 格式)
     entriesArray.sort(function(a, b) {
-        var ia = a.insertion_order != null ? a.insertion_order : 100;
-        var ib = b.insertion_order != null ? b.insertion_order : 100;
+        var ia = (a.insertion_order != null ? a.insertion_order : (a.order != null ? a.order : 100));
+        var ib = (b.insertion_order != null ? b.insertion_order : (b.order != null ? b.order : 100));
         return ia - ib || (a.id || 0) - (b.id || 0);
     });
 
@@ -5263,6 +5384,9 @@ function updatePositionConditionalRows(pos) {
 function fillEditorFromEntry(entry) {
     if (!entry) return showNoSelection();
 
+    // Normalize on read so ST/character_book fields (keys, insertion_order, enabled, extensions.*) are visible in editor
+    entry = normalizeWIEntry(entry) || entry;
+
     dom.wiNoSelection.classList.add('hidden');
     dom.wiEditorForm.classList.remove('hidden');
 
@@ -5485,7 +5609,9 @@ function renderWIEntryList(filter) {
         return;
     }
 
-    var entries = Object.keys(wi.entries).map(function(k){ return wi.entries[k]; });
+    var entries = Object.keys(wi.entries).map(function(k){
+        return normalizeWIEntry(wi.entries[k]) || wi.entries[k];
+    });
 
     if (filter) {
         var f = filter.toLowerCase();
@@ -6085,7 +6211,8 @@ function getActivatedWorldInfo(conv) {
                 var wb = state.worldBooks && state.worldBooks[wbId];
                 if (wb && wb.entries) {
                     Object.keys(wb.entries).forEach(function(uid) {
-                        var entry = JSON.parse(JSON.stringify(wb.entries[uid]));
+                        // Normalize on read so old imported data (with ST field names like keys/insertion_order/enabled + extensions) works
+                        var entry = normalizeWIEntry(wb.entries[uid]) || JSON.parse(JSON.stringify(wb.entries[uid]));
                         entry._sourceWorldBookId = wbId;
                         entries.push(entry);
                     });
@@ -6096,7 +6223,8 @@ function getActivatedWorldInfo(conv) {
         // Legacy fallback during transition
         if (conv.worldInfo && conv.worldInfo.entries) {
             Object.keys(conv.worldInfo.entries).forEach(function(uid) {
-                entries.push(JSON.parse(JSON.stringify(conv.worldInfo.entries[uid])));
+                var entry = normalizeWIEntry(conv.worldInfo.entries[uid]) || JSON.parse(JSON.stringify(conv.worldInfo.entries[uid]));
+                entries.push(entry);
             });
         }
     }
