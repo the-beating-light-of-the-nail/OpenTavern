@@ -4760,6 +4760,11 @@ var wiState = {
     secondaryKeys: []
 };
 
+function updateWIDirtyIndicator() {
+    if (!dom.wiDirtyIndicator) return;
+    dom.wiDirtyIndicator.classList.toggle('hidden', !wiState.dirty);
+}
+
 function getActiveWI() {
     // Phase 2+: prefer the currently selected global world book in the editor
     if (wiState.currentWorldBookId && state.worldBooks && state.worldBooks[wiState.currentWorldBookId]) {
@@ -4894,6 +4899,8 @@ function openWorldBookModal() {
     wiState.viewMode = 'books';
     wiState.currentWorldBookId = null;
     wiState.selectedUid = null;
+    wiState.dirty = false;
+    updateWIDirtyIndicator();
 
     renderWIEntryList('');
     showNoSelection();
@@ -4909,11 +4916,16 @@ function openWorldBookModal() {
 
 function closeWorldBookModal() {
     if (wiState.dirty) {
-        persistState();
+        // Use immediate persist so edits (especially content) and structural changes (import/delete) are reliably written before the modal closes / user navigates away.
+        persistState(true);
         // 世界书条目有变更，清除激活缓存
         var conv = getActiveConv();
         if (conv) conv._wiCache = null;
     }
+    // Reset dirty state after successful commit
+    wiState.dirty = false;
+    updateWIDirtyIndicator();
+
     dom.worldBookModal.classList.add('hidden');
     wiState.modalOpen = false;
     wiState.selectedUid = null;
@@ -4930,6 +4942,7 @@ function wireWorldBookListeners() {
         var wi = getActiveWI();
         wi.name = this.value;
         wiState.dirty = true;
+        updateWIDirtyIndicator();
     });
 
     // Buttons
@@ -4945,11 +4958,12 @@ function wireWorldBookListeners() {
             wiState.currentWorldBookId = newBook.id;
             wiState.viewMode = 'entries';
             wiState.dirty = true;
+            updateWIDirtyIndicator();
             dom.wiBookName.value = newBook.name;
             renderWIEntryList('');
             showNoSelection();
             updateWorldBookModalHeader();
-            persistState();
+            persistState(true);
         });
     }
 
@@ -4998,6 +5012,19 @@ function wireWorldBookListeners() {
     bindLive('wiCooldown', 'cooldown', true);
     bindLive('wiDelay', 'delay', true);
     bindLive('wiScanDepth', 'scanDepth', true);
+
+    // CRITICAL FIX: wiContent (the main entry body) was never wired for live sync!
+    // User edits to the big textarea were lost on close.
+    if (dom.wiContent) {
+        dom.wiContent.addEventListener('input', function() {
+            if (!wiState.selectedUid) return;
+            var entry = getActiveWI().entries[wiState.selectedUid];
+            if (!entry) return;
+            entry.content = this.value;
+            wiState.dirty = true;
+            updateWIDirtyIndicator();
+        });
+    }
 
     // Checkboxes
     var checkboxes = [
@@ -5347,6 +5374,7 @@ function addNewWIEntry() {
     var entry = createDefaultWIEntry(uid);
     wi.entries[String(uid)] = entry;
     wiState.dirty = true;
+    updateWIDirtyIndicator();
     renderWIEntryList(dom.wiSearch.value.trim());
     selectWIEntry(uid);
 }
@@ -5361,6 +5389,7 @@ function duplicateCurrentEntry() {
     copy.comment = (src.comment || 'Entry') + ' (copy)';
     wi.entries[String(copy.uid)] = copy;
     wiState.dirty = true;
+    updateWIDirtyIndicator();
     renderWIEntryList(dom.wiSearch.value.trim());
     selectWIEntry(copy.uid);
 }
@@ -5371,6 +5400,7 @@ function deleteCurrentEntry() {
     var wi = getActiveWI();
     delete wi.entries[wiState.selectedUid];
     wiState.dirty = true;
+    updateWIDirtyIndicator();
     wiState.selectedUid = null;
     renderWIEntryList(dom.wiSearch.value.trim());
     showNoSelection();
@@ -5382,6 +5412,7 @@ function deleteAllWIEntries() {
     wi.entries = {};
     wiState.selectedUid = null;
     wiState.dirty = true;
+    updateWIDirtyIndicator();
     renderWIEntryList('');
     showNoSelection();
 }
@@ -5415,7 +5446,9 @@ function deleteWorldBook(wbId) {
     }
 
     wiState.dirty = true;
-    persistState();
+    updateWIDirtyIndicator();
+    // Immediate persist so the deletion sticks even if user closes tab or refreshes soon after.
+    persistState(true);
     renderWorldInfoBadge();
 
     // Refresh the list
@@ -5497,7 +5530,8 @@ function renderWIEntryList(filter) {
                 if (!currentConv) return;
                 currentConv.worldBookIds = (currentConv.worldBookIds || []).filter(id => id !== wiState.currentWorldBookId);
                 wiState.dirty = true;
-                persistState();
+                updateWIDirtyIndicator();
+                persistState(true);
                 renderWorldInfoBadge();
                 renderWorldBookList(dom.wiSearch.value.trim());
                 renderWIEntryList(dom.wiSearch.value.trim());
@@ -5513,7 +5547,8 @@ function renderWIEntryList(filter) {
                     currentConv.worldBookIds.push(wiState.currentWorldBookId);
                 }
                 wiState.dirty = true;
-                persistState();
+                updateWIDirtyIndicator();
+                persistState(true);
                 renderWorldInfoBadge();
                 renderWorldBookList(dom.wiSearch.value.trim());
                 renderWIEntryList(dom.wiSearch.value.trim());
@@ -5575,6 +5610,7 @@ function renderWIEntryList(filter) {
             var e = wi.entries[uidStr];
             e.disable = !this.checked;
             wiState.dirty = true;
+            updateWIDirtyIndicator();
             renderWIEntryList(dom.wiSearch.value.trim());
         });
 
@@ -5584,6 +5620,7 @@ function renderWIEntryList(filter) {
             if (!confirm('删除此条目？')) return;
             delete wi.entries[uidStr];
             wiState.dirty = true;
+            updateWIDirtyIndicator();
             if (wiState.selectedUid === uidStr) {
                 wiState.selectedUid = null;
                 showNoSelection();
@@ -5682,7 +5719,8 @@ function renderWorldBookList(filter) {
                 if (!currentConv) return;
                 currentConv.worldBookIds = (currentConv.worldBookIds || []).filter(function(id) { return id !== wb.id; });
                 wiState.dirty = true;
-                persistState();
+                updateWIDirtyIndicator();
+                persistState(true);
                 renderWorldInfoBadge();
                 // Re-render list to update badges
                 var f = (dom.wiSearch && dom.wiSearch.value) ? dom.wiSearch.value.trim() : '';
@@ -5724,6 +5762,7 @@ function handleWIFileImport(e) {
                 wiState.currentWorldBookId = newBook.id;
                 wiState.viewMode = 'entries';
                 wiState.dirty = true;
+                updateWIDirtyIndicator();
 
                 if (dom.wiBookName) dom.wiBookName.value = newBook.name;
                 if (dom.wiSearch) dom.wiSearch.value = '';
@@ -5732,6 +5771,9 @@ function handleWIFileImport(e) {
                 showNoSelection();
                 updateWorldBookModalHeader();
                 renderWorldInfoBadge();
+
+                // Immediate persist: imported world books must be durable immediately (user complaint: they get persisted but then "cannot be deleted" if timing is bad).
+                persistState(true);
 
                 alert('已作为新世界书导入（' + Object.keys(newBook.entries).length + ' 条目）');
             } else {
@@ -5743,11 +5785,13 @@ function handleWIFileImport(e) {
                     if (dom.wiBookName) dom.wiBookName.value = normalized.name;
                 }
                 wiState.dirty = true;
+                updateWIDirtyIndicator();
 
                 if (dom.wiSearch) dom.wiSearch.value = '';
                 renderWIEntryList('');
                 showNoSelection();
                 renderWorldInfoBadge();
+                persistState(true);
                 alert('世界书导入成功（' + Object.keys(wi.entries).length + ' 条目）');
             }
         } catch (err) {
