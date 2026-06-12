@@ -7261,6 +7261,11 @@ function newConversation(charOrChars) {
         }
 
         conv.title = conv.group.name;
+
+        // 设置当前角色上下文为群组第一个成员，便于侧边栏会话列表过滤时能看到该群聊
+        if (members.length > 0) {
+            currentCharacterName = members[0].character.name;
+        }
     }
     // 单角色兜底
     else if (Array.isArray(charOrChars) && charOrChars.length === 1) {
@@ -8497,7 +8502,12 @@ function loadConversation(id) {
 
     // For chat-only conv list per character
     var c = state.conversations[id];
-    if (c && c.character && c.character.name) currentCharacterName = c.character.name;
+    if (c && c.character && c.character.name) {
+        currentCharacterName = c.character.name;
+    } else if (c && isGroupChat(c) && c.group && c.group.members && c.group.members.length > 0) {
+        // 群聊：设置到第一个成员的上下文，使群聊出现在对应角色的会话列表中
+        currentCharacterName = c.group.members[0].character.name;
+    }
 
     // 切换对话时重置增量渲染状态和“显示全部消息”状态
     var newConv = getActiveConv();
@@ -8711,9 +8721,12 @@ function renderConversationList() {
     // - In card library view: show ALL historical conversations
     // - After clicking a character card to enter chat: only show conversations related to currentCharacterName (including group chats)
     if (currentView === 'chat' && currentCharacterName) {
+        const activeId = state.activeConvId;
         order = order.filter(function(id) {
             var c = state.conversations[id];
             if (!c) return false;
+            // 始终保留当前激活的会话（尤其是群聊切换后 currentCharacterName 可能不匹配任一成员）
+            if (id === activeId) return true;
             if (c.character && c.character.name === currentCharacterName) return true;
             if (c.group && Array.isArray(c.group.members)) {
                 return c.group.members.some(function(m) {
@@ -8778,9 +8791,12 @@ if (typeof renderConversationList === 'function') {
         var order = (state.conversationOrder || []).slice();
 
         if (currentView === 'chat' && currentCharacterName) {
+            const activeId = state.activeConvId;
             order = order.filter(function(id) {
                 var c = state.conversations[id];
                 if (!c) return false;
+                // 始终保留当前激活的会话（尤其是群聊切换后 currentCharacterName 可能不匹配任一成员）
+                if (id === activeId) return true;
                 if (c.character && c.character.name === currentCharacterName) return true;
                 if (c.group && Array.isArray(c.group.members)) {
                     return c.group.members.some(function(m) {
@@ -9071,6 +9087,20 @@ function renderTopBar() {
     var conv = getActiveConv();
     if (!conv) return;
     if (dom.chatTitle) dom.chatTitle.textContent = conv.title || t('new_chat_title');
+
+    if (isGroupChat(conv)) {
+        const members = getGroupMembers(conv);
+        if (dom.charAvatar) {
+            dom.charAvatar.textContent = '👥';
+            dom.charAvatar.className = 'w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500/70 to-rose-500/70 flex items-center justify-center text-white text-sm font-bold flex-shrink-0';
+        }
+        if (dom.chatSubtitle) {
+            const names = members.map(m => (m.character && m.character.name) ? m.character.name : '').filter(Boolean).slice(0, 3).join('、');
+            dom.chatSubtitle.textContent = names + (members.length > 3 ? ' 等' : '') || (t('no_character') || '群聊');
+        }
+        return;
+    }
+
     if (conv.character) {
         const ch = conv.character;
         const src = ch.previewImage || ch.avatar;
@@ -9113,7 +9143,46 @@ function renderTokenBar() {
 
 function renderCharacterCard() {
     var conv = getActiveConv();
-    var character = conv && conv.character;
+    if (!conv) {
+        if (dom.charCardPreview) dom.charCardPreview.classList.add('hidden');
+        if (dom.charCardEmptyHint) dom.charCardEmptyHint.classList.remove('hidden');
+        if (dom.charEditBtn) dom.charEditBtn.classList.add('hidden');
+        if (dom.charExportBtn) dom.charExportBtn.classList.add('hidden');
+        if (dom.charRemoveBtn) dom.charRemoveBtn.classList.add('hidden');
+        renderWorldInfoBadge();
+        return;
+    }
+
+    if (isGroupChat(conv)) {
+        // 群聊模式：在角色卡区域显示群组成员摘要（避免显示“无角色卡”空状态）
+        if (dom.charCardPreview) dom.charCardPreview.classList.remove('hidden');
+        if (dom.charCardEmptyHint) dom.charCardEmptyHint.classList.add('hidden');
+        if (dom.charEditBtn) dom.charEditBtn.classList.add('hidden');
+        if (dom.charExportBtn) dom.charExportBtn.classList.add('hidden');
+        if (dom.charRemoveBtn) dom.charRemoveBtn.classList.add('hidden');
+
+        const members = getGroupMembers(conv);
+        if (dom.charCardAvatar) {
+            dom.charCardAvatar.textContent = '👥';
+            dom.charCardAvatar.className = 'w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-rose-500 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0';
+        }
+        if (dom.charCardName) {
+            dom.charCardName.textContent = (conv.group && conv.group.name) ? conv.group.name : '群聊';
+        }
+        if (dom.charCardTagCount) {
+            const shortList = members
+                .map(m => (m.character && m.character.name) ? m.character.name : '')
+                .filter(Boolean)
+                .slice(0, 2)
+                .join('、');
+            const more = members.length > 2 ? ' 等' : '';
+            dom.charCardTagCount.textContent = members.length + ' 角色' + (shortList ? ' · ' + shortList + more : '');
+        }
+        renderWorldInfoBadge();
+        return;
+    }
+
+    var character = conv.character;
 
     if (character) {
         if (dom.charCardPreview) dom.charCardPreview.classList.remove('hidden');
