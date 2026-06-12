@@ -1342,7 +1342,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
         </div>
 
         <div class="mt-4 pt-3 border-t border-white/10 text-[11px] text-zinc-500 px-1" data-i18n="group_mention_hint">
-            选择后将自动插入 @角色名
+            选择后在输入栏左侧显示指定角色气泡（不可编辑），本轮将由该角色回复
         </div>
     </div>
 </div>
@@ -1573,6 +1573,17 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
                         aria-label="Mention Character">
                     @
                 </button>
+
+                <!-- @ 指定气泡（非编辑态）：点击@按钮选择后在此显示角色名 + 关闭按钮，只指定一个角色 -->
+                <div id="mentionPill"
+                     class="hidden flex-shrink-0 items-center gap-1 px-2 py-1 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-medium max-w-[160px] overflow-hidden cursor-pointer">
+                    <span id="mentionPillName" class="truncate select-none"></span>
+                    <button id="mentionPillClear"
+                            type="button"
+                            class="ml-0.5 w-3.5 h-3.5 flex items-center justify-center text-amber-400 hover:text-red-400 hover:bg-white/10 rounded-full leading-none text-base"
+                            aria-label="清除@指定">×</button>
+                </div>
+
                 <textarea id="messageInput" rows="1"
                           class="flex-1 px-4 py-3 glass rounded-2xl text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none transition-all min-h-[44px]"
                           data-i18n-placeholder="input_placeholder"
@@ -1922,9 +1933,9 @@ var i18n = {
         // Group Chat @ Mention Feature
         mention_button_title: '提及角色 (@)',
         group_mention_title: '选择要提及的角色',
-        group_mention_hint: '选择后将让该角色在本轮回复',
+        group_mention_hint: '选择后将在输入栏左侧显示指定角色（气泡），本轮回复将由该角色驱动',
         group_mention_no_group: '当前不是群组聊天',
-        group_mention_insert: '插入 @'
+        group_mention_insert: '指定 @'
     },
     'zh-TW': {
         app_subtitle: 'AI 角色聊天',
@@ -2485,9 +2496,9 @@ var i18n = {
         // Group Chat @ Mention Feature
         mention_button_title: 'Mention Character (@)',
         group_mention_title: 'Select Character to Mention',
-        group_mention_hint: 'The selected character will reply this turn',
+        group_mention_hint: 'After selection a pill will appear left of the input (non-editable). This turn will be driven by the selected character.',
         group_mention_no_group: 'Not currently in a group chat',
-        group_mention_insert: 'Insert @',
+        group_mention_insert: 'Mention @',
 
         // Public Card Library
         card_library: 'Card Library',
@@ -3553,7 +3564,12 @@ function getNextGroupSpeaker(conv) {
 
     let lastIndex = -1;
     if (lastAssistant && lastAssistant.speaker) {
-        lastIndex = members.findIndex(m => m.character.name === lastAssistant.speaker);
+        const sp = lastAssistant.speaker;
+        lastIndex = members.findIndex(m => m.character.name === sp);
+        if (lastIndex === -1) {
+            const lower = sp.toLowerCase();
+            lastIndex = members.findIndex(m => (m.character.name || '').toLowerCase() === lower);
+        }
     }
 
     // 下一个（循环）
@@ -3677,26 +3693,12 @@ function showGroupMentionPanel(conv) {
 
         if (!isMuted) {
             item.addEventListener('click', () => {
-                const ta = dom.messageInput;
-
-                // 先移除输入框中已有的 @提及（确保一次只能@一个角色）
-                let cleanedValue = ta.value.replace(/@[^\s@，,。.!?]+/g, '').trim();
-
-                // 在光标位置或末尾插入新的 @角色名
-                const start = ta.selectionStart || cleanedValue.length;
-                const end = ta.selectionEnd || cleanedValue.length;
-                const before = cleanedValue.substring(0, start);
-                const after = cleanedValue.substring(end);
-                const insertText = `@${char.name} `;
-
-                ta.value = (before + insertText + after).trim();
-
+                // 新逻辑：设置非编辑气泡，而不是往输入框插入纯文本 @名字
+                setPendingGroupMention(char);
                 modal.classList.add('hidden');
 
-                // 聚焦并移动光标到插入内容之后
-                ta.focus();
-                const newPos = start + insertText.length;
-                ta.selectionStart = ta.selectionEnd = newPos;
+                // 聚焦输入框，让用户继续输入实际消息内容
+                if (dom.messageInput) dom.messageInput.focus();
             });
         }
 
@@ -3709,6 +3711,34 @@ function showGroupMentionPanel(conv) {
     dom.groupMentionBackdrop.onclick = close;
 
     modal.classList.remove('hidden');
+}
+
+// ===== 新 @ 指定 UI 辅助：气泡而非文本插入（只能指定一个角色） =====
+function setPendingGroupMention(char) {
+    if (!char) return;
+    pendingGroupMention = char;
+
+    if (dom.mentionPill && dom.mentionPillName) {
+        dom.mentionPill.classList.remove('hidden');
+        dom.mentionPill.classList.add('flex');
+        dom.mentionPillName.textContent = '@' + (char.name || '角色');
+        // 工具提示显示完整名
+        dom.mentionPill.title = char.name || '';
+    }
+
+    // 清理输入框里可能已有的旧 @ 文字（保持输入栏干净）
+    if (dom.messageInput) {
+        dom.messageInput.value = (dom.messageInput.value || '').replace(/@[^\s@，,。.!?]+/g, '').trim();
+    }
+}
+
+function clearPendingGroupMention() {
+    pendingGroupMention = null;
+    if (dom.mentionPill) {
+        dom.mentionPill.classList.remove('flex');
+        dom.mentionPill.classList.add('hidden');
+        if (dom.mentionPillName) dom.mentionPillName.textContent = '';
+    }
 }
 
 function buildGroupSystemPrompt(conv, wiByPos) {
@@ -3790,9 +3820,10 @@ function buildGroupSystemPrompt(conv, wiByPos) {
         });
     }
 
-    // 明确标注当前被 @ 的角色（如果有）
+    // 明确标注当前被 @ 的角色（如果有）—— 加强指令以提高模型遵守率
     if (forcedSpeaker) {
-        parts.push(`\n【本轮用户特别指定】用户在本条消息中 @ 了 ${forcedSpeaker.name}。请优先让 ${forcedSpeaker.name} 作为主要回应者进行回复，同时保持其他角色的独立性。`);
+        const fsName = forcedSpeaker.name;
+        parts.push(`\n【本轮用户特别指定】用户在本条消息中明确 @ 了 ${fsName}。**本轮回复必须以 ${fsName} 为主角/主要发言者**：场景描述、动作、对话和内心活动应主要围绕 ${fsName} 展开，或让 ${fsName} 首先/主要回应用户。其他角色可以作为配角出现、评论或互动，但不能抢夺本轮的主要叙述焦点和第一人称/第三人称主视角。严格遵守本轮由 ${fsName} 驱动回复。`);
     }
 
     // World Info
@@ -7299,6 +7330,11 @@ function newConversation(charOrChars) {
     requestRender('activeConvId');
     renderTokenBar();
 
+    // 只有群聊才保留 @ 指定气泡，否则清理（新UI）
+    if (!(conv && isGroupChat(conv))) {
+        if (typeof clearPendingGroupMention === 'function') clearPendingGroupMention();
+    }
+
     // 当从卡片库（library view）通过侧边栏“新对话/新群聊”→角色选择器创建新对话/群聊时，
     // newConversation 负责创建状态，但需要显式切换到聊天界面。
     // loadConversation 和 loadOrCreateChatForCharacter 已经有类似逻辑。
@@ -7482,13 +7518,15 @@ function showNewChatCharacterPicker() {
                         const cancelBtn = confirmBar.querySelector('#newChatCancelMultiBtn');
 
                         createBtn.addEventListener('click', () => {
-                            const selectedChars = characters.filter(c =>
-                                selectedKeys.has((c.name || '').trim().toLowerCase())
-                            );
+                            // 按用户在多选模式下的点击顺序（Set 插入顺序）构建数组，
+                            // 这样 members[0] 就是用户第一个选的（开场白用它），list_order 循环也符合用户预期。
+                            const keyOrder = Array.from(selectedKeys);
+                            const selectedChars = keyOrder
+                                .map(k => characters.find(c => (c.name || '').trim().toLowerCase() === k))
+                                .filter(Boolean);
                             if (selectedChars.length >= 2) {
                                 newChatPickerCameFromQuick = false;
                                 modal.classList.add('hidden');
-                                // 传递数组给新逻辑（下一阶段实现）
                                 newConversation(selectedChars);
                             } else {
                                 alert('请至少选择 2 个角色创建群组');
@@ -7752,6 +7790,9 @@ let cardLibrarySearchQuery = '';
 let currentView = 'library'; // 'library' | 'chat'
 let activeLibraryTab = 'my'; // 'my' | 'public'
 let currentCharacterName = null; // for chat filtering and active card
+
+// 群聊 @ 指定（新 UI）：点击选择后用气泡显示，不再往输入框插入纯文本 @名字
+let pendingGroupMention = null;
 
 // Flag to allow "返回上一级" from the full character picker back to the 3-button quick menu
 let newChatPickerCameFromQuick = false;
@@ -8500,6 +8541,12 @@ function loadConversation(id) {
     saveCurrentConversation();
     state.activeConvId = id;           // triggers granular renders via subscription
 
+    // 切换对话时清理 @ 指定气泡（只在群聊输入时有意义）
+    if (typeof clearPendingGroupMention === 'function') {
+        const c = state.conversations[id];
+        if (!c || !isGroupChat(c)) clearPendingGroupMention();
+    }
+
     // For chat-only conv list per character
     var c = state.conversations[id];
     if (c && c.character && c.character.name) {
@@ -8566,7 +8613,7 @@ var dom = {};
 function cacheDom() {
     var ids = [
         'sidebar','convList','noConvHint','chatTopBar','charAvatar','chatTitle','chatSubtitle',
-        'messagesContainer','emptyState','messageInput','sendBtn','stopBtn','mentionBtn',
+        'messagesContainer','emptyState','messageInput','sendBtn','stopBtn','mentionBtn','mentionPill','mentionPillName','mentionPillClear',
         'settingsModal','settingsBackdrop','settingsCloseBtn',
         'apiEndpoint','apiKey','saveApiKey','modelName','contextLength','contextLenVal',
         'maxTokens','maxTokensVal','temperature','tempVal','topP','topPVal',
@@ -9808,21 +9855,31 @@ function sendMessage() {
         conv.title = text.slice(0, 50) + (text.length > 50 ? '...' : '');
     }
 
-    // ===== 群组聊天 @ 指定功能（一次只允许@一个角色） =====
+    // ===== 群组聊天 @ 指定功能（新气泡 UI，优先使用点击指定的角色，只允许一个） =====
     if (isGroupChat(conv)) {
-        const mentioned = parseGroupMention(text, conv);
+        let mentioned = null;
+
+        if (pendingGroupMention) {
+            // 优先使用左侧气泡指定的角色（点击选择的结果）
+            mentioned = pendingGroupMention;
+            clearPendingGroupMention(); // 用过即清除
+        } else {
+            // 兜底：支持用户手动在输入框里输入 @名字 的旧方式
+            mentioned = parseGroupMention(text, conv);
+        }
+
         if (mentioned) {
-            // 用户明确 @ 了某人 → 强制让该角色回复（只认第一个@）
-            // @ 只影响本轮；本轮结束后 onComplete 会用 getNextGroupSpeaker 推进到列表下一个
+            // 强制本轮由该角色回复
             conv._nextGroupSpeaker = mentioned;
         } else {
-            // 没有 @ 时，按 list_order 策略由 getNextGroupSpeaker 决定本轮该谁（上一个发言者之后的那位）
+            // 没有指定时，按 list_order 自然推进
             conv._nextGroupSpeaker = getNextGroupSpeaker(conv);
         }
     }
 
     dom.messageInput.value = '';
     dom.messageInput.style.height = 'auto';
+    clearPendingGroupMention(); // 保险清除（防止异常情况残留）
     persistState();
     requestFullRender();
 
@@ -9909,6 +9966,25 @@ function bindEvents() {
                 return;
             }
             showGroupMentionPanel(conv);
+        });
+    }
+
+    // @ 指定气泡的清除按钮（只指定一个角色，点 × 即可移除）
+    if (dom.mentionPillClear) {
+        dom.mentionPillClear.addEventListener('click', function(e) {
+            e.stopPropagation();
+            clearPendingGroupMention();
+        });
+    }
+
+    // 点击气泡名称区域可重新打开选择器更换指定的角色
+    if (dom.mentionPill) {
+        dom.mentionPill.addEventListener('click', function(e) {
+            if (e.target && e.target.id === 'mentionPillClear') return;
+            const conv = getActiveConv();
+            if (conv && isGroupChat(conv)) {
+                showGroupMentionPanel(conv);
+            }
         });
     }
 
