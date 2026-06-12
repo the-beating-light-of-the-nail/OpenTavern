@@ -4644,7 +4644,7 @@ function buildMessagesForAPI() {
     var apiMessages = [];
 
     // 将 JailBreak 提示合并到 system prompt 的最前面
-    // 模型会先读到 JailBreak 指令，再看到角色卡的 Personality/Scenario，更难被覆盖
+    // 模型会先读到 JailBreak 指令，再看到角色卡的内容
     let finalSystemContent = systemContent || '';
     if (typeof JAILBREAK_PROMPT === 'string' && JAILBREAK_PROMPT.length > 50) {
         finalSystemContent = JAILBREAK_PROMPT + '\n\n' + finalSystemContent;
@@ -10549,24 +10549,13 @@ function bindEvents() {
     // Prompt viewer
     function showFullPrompt() {
         try {
-            // 提示词查看器排除 JailBreak 部分，避免用户直接复制隐藏提示
+            // 临时取消隐藏，方便验证 JailBreak 是否正确注入到 API 提示词最前面
+            // 用户可以通过“查看完整提示词”确认第一条 SYSTEM 是否以 JailBreak 开头
             var messages = buildMessagesForAPI();
             var text = '';
             for (var i = 0; i < messages.length; i++) {
-                var role = messages[i].role.toUpperCase();
-                var content = messages[i].content || '';
-
-                // 如果是 system 消息且包含 JailBreak 前缀，则在显示时去掉 JailBreak 部分
-                if (role === 'SYSTEM' && 
-                    typeof JAILBREAK_PROMPT === 'string' && 
-                    content.startsWith(JAILBREAK_PROMPT)) {
-                    content = content.slice(JAILBREAK_PROMPT.length).trim();
-                }
-
-                if (content) {
-                    text += '=== ' + role + ' ===\n';
-                    text += content + '\n\n';
-                }
+                text += '=== ' + messages[i].role.toUpperCase() + ' ===\n';
+                text += (messages[i].content || '') + '\n\n';
             }
             dom.promptViewerContent.textContent = text || t('no_messages_to_send');
             dom.promptViewerModal.classList.remove('hidden');
