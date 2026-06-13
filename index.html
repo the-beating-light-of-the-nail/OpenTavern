@@ -541,6 +541,46 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
 #sidebar.library-mode .glass.rounded-xl.px-3.py-2 {
     display: none !important;
 }
+
+/* ========== 效能模式（低功耗 / low-power）视觉降级规则 ==========
+   当 body.low-power 存在时：
+   - 完全禁用/隐藏 shaderCanvas（最耗电的持续 60fps WebGL）
+   - 强制移除所有 .glass 和气泡的 backdrop-filter（手机上最耗电的 CSS 属性之一）
+   - 把 blur 强度 var 置 0
+   - 停止 typing 光标无限动画（静态显示）
+   - 极短过渡避免完全无反馈，但仍大幅降低合成负载
+*/
+body.low-power #shaderCanvas,
+body.low-power #vignetteOverlay {
+    display: none !important;
+}
+body.low-power {
+    --blur-intensity: 0px;
+}
+body.low-power .glass,
+body.low-power .msg-bubble,
+body.low-power #sidebar,
+body.low-power .modal-overlay .glass,
+body.low-power #chatTopBar,
+body.low-power #main-layout .flex-shrink-0.px-4.py-3,
+body.low-power #summaryManagerModal .glass,
+body.low-power #worldBookModal .glass {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+body.low-power .typing-cursor::after {
+    animation: none !important;
+    opacity: 0.6;
+}
+body.low-power .conv-item,
+body.low-power .glass,
+body.low-power .msg-bubble,
+body.low-power button,
+body.low-power .modal-overlay {
+    /* 极短过渡保留可点击反馈，其余动画已禁用 */
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+}
 </style>
 </head>
 <body class="shimmer-enabled">
@@ -750,6 +790,19 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px;
                     <span id="worldInfoBudgetVal" class="text-xs text-zinc-500 bg-white/5 px-2 py-0.5 rounded-full">2048</span>
                 </div>
                 <input type="range" id="worldInfoBudget" min="256" max="8192" step="256" value="2048" class="w-full">
+            </div>
+
+            <!-- 效能模式（新增，解决手机发热问题，用户可自由开关） -->
+            <hr class="border-white/5">
+            <div class="flex items-center justify-between">
+                <div>
+                    <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider" data-i18n="settings_low_power_label">效能模式（减少视觉效果以降低手机发热）</label>
+                    <p class="text-[10px] text-zinc-600 mt-0.5" data-i18n="settings_low_power_hint">开启后暂停背景动画、关闭玻璃模糊效果，可显著降低手机 GPU 负载与发热。随时可关闭。</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-3">
+                    <input type="checkbox" id="lowPowerMode" class="sr-only peer">
+                    <div class="w-9 h-5 bg-white/10 rounded-full peer-checked:bg-amber-500/60 peer-checked:ring-1 peer-checked:ring-amber-500/40 transition-all after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></div>
+                </label>
             </div>
         </div>
     </div>
@@ -1868,6 +1921,8 @@ var i18n = {
         settings_wi_budget_max: '世界书最大 Token 数',
         wi_budget_warning: '部分世界书因预算限制未激活',
         wi_budget_warning_dismiss: '知道了',
+        settings_low_power_label: '效能模式（减少视觉效果以降低手机发热）',
+        settings_low_power_hint: '开启后暂停背景 WebGL 动画、关闭玻璃模糊（backdrop-filter），并精简部分过渡动画。可显著降低手机 GPU/CPU 负载与发热。随时可关闭，不影响聊天功能。',
         settings_summarize_api_title: '总结 API 设置（Summarization API）',
         settings_summarize_use_main: '使用主 API 进行总结（推荐大多数用户）',
         settings_summarize_api_endpoint: 'API Endpoint',
@@ -2196,6 +2251,8 @@ var i18n = {
         settings_wi_budget_max: '世界書最大 Token 數',
         wi_budget_warning: '部分世界書因預算限制未啟動',
         wi_budget_warning_dismiss: '知道了',
+        settings_low_power_label: '效能模式（減少視覺效果以降低手機發熱）',
+        settings_low_power_hint: '開啟後暫停背景 WebGL 動畫、關閉玻璃模糊（backdrop-filter），並精簡部分過渡動畫。可顯著降低手機 GPU/CPU 負載與發熱。隨時可關閉，不影響聊天功能。',
         settings_summarize_api_title: '總結 API 設定（Summarization API）',
         settings_summarize_use_main: '使用主 API 進行總結（推薦大多數用戶）',
         settings_summarize_api_endpoint: 'API Endpoint',
@@ -2476,6 +2533,8 @@ var i18n = {
         settings_wi_budget_max: 'Max Tokens from World Info',
         wi_budget_warning: 'Some World Book entries were not activated due to budget limits',
         wi_budget_warning_dismiss: 'Dismiss',
+        settings_low_power_label: 'Performance Mode (reduce visual effects to lower phone heat)',
+        settings_low_power_hint: 'Pauses the animated WebGL background, disables glass blur (backdrop-filter), and reduces heavy transitions/animations. Significantly lowers mobile GPU/CPU load and heat. Can be turned off anytime; does not affect chat, summaries, or any functionality.',
         settings_summarize_api_title: 'Summarization API Settings',
         settings_summarize_use_main: 'Use main API for summarization (recommended for most users)',
         settings_summarize_api_endpoint: 'API Endpoint',
@@ -2737,27 +2796,75 @@ if (gl) {
                 shaderAnimationFrame = null;
                 return;
             }
+            // 效能模式下额外保护（applyPerformanceMode 会负责暂停）
+            if (window.__lowPowerMode) {
+                shaderAnimationFrame = null;
+                return;
+            }
             if (timeLocation) gl.uniform1f(timeLocation, (now - shaderStartTime) / 1000.0);
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
             shaderAnimationFrame = requestAnimationFrame(renderShader);
         }
 
         function startShaderAnimation() {
-            if (!shaderAnimationFrame) {
+            if (!shaderAnimationFrame && !window.__lowPowerMode) {
                 shaderAnimationFrame = requestAnimationFrame(renderShader);
             }
         }
 
-        // 页面可见性变化时控制动画
+        // 效能模式专用：暂停着色器（取消 RAF + 隐藏 canvas，彻底释放 GPU）
+        function pauseShader() {
+            window.__lowPowerMode = true;
+            if (shaderAnimationFrame) {
+                cancelAnimationFrame(shaderAnimationFrame);
+                shaderAnimationFrame = null;
+            }
+            if (shaderCanvas) shaderCanvas.style.display = 'none';
+        }
+
+        // 恢复着色器（显示 canvas 并重启 RAF）
+        function resumeShader() {
+            window.__lowPowerMode = false;
+            if (shaderCanvas) shaderCanvas.style.display = '';
+            if (gl && !shaderAnimationFrame) {
+                startShaderAnimation();
+            }
+        }
+
+        // 页面可见性变化时控制动画（低功耗时不恢复）
         document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
+            if (!document.hidden && !window.__lowPowerMode) {
                 startShaderAnimation();
             }
         });
 
-        // 初始启动
+        // 初始启动（后续 applyPerformanceMode 会在设置加载后立即暂停如果需要）
         startShaderAnimation();
+
+        // 暴露控制函数供 applyPerformanceMode 调用
+        window.__pauseShader = pauseShader;
+        window.__resumeShader = resumeShader;
     }
+}
+
+// ==================== 效能模式应用函数（供设置开关与启动时调用） ====================
+function applyPerformanceMode(enabled) {
+    var isLow = !!enabled;
+    // 1. body 类控制 CSS 规则（blur、shader display、动画等）
+    if (document.body) {
+        document.body.classList.toggle('low-power', isLow);
+    }
+    // 2. 着色器控制（使用 shader 块暴露的函数）
+    try {
+        if (isLow) {
+            if (typeof window.__pauseShader === 'function') window.__pauseShader();
+        } else {
+            if (typeof window.__resumeShader === 'function') window.__resumeShader();
+        }
+    } catch (e) {
+        // 静默失败（shader 可能尚未就绪，启动时 apply 会再试）
+    }
+    // 未来可在此添加更多节流（如限制流式渲染频率等）
 }
 
 // ==================== Storage Engine (v2 - IndexedDB + idb) ====================
@@ -3474,6 +3581,9 @@ function defaultSettings() {
         worldInfoBudgetEnabled: true,
         worldInfoBudget: 2048,
 
+        // 效能模式（用户自由切换，降低手机发热）
+        lowPowerMode: false,
+
         // Summarization API (separate from main chat API)
         summarizeUseMainAPI: true,
         summarizeApiEndpoint: '',
@@ -4128,6 +4238,16 @@ async function initState() {
 
     // Ensure lang is set
     if (!state.settings.lang) state.settings.lang = 'zh-CN';
+
+    // 确保新字段有默认值（旧数据兼容）
+    if (typeof state.settings.lowPowerMode === 'undefined') {
+        state.settings.lowPowerMode = false;
+    }
+
+    // 启动时应用已保存的效能模式（立即暂停 shader + 应用 CSS 降级）
+    if (typeof applyPerformanceMode === 'function') {
+        applyPerformanceMode(state.settings.lowPowerMode);
+    }
 
     // Security migration for API key persistence
     var hadApiKey = !!(state.settings && state.settings.apiKey);
@@ -8736,6 +8856,7 @@ function cacheDom() {
         'wiImportFile',
         'worldInfoBudgetEnabled','worldInfoBudget','worldInfoBudgetVal',
         'wiBudgetWarning','wiBudgetWarningText','wiBudgetWarningDismiss',
+        'lowPowerMode',
         'summarizeUseMainAPI','summarizeApiEndpoint','summarizeApiKey','summarizeModel',
         'summarizeCustomApiSection',
         // Announcement modal
@@ -10218,6 +10339,11 @@ function bindEvents() {
         dom.worldInfoBudget.value = state.settings.worldInfoBudget || 2048;
         dom.worldInfoBudgetVal.textContent = state.settings.worldInfoBudget || 2048;
 
+        // 效能模式（低功耗）
+        if (dom.lowPowerMode) {
+            dom.lowPowerMode.checked = !!state.settings.lowPowerMode;
+        }
+
         // Summarization API
         dom.summarizeUseMainAPI.checked = state.settings.summarizeUseMainAPI !== false;
         dom.summarizeApiEndpoint.value = state.settings.summarizeApiEndpoint || '';
@@ -10358,6 +10484,9 @@ function bindEvents() {
         state.settings.worldInfoBudgetEnabled = dom.worldInfoBudgetEnabled.checked;
         state.settings.worldInfoBudget = parseInt(dom.worldInfoBudget.value) || 2048;
 
+        // 效能模式（低功耗）
+        state.settings.lowPowerMode = dom.lowPowerMode ? !!dom.lowPowerMode.checked : false;
+
         // Summarization API
         state.settings.summarizeUseMainAPI = dom.summarizeUseMainAPI.checked;
         state.settings.summarizeApiEndpoint = dom.summarizeApiEndpoint.value.trim();
@@ -10366,6 +10495,11 @@ function bindEvents() {
 
         persistState();
         dom.settingsModal.classList.add('hidden');
+
+        // 立即应用效能模式（暂停/恢复 shader + 应用 CSS 类）
+        if (typeof applyPerformanceMode === 'function') {
+            applyPerformanceMode(state.settings.lowPowerMode);
+        }
 
         // 设置变更后清理相关缓存，确保 token 条和世界书激活正确刷新
         var conv = getActiveConv();
