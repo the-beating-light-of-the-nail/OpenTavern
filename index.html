@@ -606,6 +606,14 @@ body.low-power .modal-overlay {
                         <button type="button" onclick="applyMainApiPreset('deepseek')" class="px-3 py-1 text-xs rounded-lg bg-white/5 hover:bg-amber-500/20 active:bg-amber-500/30 text-zinc-300 hover:text-amber-300 transition-all border border-white/10 font-medium">DeepSeek</button>
                     </div>
                 </div>
+                <!-- 测试 API 连接 按钮 -->
+                <div class="mt-2">
+                    <button type="button" onclick="testMainApiConnection()" 
+                            class="px-3 py-1 text-xs rounded-lg bg-white/5 hover:bg-amber-500/20 active:bg-amber-500/30 text-amber-300 hover:text-amber-200 transition-all border border-white/10 font-medium"
+                            data-i18n="api_test_button">测试 API 连接</button>
+                    <span class="ml-2 text-[10px] text-zinc-500" data-i18n="api_test_hint">测试前请填写 Endpoint 与 Key</span>
+                </div>
+                <div id="apiTestResult" class="mt-1.5 text-xs rounded-lg p-2 hidden border"></div>
             </div>
             <div>
                 <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider" data-i18n="settings_api_key">API Key</label>
@@ -1708,6 +1716,35 @@ var i18n = {
         settings_api_presets_short: '推荐：',
         settings_api_key: 'API 密钥',
         settings_model: '模型',
+        api_test_button: '测试 API 连接',
+        api_test_hint: '测试前请填写 Endpoint 与 Key',
+        api_test_testing: '正在测试连接...',
+        api_test_need_endpoint: '请先填写 API Endpoint。',
+        api_test_success_title: '连接成功',
+        api_test_models_prefix: '返回的模型列表（前 ',
+        api_test_models_mid: ' 个）：',
+        api_test_models_total: ' / 共 ',
+        api_test_more_omitted: '（更多模型已省略）',
+        api_test_models_empty_note: '（/v1/models 未返回模型数组，但 HTTP 200 成功）',
+        api_test_failed_title: '连接测试失败',
+        api_test_tested_urls_label: '测试地址：',
+        api_test_suggest_title: '建议检查项：',
+        api_test_models_failed_prefix: '首选测试 (/v1/models) 失败：',
+        api_test_unknown_error: '未知错误',
+        api_test_fallback_success: '备选测试（非流式 chat）✅ 成功',
+        api_test_fallback_success_choice: '（收到回复结构）',
+        api_test_fallback_success_ok: '（200 OK）',
+        api_test_fallback_failed_prefix: '备选测试（非流式 chat）❌ ',
+        api_test_timeout_msg: '请求超时（{s}s）',
+        api_test_typeerror_prefix: 'TypeError: ',
+        api_test_typeerror_cors_note: 'TypeError (很可能 CORS 或网络不通)',
+        api_test_timeout_short: '超时',
+        api_test_suggest_localhost: '地址使用了 localhost / 127.0.0.1，浏览器跨域限制严格。建议用局域网 IP、域名，或开发时用 --disable-web-security（仅测试）。',
+        api_test_suggest_cors: '检查是否为 CORS 问题：TypeError/Failed to fetch 通常表示目标服务器未返回正确的 Access-Control-Allow-Origin 头（需 nginx/反代配置允许你的来源 + Authorization 头）。',
+        api_test_suggest_endpoint_path: '确认 Endpoint 路径正确（很多服务需要 /v1 或无 /v1 直接根路径）。可尝试在输入框粘贴完整 https://.../v1 形式。',
+        api_test_suggest_apikey: 'API Key 格式：sk-... （或 provider 特定前缀），并确保 Key 有调用 /models 与 chat 权限。',
+        api_test_suggest_stream: '服务器是否开启了 streaming 支持？本次测试主要用 stream:false + /models，非流式若也失败则基本不可用。',
+        api_test_suggest_gateway: '502/503/504：检查 nginx / 反向代理 / 后端服务是否正常运行。',
         settings_context_length: '上下文长度（消息条数）',
         settings_max_tokens: '最大回复 Token 数',
         settings_temperature: '温度',
@@ -2038,6 +2075,35 @@ var i18n = {
         settings_api_presets_short: '推薦：',
         settings_api_key: 'API 金鑰',
         settings_model: '模型',
+        api_test_button: '測試 API 連接',
+        api_test_hint: '測試前請填寫 Endpoint 與 Key',
+        api_test_testing: '正在測試連接...',
+        api_test_need_endpoint: '請先填寫 API Endpoint。',
+        api_test_success_title: '連接成功',
+        api_test_models_prefix: '返回的模型列表（前 ',
+        api_test_models_mid: ' 個）：',
+        api_test_models_total: ' / 共 ',
+        api_test_more_omitted: '（更多模型已省略）',
+        api_test_models_empty_note: '（/v1/models 未返回模型陣列，但 HTTP 200 成功）',
+        api_test_failed_title: '連接測試失敗',
+        api_test_tested_urls_label: '測試地址：',
+        api_test_suggest_title: '建議檢查項目：',
+        api_test_models_failed_prefix: '首選測試 (/v1/models) 失敗：',
+        api_test_unknown_error: '未知錯誤',
+        api_test_fallback_success: '備選測試（非串流 chat）✅ 成功',
+        api_test_fallback_success_choice: '（收到回覆結構）',
+        api_test_fallback_success_ok: '（200 OK）',
+        api_test_fallback_failed_prefix: '備選測試（非串流 chat）❌ ',
+        api_test_timeout_msg: '請求逾時（{s}s）',
+        api_test_typeerror_prefix: 'TypeError: ',
+        api_test_typeerror_cors_note: 'TypeError（很可能是 CORS 或網路不通）',
+        api_test_timeout_short: '逾時',
+        api_test_suggest_localhost: '地址使用了 localhost / 127.0.0.1，瀏覽器跨域限制嚴格。建議用區域網路 IP、網域名稱，或開發時用 --disable-web-security（僅測試）。',
+        api_test_suggest_cors: '檢查是否為 CORS 問題：TypeError/Failed to fetch 通常表示目標伺服器未返回正確的 Access-Control-Allow-Origin 頭（需 nginx/反代配置允許你的來源 + Authorization 頭）。',
+        api_test_suggest_endpoint_path: '確認 Endpoint 路徑正確（很多服務需要 /v1 或無 /v1 直接根路徑）。可嘗試在輸入框貼上完整 https://.../v1 形式。',
+        api_test_suggest_apikey: 'API Key 格式：sk-... （或 provider 特定前綴），並確保 Key 有呼叫 /models 與 chat 權限。',
+        api_test_suggest_stream: '伺服器是否開啟了 streaming 支援？本次測試主要用 stream:false + /models，非串流若也失敗則基本不可用。',
+        api_test_suggest_gateway: '502/503/504：檢查 nginx / 反向代理 / 後端服務是否正常運作。',
         settings_context_length: '上下文長度（訊息條數）',
         settings_max_tokens: '最大回覆 Token 數',
         settings_temperature: '溫度',
@@ -2321,6 +2387,35 @@ var i18n = {
         settings_api_presets_short: 'Recommended:',
         settings_api_key: 'API Key',
         settings_model: 'Model',
+        api_test_button: 'Test API Connection',
+        api_test_hint: 'Fill Endpoint and Key before testing',
+        api_test_testing: 'Testing API connection...',
+        api_test_need_endpoint: 'Please fill in the API Endpoint first.',
+        api_test_success_title: 'Connection successful',
+        api_test_models_prefix: 'Returned model list (first ',
+        api_test_models_mid: '):',
+        api_test_models_total: ' / total ',
+        api_test_more_omitted: '(more models omitted)',
+        api_test_models_empty_note: '(/v1/models did not return a model array, but HTTP 200 succeeded)',
+        api_test_failed_title: 'Connection test failed',
+        api_test_tested_urls_label: 'Tested endpoints:',
+        api_test_suggest_title: 'Suggested checks:',
+        api_test_models_failed_prefix: 'Preferred test (/v1/models) failed: ',
+        api_test_unknown_error: 'Unknown error',
+        api_test_fallback_success: 'Fallback test (non-streaming chat) ✅ succeeded',
+        api_test_fallback_success_choice: ' (received reply structure)',
+        api_test_fallback_success_ok: ' (200 OK)',
+        api_test_fallback_failed_prefix: 'Fallback test (non-streaming chat) ❌ ',
+        api_test_timeout_msg: 'Request timed out ({s}s)',
+        api_test_typeerror_prefix: 'TypeError: ',
+        api_test_typeerror_cors_note: 'TypeError (likely CORS or network unreachable)',
+        api_test_timeout_short: 'timed out',
+        api_test_suggest_localhost: 'The address uses localhost / 127.0.0.1. Browser cross-origin restrictions are strict. Try a LAN IP, a domain name, or --disable-web-security flag during development (testing only).',
+        api_test_suggest_cors: 'Possible CORS issue: TypeError / "Failed to fetch" usually means the target server did not return proper Access-Control-Allow-Origin headers (configure your nginx/reverse proxy to allow your origin + Authorization header).',
+        api_test_suggest_endpoint_path: 'Verify the Endpoint path. Many services require /v1 or a root path without /v1. Try pasting the full https://.../v1 form in the input.',
+        api_test_suggest_apikey: 'API Key format should be sk-... (or provider-specific prefix). Ensure the key has permission to call /models and chat endpoints.',
+        api_test_suggest_stream: 'Does the server support streaming? This test primarily uses stream:false + /v1/models. If non-streaming also fails the server may not be usable.',
+        api_test_suggest_gateway: '502/503/504: Check your nginx / reverse proxy / backend service status.',
         settings_context_length: 'Context Length (messages)',
         settings_max_tokens: 'Max Response Tokens',
         settings_temperature: 'Temperature',
@@ -3615,6 +3710,206 @@ function defaultSettings() {
         }
     };
 })();
+
+// ==================== API 连接测试（新增） ====================
+window.testMainApiConnection = function() {
+    var epEl = document.getElementById('apiEndpoint');
+    var keyEl = document.getElementById('apiKey');
+    var modelEl = document.getElementById('modelName');
+    var resultEl = document.getElementById('apiTestResult');
+
+    var rawEndpoint = epEl ? epEl.value.trim() : '';
+    var apiKey = keyEl ? keyEl.value.trim() : '';
+    var model = modelEl ? modelEl.value.trim() || 'gpt-3.5-turbo' : 'gpt-3.5-turbo';
+
+    if (!resultEl) return;
+
+    resultEl.classList.remove('hidden');
+    resultEl.innerHTML = '<span class="text-amber-400">' + t('api_test_testing') + '</span>';
+
+    if (!rawEndpoint) {
+        resultEl.innerHTML = '<div class="text-red-400">' + t('api_test_need_endpoint') + '</div>';
+        return;
+    }
+
+    // 派生 models 测试地址（首选）
+    function deriveModelsEndpoint(raw) {
+        var u = String(raw || '').trim().replace(/\/+$/, '');
+        u = u.replace(/\/chat\/completions$/i, '');
+        // 如果已经是版本化路径（/v1 /v0 /openai/v1 等），直接加 /models
+        if (/\/(v[0-9]+|openai\/v1|paas\/v[0-9]+)$/.test(u)) {
+            return u + '/models';
+        }
+        // 否则补 /v1 再加 /models（DeepSeek 等无版本输入）
+        if (!/\/v[0-9]/.test(u) && !u.includes('/paas/')) {
+            u += '/v1';
+        }
+        return u + '/models';
+    }
+
+    var modelsUrl = deriveModelsEndpoint(rawEndpoint);
+    var chatUrl = normalizeApiEndpoint(rawEndpoint); // 用于备选 chat 测试
+
+    var TIMEOUT_MS = 15000;
+
+    function buildErrorHtml(title, details, suggestions, testedUrls) {
+        var html = '<div class="bg-red-500/10 border border-red-500/30 rounded-lg p-2 text-red-300">';
+        html += '<div class="font-semibold mb-1">❌ ' + title + '</div>';
+        if (details) html += '<div class="text-red-200/90 mb-1 whitespace-pre-wrap">' + details + '</div>';
+        if (testedUrls && testedUrls.length) {
+            html += '<div class="text-[10px] text-red-300/70 mb-1">' + t('api_test_tested_urls_label') + '<br>' + testedUrls.map(function(x){return '• ' + x;}).join('<br>') + '</div>';
+        }
+        if (suggestions && suggestions.length) {
+            html += '<div class="mt-1 text-amber-300/90"><div class="font-medium text-[10px] mb-0.5">' + t('api_test_suggest_title') + '</div><ul class="list-disc ml-4 text-[10px] leading-snug">';
+            suggestions.forEach(function(s) { html += '<li>' + s + '</li>'; });
+            html += '</ul></div>';
+        }
+        html += '</div>';
+        return html;
+    }
+
+    function buildSuccessHtml(models) {
+        var html = '<div class="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-2 text-emerald-300">';
+        html += '<div class="font-semibold">✅ ' + t('api_test_success_title') + '</div>';
+        if (models && models.length > 0) {
+            var shown = models.slice(0, 12);
+            var total = models.length;
+            var shownCount = shown.length;
+            var listLabel;
+            if (total > shownCount) {
+                // e.g. "返回的模型列表（前 5 个 / 共 30 个）： " or English "Returned model list (first 5 of 30):"
+                listLabel = t('api_test_models_prefix') + shownCount + t('api_test_models_total') + total + t('api_test_models_mid');
+            } else {
+                listLabel = t('api_test_models_prefix') + shownCount + t('api_test_models_mid');
+            }
+            html += '<div class="mt-1 text-emerald-200/90">' + listLabel + '</div>';
+            html += '<div class="mt-0.5 text-xs text-emerald-100/80 font-mono break-all">' + shown.join(', ') + '</div>';
+            if (total > 12) html += '<div class="text-[10px] text-emerald-300/60 mt-0.5">' + t('api_test_more_omitted') + '</div>';
+        } else {
+            html += '<div class="text-emerald-200/80 text-xs mt-1">' + t('api_test_models_empty_note') + '</div>';
+        }
+        html += '</div>';
+        return html;
+    }
+
+    async function doFetchWithTimeout(url, options) {
+        var controller = new AbortController();
+        var timer = setTimeout(function() { controller.abort(); }, TIMEOUT_MS);
+        try {
+            var resp = await fetch(url, Object.assign({}, options, { signal: controller.signal }));
+            clearTimeout(timer);
+            return resp;
+        } catch (e) {
+            clearTimeout(timer);
+            throw e;
+        }
+    }
+
+    (async function runTest() {
+        var tested = [];
+        var modelsList = [];
+        var modelsErrInfo = '';
+
+        // ===== 首选测试：GET /v1/models =====
+        try {
+            tested.push('GET ' + modelsUrl);
+            var headers = {};
+            if (apiKey) headers['Authorization'] = 'Bearer ' + apiKey;
+            var resp = await doFetchWithTimeout(modelsUrl, { method: 'GET', headers: headers });
+
+            if (resp.ok) {
+                var data = await resp.json().catch(function(){ return {}; });
+                if (data && Array.isArray(data.data)) {
+                    modelsList = data.data.map(function(m){ return m && (m.id || m.name) || String(m); }).filter(Boolean);
+                } else if (Array.isArray(data)) {
+                    modelsList = data.map(function(m){ return m && (m.id || m.name) || String(m); }).filter(Boolean);
+                }
+                resultEl.innerHTML = buildSuccessHtml(modelsList);
+                return; // 成功就结束，不再跑备选
+            } else {
+                // HTTP 错误
+                var text = await resp.text().catch(function(){return '';});
+                var errMsg = 'HTTP ' + resp.status;
+                try {
+                    var j = JSON.parse(text);
+                    if (j.error && j.error.message) errMsg += ' — ' + j.error.message;
+                    else if (j.message) errMsg += ' — ' + j.message;
+                } catch (e) {
+                    if (text) errMsg += ' — ' + text.slice(0, 300);
+                }
+                modelsErrInfo = errMsg;
+            }
+        } catch (e) {
+            var secs = (TIMEOUT_MS / 1000);
+            if (e.name === 'AbortError') {
+                modelsErrInfo = t('api_test_timeout_msg').replace('{s}', secs);
+            } else if (e instanceof TypeError) {
+                modelsErrInfo = t('api_test_typeerror_prefix') + (e.message || 'Failed to fetch');
+            } else {
+                modelsErrInfo = (e.message || String(e));
+            }
+        }
+
+        // ===== 失败时做备选/进阶测试：极简非流式 chat =====
+        var chatResult = '';
+        try {
+            tested.push('POST ' + chatUrl + ' (stream:false)');
+            var chatPayload = {
+                model: model,
+                messages: [{ role: 'user', content: 'hi' }],
+                max_tokens: 1,
+                temperature: 0,
+                stream: false
+            };
+            var chatHeaders = { 'Content-Type': 'application/json' };
+            if (apiKey) chatHeaders['Authorization'] = 'Bearer ' + apiKey;
+
+            var chatResp = await doFetchWithTimeout(chatUrl, {
+                method: 'POST',
+                headers: chatHeaders,
+                body: JSON.stringify(chatPayload)
+            });
+
+            if (chatResp.ok) {
+                var chatData = await chatResp.json().catch(function(){return {};});
+                var hasChoice = chatData && chatData.choices && chatData.choices[0];
+                var suffix = hasChoice ? t('api_test_fallback_success_choice') : t('api_test_fallback_success_ok');
+                chatResult = t('api_test_fallback_success') + suffix;
+            } else {
+                var ctext = await chatResp.text().catch(function(){return '';});
+                var cmsg = 'HTTP ' + chatResp.status;
+                try {
+                    var cj = JSON.parse(ctext);
+                    if (cj.error && cj.error.message) cmsg += ' — ' + cj.error.message;
+                } catch(e){}
+                chatResult = t('api_test_fallback_failed_prefix') + cmsg;
+            }
+        } catch (e2) {
+            var c2 = '';
+            if (e2.name === 'AbortError') c2 = t('api_test_timeout_short');
+            else if (e2 instanceof TypeError) c2 = t('api_test_typeerror_cors_note');
+            else c2 = e2.message || String(e2);
+            chatResult = t('api_test_fallback_failed_prefix') + c2;
+        }
+
+        // 构建失败报告
+        var suggestions = [];
+        var rawEpLower = rawEndpoint.toLowerCase();
+        if (rawEpLower.includes('localhost') || rawEpLower.includes('127.0.0.1')) {
+            suggestions.push(t('api_test_suggest_localhost'));
+        }
+        suggestions.push(t('api_test_suggest_cors'));
+        suggestions.push(t('api_test_suggest_endpoint_path'));
+        suggestions.push(t('api_test_suggest_apikey'));
+        suggestions.push(t('api_test_suggest_stream'));
+        suggestions.push(t('api_test_suggest_gateway'));
+
+        var detail = t('api_test_models_failed_prefix') + (modelsErrInfo || t('api_test_unknown_error'));
+        if (chatResult) detail += '\n' + chatResult;
+
+        resultEl.innerHTML = buildErrorHtml(t('api_test_failed_title'), detail, suggestions, tested);
+    })();
+};
 
 // 统一的 API Endpoint 规范化（支持 DeepSeek 无 /v1、智谱 /v4、Groq /openai/v1 等各种变体）
 function normalizeApiEndpoint(raw) {
