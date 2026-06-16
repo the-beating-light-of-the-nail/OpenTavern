@@ -632,6 +632,24 @@ body.low-power .modal-overlay {
                 <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider" data-i18n="settings_model">Model</label>
                 <input id="modelName" type="text" class="w-full mt-1.5 px-3 py-2.5 glass rounded-xl text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all" placeholder="gpt-4o">
             </div>
+
+            <!-- WebLLM 本地后端选择（零加载：仅用户在设置中主动切换并确认后才动态 import） -->
+            <div>
+                <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider" data-i18n="settings_inference_backend">推理后端</label>
+                <select id="inferenceBackend" class="w-full mt-1.5 px-3 py-2.5 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all">
+                    <option value="remote-api" data-i18n="settings_backend_remote">远程 API（OpenAI 兼容）</option>
+                    <option value="webllm" data-i18n="settings_backend_webllm">浏览器本地 (WebLLM)</option>
+                </select>
+                <div id="webllmModelSection" class="mt-2 hidden">
+                    <label class="text-xs font-semibold text-zinc-400" data-i18n="settings_webllm_model">本地模型</label>
+                    <select id="webllmModel" class="w-full mt-1 px-3 py-2 text-sm glass rounded-xl text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30">
+                        <option value="Llama-3.2-1B-Instruct-q4f16_1-MLC">Llama-3.2-1B (q4f16，约 850 MB)</option>
+                        <option value="Llama-3.2-3B-Instruct-q4f16_1-MLC">Llama-3.2-3B (q4f16，约 2100 MB)</option>
+                    </select>
+                    <p class="mt-1 text-[10px] text-amber-400/90" data-i18n="settings_webllm_hint">首次使用需下载模型文件，建议 Wi-Fi 环境。需要浏览器支持 WebGPU。</p>
+                </div>
+            </div>
+
             <hr class="border-white/5">
             <div>
                 <div class="flex items-center justify-between mb-1.5">
@@ -813,6 +831,69 @@ body.low-power .modal-overlay {
                 </label>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- ===== WebLLM 切换确认对话框（关键：仅在用户主动选择“浏览器本地 (WebLLM)”时立即弹出） -->
+<div id="webllmConfirmModal" class="modal-overlay fixed inset-0 z-[120] flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" id="webllmConfirmBackdrop"></div>
+    <div class="relative glass rounded-3xl w-[92%] max-w-md p-6 shadow-2xl animate-fade-in">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="text-2xl">⚠️</span>
+            <h2 class="text-lg font-bold text-zinc-100" data-i18n="webllm_confirm_title">启用浏览器本地模型</h2>
+        </div>
+        <div class="text-sm text-zinc-300 space-y-2 mb-4 leading-relaxed" id="webllmConfirmText">
+            <!-- JS 动态填充带具体模型大小的警告文字 -->
+        </div>
+
+        <!-- 模型选择区：用户第一次选择本地后端时在这里明确挑选要下载的模型 -->
+        <div id="webllmConfirmChoice" class="mb-4">
+            <div class="text-xs font-semibold text-zinc-400 mb-2">请选择要下载的模型：</div>
+            <div class="grid grid-cols-1 gap-2">
+                <button id="webllmChoice1B"
+                        class="w-full px-3 py-2.5 rounded-xl text-sm font-medium glass border border-white/10 hover:border-amber-500/40 active:bg-amber-500/10 text-left transition-all">
+                    <div class="font-semibold">Llama-3.2-1B (q4f16)</div>
+                    <div class="text-[11px] text-amber-300">约 850 MB · 适合大多数设备</div>
+                </button>
+                <button id="webllmChoice3B"
+                        class="w-full px-3 py-2.5 rounded-xl text-sm font-medium glass border border-white/10 hover:border-amber-500/40 active:bg-amber-500/10 text-left transition-all">
+                    <div class="font-semibold">Llama-3.2-3B (q4f16)</div>
+                    <div class="text-[11px] text-amber-300">约 2100 MB · 需要较强 GPU</div>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex gap-3" id="webllmConfirmGenericActions">
+            <button id="webllmConfirmCancelBtn"
+                    class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/15 text-zinc-300 transition-all"
+                    data-i18n="webllm_confirm_cancel">取消</button>
+            <button id="webllmConfirmContinueBtn"
+                    class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-white shadow-lg shadow-amber-500/20 transition-all"
+                    data-i18n="webllm_confirm_continue">继续</button>
+        </div>
+        <p class="mt-3 text-[10px] text-center text-zinc-500" data-i18n="webllm_confirm_note">点击对应模型按钮后将开始下载（首次较慢，建议 Wi-Fi）。</p>
+    </div>
+</div>
+
+<!-- ===== WebLLM 初始化进度 Modal（下载/编译阶段反馈） -->
+<div id="webllmProgressModal" class="modal-overlay fixed inset-0 z-[130] flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" id="webllmProgressBackdrop"></div>
+    <div class="relative glass rounded-3xl w-[92%] max-w-md p-6 shadow-2xl animate-fade-in">
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-bold text-zinc-100" data-i18n="webllm_progress_title">正在初始化浏览器本地模型</h2>
+            <button id="webllmProgressCloseBtn" class="w-8 h-8 rounded-full glass flex items-center justify-center text-zinc-400 hover:text-zinc-200 transition-colors text-xl leading-none">&times;</button>
+        </div>
+        <div id="webllmProgressStatus" class="text-sm text-zinc-300 mb-2">准备中...</div>
+        <div class="h-2.5 bg-white/10 rounded-full overflow-hidden mb-1">
+            <div id="webllmProgressBar" class="h-full bg-amber-500 transition-all duration-200" style="width:0%"></div>
+        </div>
+        <div id="webllmProgressPercent" class="text-xs text-right text-zinc-400 tabular-nums">0%</div>
+        <div class="mt-4 flex gap-2">
+            <button id="webllmProgressCancelBtn"
+                    class="flex-1 px-4 py-2 rounded-xl text-sm font-semibold bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 transition-all"
+                    data-i18n="webllm_progress_cancel">取消并切回远程 API</button>
+        </div>
+        <p class="mt-2 text-[10px] text-zinc-500" data-i18n="webllm_progress_hint">请保持页面打开，不要锁屏或切换标签页过久。下载完成后即可使用本地推理。</p>
     </div>
 </div>
 
@@ -1705,6 +1786,318 @@ const _BASE_PARTS = [
 
 const BASE_SYSTEM_PROMPT = _BASE_PARTS.join('\n');
 
+// ==================== WebLLM 懒加载相关（关键：页面初始化时绝不执行任何 import 或初始化） ====================
+let webllmEngine = null;           // MLCEngine 实例，只有在用户确认后才创建
+let webllmCurrentModel = null;     // 当前已加载的模型 ID
+const WEBLLM_MODEL_INFO = {
+    'Llama-3.2-1B-Instruct-q4f16_1-MLC': { label: 'Llama-3.2-1B', sizeMB: 850 },
+    'Llama-3.2-3B-Instruct-q4f16_1-MLC': { label: 'Llama-3.2-3B', sizeMB: 2100 }
+};
+
+function isWebLLMBackend() {
+    return !!(state && state.settings && state.settings.inferenceBackend === 'webllm');
+}
+
+function getWebLLMModelId() {
+    if (!state || !state.settings) return 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
+    return state.settings.webllmModel || 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
+}
+
+// 动态加载 WebLLM 并初始化引擎（仅在“继续”后调用）
+async function ensureWebLLMEngine(modelId, onProgress) {
+    if (webllmEngine && webllmCurrentModel === modelId) {
+        if (onProgress) onProgress({ progress: 1, text: '已就绪' });
+        return webllmEngine;
+    }
+
+    // 动态 import —— 这是唯一允许出现 WebLLM 代码执行的地方（用户主动触发后）
+    let webllm;
+    try {
+        webllm = await import('https://esm.run/@mlc-ai/web-llm');
+    } catch (e) {
+        throw new Error('无法加载 WebLLM 库：' + (e.message || e));
+    }
+
+    const CreateMLCEngine = webllm.CreateMLCEngine;
+    if (!CreateMLCEngine) {
+        throw new Error('WebLLM 库加载异常（缺少 CreateMLCEngine）');
+    }
+
+    // WebGPU 能力检测（必须）
+    if (!navigator.gpu) {
+        throw new Error('NO_WEBGPU');
+    }
+
+    // 进度回调包装
+    function progressCallback(report) {
+        if (onProgress) onProgress(report);
+    }
+
+    try {
+        const engine = await CreateMLCEngine(modelId, {
+            initProgressCallback: progressCallback
+        });
+        webllmEngine = engine;
+        webllmCurrentModel = modelId;
+
+        // 成功后更新 state（以便 UI 感知）
+        if (state && state.settings) {
+            state.settings.inferenceBackend = 'webllm';
+            state.settings.webllmModel = modelId;
+        }
+        return engine;
+    } catch (e) {
+        webllmEngine = null;
+        webllmCurrentModel = null;
+        throw e;
+    }
+}
+
+// ===== WebLLM 确认对话框 + 初始化启动 + 进度处理（严格按需求） =====
+// - 第一次选择“浏览器本地”后端时：立即弹出重要确认，并在确认框内明确让用户选择要下载哪个模型。
+// - 之后在设置中更换模型时：再次弹出（带新模型大小的）确认 + 进度条弹窗。
+var _prevWebLLMSelectValueForConfirm = 'remote-api';
+
+function showWebLLMConfirmDialog(onContinue, onCancel) {
+    // 兼容旧调用（后端切换时使用）。新逻辑优先用 showWebLLMConfirmForModel
+    showWebLLMConfirmForModel(null, false, onContinue, onCancel);
+}
+
+/**
+ * 新的、更明确的确认函数
+ * @param {string|null} targetModelId - 要下载的特定模型（null 时读取当前设置/选择器）
+ * @param {boolean} isModelSwitch - 是否是“更换模型”场景（文字略有不同）
+ * @param {Function} onContinue - 继续后的回调（可选，内部通常直接启动下载）
+ * @param {Function} onCancel
+ */
+function showWebLLMConfirmForModel(targetModelId, isModelSwitch, onContinue, onCancel) {
+    var modal = document.getElementById('webllmConfirmModal');
+    var backdrop = document.getElementById('webllmConfirmBackdrop');
+    var cancelBtn = document.getElementById('webllmConfirmCancelBtn');
+    var continueBtn = document.getElementById('webllmConfirmContinueBtn');
+    var textEl = document.getElementById('webllmConfirmText');
+    var choiceContainer = document.getElementById('webllmConfirmChoice');
+    var genericActions = document.getElementById('webllmConfirmGenericActions');
+
+    if (!modal) {
+        // 极端兜底
+        var m = targetModelId || (state && state.settings && state.settings.webllmModel) || 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
+        var i = WEBLLM_MODEL_INFO[m] || {sizeMB: 1000};
+        var s = i.sizeMB >= 1000 ? (i.sizeMB/1000).toFixed(1)+' GB' : i.sizeMB+' MB';
+        if (confirm('注意：启用/更换浏览器本地模型需要下载模型文件（约 ' + s + '）。\n首次下载会使用较多流量，建议在 Wi-Fi 环境下进行。\n是否继续？')) {
+            if (onContinue) onContinue(m);
+        } else {
+            if (onCancel) onCancel();
+        }
+        return;
+    }
+
+    // 确定目标模型
+    var modelId = targetModelId ||
+        (document.getElementById('webllmModel') && document.getElementById('webllmModel').value) ||
+        (state && state.settings && state.settings.webllmModel) ||
+        'Llama-3.2-1B-Instruct-q4f16_1-MLC';
+
+    var info = WEBLLM_MODEL_INFO[modelId] || { label: '所选模型', sizeMB: 1000 };
+    var sizeText = info.sizeMB >= 1000 ? (info.sizeMB / 1000).toFixed(1) + ' GB' : info.sizeMB + ' MB';
+
+    // 设置警告文字
+    if (textEl) {
+        if (isModelSwitch) {
+            textEl.innerHTML =
+                '注意：更换浏览器本地模型需要下载新模型文件（约 <strong>' + sizeText + '</strong>）。<br>' +
+                '首次下载会使用较多流量，建议在 Wi-Fi 环境下进行。<br>' +
+                '是否继续下载「' + (info.label || modelId) + '」？';
+        } else {
+            textEl.innerHTML =
+                '注意：启用浏览器本地模型需要下载模型文件（约 <strong>' + sizeText + '</strong>）。<br>' +
+                '首次下载会使用较多流量，建议在 Wi-Fi 环境下进行。<br>' +
+                '是否继续？';
+        }
+    }
+
+    // 显示/隐藏选择按钮区域
+    var isFirstEnable = !isModelSwitch;
+
+    if (choiceContainer) {
+        choiceContainer.style.display = isFirstEnable ? '' : 'none';
+    }
+    if (genericActions) {
+        genericActions.style.display = isFirstEnable ? 'none' : 'flex';
+    }
+
+    modal.classList.remove('hidden');
+
+    // 清理函数
+    function cleanup() {
+        modal.classList.add('hidden');
+        if (cancelBtn) cancelBtn.onclick = null;
+        if (continueBtn) continueBtn.onclick = null;
+        if (backdrop) backdrop.onclick = null;
+
+        // 清理两个模型选择按钮
+        var b1 = document.getElementById('webllmChoice1B');
+        var b2 = document.getElementById('webllmChoice3B');
+        if (b1) b1.onclick = null;
+        if (b2) b2.onclick = null;
+    }
+
+    // 取消（通用）
+    if (cancelBtn) {
+        cancelBtn.onclick = function() {
+            cleanup();
+            if (onCancel) onCancel();
+        };
+    }
+    if (backdrop) {
+        backdrop.onclick = function() {
+            cleanup();
+            if (onCancel) onCancel();
+        };
+    }
+
+    // 通用 continue（主要用于“更换模型”场景）
+    if (continueBtn) {
+        continueBtn.onclick = function() {
+            cleanup();
+            // 使用传入的目标模型
+            var chosen = modelId;
+            if (onContinue) onContinue(chosen);
+            else {
+                // 默认行为：设置并启动
+                if (state && state.settings) {
+                    state.settings.inferenceBackend = 'webllm';
+                    state.settings.webllmModel = chosen;
+                }
+                persistState();
+                startWebLLMInitialization(chosen);
+            }
+        };
+    }
+
+    // 仅在“首次启用”时显示明确的模型选择按钮（用户必须在这里挑一个）
+    if (isFirstEnable) {
+        var btn1B = document.getElementById('webllmChoice1B');
+        var btn3B = document.getElementById('webllmChoice3B');
+
+        var doChoose = function(chosenModel) {
+            cleanup();
+            // 同步到设置里的 model select（如果开着的话）和 state
+            var picker = document.getElementById('webllmModel');
+            if (picker) picker.value = chosenModel;
+            if (state && state.settings) {
+                state.settings.inferenceBackend = 'webllm';
+                state.settings.webllmModel = chosenModel;
+            }
+            persistState();
+
+            // 立即开始下载这个模型 + 打开进度条
+            startWebLLMInitialization(chosenModel);
+            if (onContinue) onContinue(chosenModel);
+        };
+
+        if (btn1B) btn1B.onclick = function() { doChoose('Llama-3.2-1B-Instruct-q4f16_1-MLC'); };
+        if (btn3B) btn3B.onclick = function() { doChoose('Llama-3.2-3B-Instruct-q4f16_1-MLC'); };
+    }
+}
+
+function startWebLLMInitialization(forcedModelId) {
+    var progressModal = document.getElementById('webllmProgressModal');
+    var progressBar = document.getElementById('webllmProgressBar');
+    var progressStatus = document.getElementById('webllmProgressStatus');
+    var progressPercent = document.getElementById('webllmProgressPercent');
+    var cancelBtn = document.getElementById('webllmProgressCancelBtn');
+    var closeBtn = document.getElementById('webllmProgressCloseBtn');
+    var backdrop = document.getElementById('webllmProgressBackdrop');
+
+    if (!progressModal) {
+        // 极简 fallback
+        var model = forcedModelId || getWebLLMModelId();
+        ensureWebLLMEngine(model).then(function() {
+            alert(t('webllm_init_success').replace('{model}', model));
+        }).catch(function(e) {
+            alert((t('webllm_init_failed') || 'Failed: {msg}').replace('{msg}', e.message || e));
+            if (state && state.settings) state.settings.inferenceBackend = 'remote-api';
+        });
+        return;
+    }
+
+    // 重置 UI
+    if (progressBar) progressBar.style.width = '0%';
+    if (progressPercent) progressPercent.textContent = '0%';
+    if (progressStatus) progressStatus.textContent = '正在准备下载...';
+    progressModal.classList.remove('hidden');
+
+    var modelId = forcedModelId || getWebLLMModelId();
+    var info = WEBLLM_MODEL_INFO[modelId] || { label: modelId, sizeMB: 0 };
+    var abortedByUser = false;
+
+    function updateProgress(report) {
+        if (!progressModal || progressModal.classList.contains('hidden')) return;
+        var pct = Math.max(0, Math.min(100, Math.round((report.progress || 0) * 100)));
+        if (progressBar) progressBar.style.width = pct + '%';
+        if (progressPercent) progressPercent.textContent = pct + '%';
+        var txt = report.text || (pct < 100 ? '下载/初始化中...' : '完成');
+        if (progressStatus) progressStatus.textContent = txt + ' (' + info.label + ')';
+    }
+
+    function finish(success, errMsg) {
+        // 关闭进度
+        progressModal.classList.add('hidden');
+        if (cancelBtn) cancelBtn.onclick = null;
+        if (closeBtn) closeBtn.onclick = null;
+        if (backdrop) backdrop.onclick = null;
+
+        if (!success) {
+            // 失败：回退 backend
+            if (state && state.settings) {
+                state.settings.inferenceBackend = 'remote-api';
+            }
+            persistState();
+            var msg = (t('webllm_init_failed') || '本地模型初始化失败：{msg}。已自动切回远程 API。')
+                .replace('{msg}', errMsg || '未知错误');
+            alert(msg);
+        } else {
+            // 成功提示（可选，非阻塞）
+            // 可以不弹，用 console 或小 toast，这里用简单 alert 让用户知道
+            try {
+                // 轻提示
+                var okMsg = t('webllm_init_success').replace('{model}', info.label);
+                // 为了不打扰，用 console + 临时小提示（如果有输入区）
+                console.log('[WebLLM]', okMsg);
+            } catch (e) {}
+        }
+    }
+
+    ensureWebLLMEngine(modelId, updateProgress).then(function() {
+        finish(true);
+    }).catch(function(e) {
+        if (abortedByUser) return;
+        var reason = (e && e.message === 'NO_WEBGPU') ? t('webllm_init_no_webgpu') : (e && e.message) || String(e);
+        finish(false, reason);
+    });
+
+    // 用户取消
+    function doCancel() {
+        abortedByUser = true;
+        // 尝试中断（WebLLM 目前没有公开可靠的全局 abort，这里仅标记并回退）
+        progressModal.classList.add('hidden');
+        if (state && state.settings) {
+            state.settings.inferenceBackend = 'remote-api';
+        }
+        persistState();
+        webllmEngine = null;
+        webllmCurrentModel = null;
+        if (cancelBtn) cancelBtn.onclick = null;
+        if (closeBtn) closeBtn.onclick = null;
+        if (backdrop) backdrop.onclick = null;
+    }
+
+    if (cancelBtn) cancelBtn.onclick = doCancel;
+    if (closeBtn) closeBtn.onclick = doCancel;
+    if (backdrop) backdrop.onclick = doCancel;
+}
+
 // ==================== i18n ====================
 var i18n = {
     'zh-CN': {
@@ -1948,6 +2341,21 @@ var i18n = {
         wi_budget_warning_dismiss: '知道了',
         settings_low_power_label: '效能模式（减少视觉效果以降低手机发热）',
         settings_low_power_hint: '开启后暂停背景 WebGL 动画、关闭玻璃模糊（backdrop-filter），并精简部分过渡动画。可显著降低手机 GPU/CPU 负载与发热。随时可关闭，不影响聊天功能。',
+        settings_inference_backend: '推理后端',
+        settings_backend_remote: '远程 API（OpenAI 兼容）',
+        settings_backend_webllm: '浏览器本地 (WebLLM)',
+        settings_webllm_model: '本地模型',
+        settings_webllm_hint: '首次使用需下载模型文件，建议 Wi-Fi 环境。需要浏览器支持 WebGPU。',
+        webllm_confirm_title: '启用浏览器本地模型',
+        webllm_confirm_cancel: '取消',
+        webllm_confirm_continue: '继续',
+        webllm_confirm_note: '点击「继续」后将开始下载模型文件（首次较慢）。',
+        webllm_progress_title: '正在初始化浏览器本地模型',
+        webllm_progress_cancel: '取消并切回远程 API',
+        webllm_progress_hint: '请保持页面打开，不要锁屏或切换标签页过久。下载完成后即可使用本地推理。',
+        webllm_init_no_webgpu: '当前浏览器不支持 WebGPU（推荐 Chrome / Edge 最新版）。无法使用本地模型，请切换回远程 API。',
+        webllm_init_failed: '本地模型初始化失败：{msg}。已自动切回远程 API。',
+        webllm_init_success: '本地模型已就绪（{model}）。',
         settings_summarize_api_title: '总结 API 设置（Summarization API）',
         settings_summarize_use_main: '使用主 API 进行总结（推荐大多数用户）',
         settings_summarize_api_endpoint: 'API Endpoint',
@@ -2307,6 +2715,21 @@ var i18n = {
         wi_budget_warning_dismiss: '知道了',
         settings_low_power_label: '效能模式（減少視覺效果以降低手機發熱）',
         settings_low_power_hint: '開啟後暫停背景 WebGL 動畫、關閉玻璃模糊（backdrop-filter），並精簡部分過渡動畫。可顯著降低手機 GPU/CPU 負載與發熱。隨時可關閉，不影響聊天功能。',
+        settings_inference_backend: '推理後端',
+        settings_backend_remote: '遠端 API（OpenAI 相容）',
+        settings_backend_webllm: '瀏覽器本地 (WebLLM)',
+        settings_webllm_model: '本地模型',
+        settings_webllm_hint: '首次使用需下載模型檔案，建議 Wi-Fi 環境。需要瀏覽器支援 WebGPU。',
+        webllm_confirm_title: '啟用瀏覽器本地模型',
+        webllm_confirm_cancel: '取消',
+        webllm_confirm_continue: '繼續',
+        webllm_confirm_note: '點擊「繼續」後將開始下載模型檔案（首次較慢）。',
+        webllm_progress_title: '正在初始化瀏覽器本地模型',
+        webllm_progress_cancel: '取消並切回遠端 API',
+        webllm_progress_hint: '請保持頁面開啟，不要鎖屏或切換標籤頁過久。下載完成後即可使用本地推理。',
+        webllm_init_no_webgpu: '目前瀏覽器不支援 WebGPU（推薦 Chrome / Edge 最新版）。無法使用本地模型，請切換回遠端 API。',
+        webllm_init_failed: '本地模型初始化失敗：{msg}。已自動切回遠端 API。',
+        webllm_init_success: '本地模型已就緒（{model}）。',
         settings_summarize_api_title: '總結 API 設定（Summarization API）',
         settings_summarize_use_main: '使用主 API 進行總結（推薦大多數用戶）',
         settings_summarize_api_endpoint: 'API Endpoint',
@@ -2618,6 +3041,21 @@ var i18n = {
         wi_budget_warning_dismiss: 'Dismiss',
         settings_low_power_label: 'Performance Mode (reduce visual effects to lower phone heat)',
         settings_low_power_hint: 'Pauses the animated WebGL background, disables glass blur (backdrop-filter), and reduces heavy transitions/animations. Significantly lowers mobile GPU/CPU load and heat. Can be turned off anytime; does not affect chat, summaries, or any functionality.',
+        settings_inference_backend: 'Inference Backend',
+        settings_backend_remote: 'Remote API (OpenAI compatible)',
+        settings_backend_webllm: 'Browser Local (WebLLM)',
+        settings_webllm_model: 'Local Model',
+        settings_webllm_hint: 'First use requires downloading model files. Use Wi-Fi. Requires WebGPU support in browser.',
+        webllm_confirm_title: 'Enable Browser Local Model',
+        webllm_confirm_cancel: 'Cancel',
+        webllm_confirm_continue: 'Continue',
+        webllm_confirm_note: 'Clicking Continue will start downloading the model (slower on first run).',
+        webllm_progress_title: 'Initializing Browser Local Model',
+        webllm_progress_cancel: 'Cancel and revert to Remote API',
+        webllm_progress_hint: 'Keep the page open. Avoid locking screen or leaving the tab for too long. Inference will be available after download.',
+        webllm_init_no_webgpu: 'Your browser does not support WebGPU (latest Chrome/Edge recommended). Cannot use local model. Reverted to remote API.',
+        webllm_init_failed: 'Local model initialization failed: {msg}. Automatically reverted to remote API.',
+        webllm_init_success: 'Local model ready ({model}).',
         settings_summarize_api_title: 'Summarization API Settings',
         settings_summarize_use_main: 'Use main API for summarization (recommended for most users)',
         settings_summarize_api_endpoint: 'API Endpoint',
@@ -3671,7 +4109,11 @@ function defaultSettings() {
         summarizeUseMainAPI: true,
         summarizeApiEndpoint: '',
         summarizeApiKey: '',
-        summarizeModel: 'deepseek-chat'
+        summarizeModel: 'deepseek-chat',
+
+        // WebLLM 本地推理后端（仅在用户主动选择并确认后才加载）
+        inferenceBackend: 'remote-api',
+        webllmModel: 'Llama-3.2-1B-Instruct-q4f16_1-MLC'
     };
 }
 
@@ -6998,6 +7440,11 @@ function processTimedEffects(conv, activatedEntries) {
 // ==================== API Client ====================
 function streamChat(onToken, onComplete, onError) {
     var settings = state.settings;
+    if (isWebLLMBackend()) {
+        // 理论上不应该走到这里（调用方已分支），但作为保险直接走本地
+        streamChatWebLLM(onToken, onComplete, onError);
+        return;
+    }
     if (!settings.apiEndpoint || !settings.apiKey) {
         onError(new Error(t('no_api_error')));
         return;
@@ -7105,12 +7552,84 @@ function streamChat(onToken, onComplete, onError) {
     });
 }
 
+// ==================== WebLLM 本地生成（仅在 ensure 成功后调用） ====================
+async function streamChatWebLLM(onToken, onComplete, onError) {
+    var modelId = getWebLLMModelId();
+    if (!webllmEngine || webllmCurrentModel !== modelId) {
+        onError(new Error('本地引擎未就绪，请在设置中重新初始化 WebLLM 模型'));
+        return;
+    }
+
+    var messages;
+    try {
+        messages = buildMessagesForAPI();
+    } catch (err) {
+        console.error('buildMessagesForAPI failed:', err);
+        state.isGenerating = false;
+        appStore.notify('isGenerating');
+        onError(new Error('构建提示词时出错：' + (err.message || err)));
+        return;
+    }
+
+    state.isGenerating = true;
+    appStore.notify('isGenerating');
+
+    // WebLLM 使用与远程相同的消息格式
+    var settings = state.settings;
+    var req = {
+        messages: messages,
+        max_tokens: settings.maxTokens || 1024,
+        temperature: typeof settings.temperature === 'number' ? settings.temperature : 0.7,
+        top_p: typeof settings.topP === 'number' ? settings.topP : 0.9,
+        stream: true
+    };
+
+    // 用于停止
+    var aborted = false;
+    state._webllmAbort = function() { aborted = true; };
+
+    try {
+        // stream: true 返回 async iterable
+        const stream = await webllmEngine.chat.completions.create(req);
+        var fullContent = '';
+
+        for await (const chunk of stream) {
+            if (aborted) break;
+            var delta = chunk && chunk.choices && chunk.choices[0] && chunk.choices[0].delta;
+            var contentDelta = delta && delta.content;
+            if (contentDelta) {
+                fullContent += contentDelta;
+                onToken(contentDelta, fullContent);
+            }
+        }
+
+        state.isGenerating = false;
+        appStore.notify('isGenerating');
+        state._webllmAbort = null;
+        onComplete(fullContent || '');
+    } catch (e) {
+        state.isGenerating = false;
+        appStore.notify('isGenerating');
+        state._webllmAbort = null;
+        if (aborted || (e && e.name === 'AbortError')) {
+            onComplete(fullContent || '');
+        } else {
+            onError(e);
+        }
+    }
+}
+
 function stopGeneration() {
     if (state.abortController) {
         state.abortController.abort();
         state.abortController = null;
         state.isGenerating = false;
         appStore.notify('isGenerating');
+    }
+    // WebLLM 停止
+    if (state._webllmAbort) {
+        try { state._webllmAbort(); } catch (e) {}
+        state._webllmAbort = null;
     }
 }
 
@@ -10031,9 +10550,12 @@ function renderAll() {
 }
 
 function updateInputState() {
+    var useLocal = isWebLLMBackend();
     var hasApiKey = !!(state.settings.apiKey && state.settings.apiEndpoint);
-    dom.messageInput.disabled = !hasApiKey || state.isGenerating;
-    dom.sendBtn.disabled = !hasApiKey || state.isGenerating;
+    // 本地 WebLLM 模式不需要远程 API Key
+    var canSend = useLocal || hasApiKey;
+    dom.messageInput.disabled = !canSend || state.isGenerating;
+    dom.sendBtn.disabled = !canSend || state.isGenerating;
     if (state.isGenerating) {
         dom.stopBtn.classList.remove('hidden');
         dom.sendBtn.classList.add('hidden');
@@ -10041,7 +10563,7 @@ function updateInputState() {
         dom.stopBtn.classList.add('hidden');
         dom.sendBtn.classList.remove('hidden');
     }
-    if (!hasApiKey && !state.isGenerating) {
+    if (!canSend && !state.isGenerating) {
         dom.messageInput.placeholder = t('input_placeholder_no_api');
     } else if (state.isGenerating) {
         dom.messageInput.placeholder = t('input_placeholder_waiting');
@@ -10236,23 +10758,28 @@ function regenerateMessage(actualIdx) {
         conv._nextGroupSpeaker = mentioned || getNextGroupSpeaker(conv);
     }
 
-    streamChat(
-        function onToken(token, fullContent) {
-            var streamingEl = document.getElementById('streamingContent');
-            if (streamingEl) {
-                streamingEl.innerHTML = highlightDialogue(fullContent);
-            } else {
-                var div = document.createElement('div');
-                div.id = 'streamingMsg';
-                div.className = 'msg-assistant flex justify-start msg-enter';
-                div.innerHTML = '<div class="max-w-[80%]"><p class="text-[10px] text-zinc-500 mb-1 ml-1 font-medium">' +
-                    escapeHtml(getCurrentGeneratingSpeakerName(conv)) +
-                    '</p><div class="msg-bubble typing-cursor" id="streamingContent">' +
-                    highlightDialogue(fullContent) + '</div></div>';
-                dom.messagesContainer.appendChild(div);
-            }
-            dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
-        },
+    // 再生也走相同后端分支
+    if (isWebLLMBackend()) {
+        (async function() {
+            try {
+                await ensureWebLLMEngine(getWebLLMModelId());
+                streamChatWebLLM(
+                    function onToken(token, fullContent) {
+                        var streamingEl = document.getElementById('streamingContent');
+                        if (streamingEl) {
+                            streamingEl.innerHTML = highlightDialogue(fullContent);
+                        } else {
+                            var div = document.createElement('div');
+                            div.id = 'streamingMsg';
+                            div.className = 'msg-assistant flex justify-start msg-enter';
+                            div.innerHTML = '<div class="max-w-[80%]"><p class="text-[10px] text-zinc-500 mb-1 ml-1 font-medium">' +
+                                escapeHtml(getCurrentGeneratingSpeakerName(conv)) +
+                                '</p><div class="msg-bubble typing-cursor" id="streamingContent">' +
+                                highlightDialogue(fullContent) + '</div></div>';
+                            dom.messagesContainer.appendChild(div);
+                        }
+                        dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+                    },
         function onComplete(fullContent) {
             var streamingEl = document.getElementById('streamingMsg');
             if (streamingEl) streamingEl.remove();
@@ -10295,8 +10822,71 @@ function regenerateMessage(actualIdx) {
             renderMessagesOnly();
             alert('Error: ' + (err.message || err));
         }
-    );
-    updateInputState();
+                );
+            } catch (e) {
+                state.isGenerating = false;
+                appStore.notify('isGenerating');
+                renderMessagesOnly();
+                alert('Error: ' + (e.message || e));
+            }
+            updateInputState();
+        })();
+    } else {
+        streamChat(
+            function onToken(token, fullContent) {
+                var streamingEl = document.getElementById('streamingContent');
+                if (streamingEl) {
+                    streamingEl.innerHTML = highlightDialogue(fullContent);
+                } else {
+                    var div = document.createElement('div');
+                    div.id = 'streamingMsg';
+                    div.className = 'msg-assistant flex justify-start msg-enter';
+                    div.innerHTML = '<div class="max-w-[80%]"><p class="text-[10px] text-zinc-500 mb-1 ml-1 font-medium">' +
+                        escapeHtml(getCurrentGeneratingSpeakerName(conv)) +
+                        '</p><div class="msg-bubble typing-cursor" id="streamingContent">' +
+                        highlightDialogue(fullContent) + '</div></div>';
+                    dom.messagesContainer.appendChild(div);
+                }
+                dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+            },
+            function onComplete(fullContent) {
+                var streamingEl = document.getElementById('streamingMsg');
+                if (streamingEl) streamingEl.remove();
+                var c = getActiveConv();
+                if (c && fullContent) {
+                    var speakerForMsg = isGroupChat(c) 
+                        ? (c._nextGroupSpeaker ? c._nextGroupSpeaker.name : getCurrentGeneratingSpeakerName(c))
+                        : null;
+                    var pushObj = { role: 'assistant', content: fullContent };
+                    if (speakerForMsg) pushObj.speaker = speakerForMsg;
+                    c.messages.push(pushObj);
+                    c.updated = Date.now();
+                    if (isGroupChat(c)) {
+                        c._nextGroupSpeaker = getNextGroupSpeaker(c);
+                    } else {
+                        delete c._nextGroupSpeaker;
+                    }
+                    persistState();
+                }
+                state.isGenerating = false;
+                appStore.notify('isGenerating');
+                appendFinalAssistantMessage(c, fullContent);
+                renderTokenBar();
+                if (state.settings.summaryEnabled) {
+                    setTimeout(function() { autoSummarize(); }, 500);
+                }
+            },
+            function onError(err) {
+                var streamingEl = document.getElementById('streamingMsg');
+                if (streamingEl) streamingEl.remove();
+                state.isGenerating = false;
+                appStore.notify('isGenerating');
+                renderMessagesOnly();
+                alert('Error: ' + (err.message || err));
+            }
+        );
+        updateInputState();
+    }
 }
 
 function copyMessageText(text) {
@@ -10451,8 +11041,16 @@ function sendMessage() {
     persistState();
     requestFullRender();
 
-    streamChat(
-        function onToken(token, fullContent) {
+    // ===== 后端分支：WebLLM 本地 vs 远程 API（严格零加载：只有用户在设置确认后才可能进入本地路径） =====
+    var useLocal = isWebLLMBackend();
+
+    if (useLocal) {
+        (async function() {
+            try {
+                var modelId = getWebLLMModelId();
+                await ensureWebLLMEngine(modelId, function(p) { console.log('[WebLLM progress]', Math.round((p.progress || 0) * 100) + '%', p.text || ''); });
+                streamChatWebLLM(
+                    function onToken(token, fullContent) {
             var streamingEl = document.getElementById('streamingContent');
             if (streamingEl) {
                 streamingEl.innerHTML = highlightDialogue(fullContent);
@@ -10510,8 +11108,75 @@ function sendMessage() {
             renderMessagesOnly();
             alert('Error: ' + (err.message || err));
         }
-    );
-    updateInputState();
+                );
+            } catch (e) {
+                state.isGenerating = false;
+                appStore.notify('isGenerating');
+                renderMessagesOnly();
+                var msg = (e && e.message === 'NO_WEBGPU') ? (t('webllm_init_no_webgpu') || '需要 WebGPU 支持') : (e && e.message) || String(e);
+                alert('本地模型错误: ' + msg);
+                if (state && state.settings) state.settings.inferenceBackend = 'remote-api';
+                persistState();
+            }
+            updateInputState();
+        })();
+    } else {
+        // 远程 API 原路径
+        streamChat(
+            function onToken(token, fullContent) {
+                var streamingEl = document.getElementById('streamingContent');
+                if (streamingEl) {
+                    streamingEl.innerHTML = highlightDialogue(fullContent);
+                } else {
+                    var div = document.createElement('div');
+                    div.id = 'streamingMsg';
+                    div.className = 'msg-assistant flex justify-start msg-enter';
+                    div.innerHTML = '<div class="max-w-[80%]"><p class="text-[10px] text-zinc-500 mb-1 ml-1 font-medium">' +
+                        escapeHtml(getCurrentGeneratingSpeakerName(conv)) +
+                        '</p><div class="msg-bubble typing-cursor" id="streamingContent">' +
+                        highlightDialogue(fullContent) + '</div></div>';
+                    dom.messagesContainer.appendChild(div);
+                }
+                dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+            },
+            function onComplete(fullContent) {
+                var streamingEl = document.getElementById('streamingMsg');
+                if (streamingEl) streamingEl.remove();
+                var c = getActiveConv();
+                if (c && fullContent) {
+                    var speakerForMsg = isGroupChat(c) 
+                        ? (c._nextGroupSpeaker ? c._nextGroupSpeaker.name : getCurrentGeneratingSpeakerName(c))
+                        : null;
+                    var pushObj = { role: 'assistant', content: fullContent };
+                    if (speakerForMsg) pushObj.speaker = speakerForMsg;
+                    c.messages.push(pushObj);
+                    c.updated = Date.now();
+                    if (isGroupChat(c)) {
+                        c._nextGroupSpeaker = getNextGroupSpeaker(c);
+                    } else {
+                        delete c._nextGroupSpeaker;
+                    }
+                    persistState();
+                }
+                state.isGenerating = false;
+                appStore.notify('isGenerating');
+                appendFinalAssistantMessage(c, fullContent);
+                renderTokenBar();
+                if (state.settings.summaryEnabled) {
+                    setTimeout(function() { autoSummarize(); }, 500);
+                }
+            },
+            function onError(err) {
+                var streamingEl = document.getElementById('streamingMsg');
+                if (streamingEl) streamingEl.remove();
+                state.isGenerating = false;
+                appStore.notify('isGenerating');
+                renderMessagesOnly();
+                alert('Error: ' + (err.message || err));
+            }
+        );
+        updateInputState();
+    }
 }
 
 // ==================== Event Bindings ====================
@@ -10726,6 +11391,68 @@ function bindEvents() {
         // Toggle custom section visibility
         toggleSummarizeCustomSection();
 
+        // ===== WebLLM 后端设置（新增） =====
+        var backendSel = document.getElementById('inferenceBackend');
+        var webllmSection = document.getElementById('webllmModelSection');
+        var webllmSel = document.getElementById('webllmModel');
+
+        var currentBackend = state.settings.inferenceBackend || 'remote-api';
+        if (backendSel) backendSel.value = currentBackend;
+
+        var currentModel = state.settings.webllmModel || 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
+        if (webllmSel) webllmSel.value = currentModel;
+
+        function toggleWebLLMSection() {
+            if (webllmSection) {
+                if (backendSel && backendSel.value === 'webllm') {
+                    webllmSection.classList.remove('hidden');
+                } else {
+                    webllmSection.classList.add('hidden');
+                }
+            }
+        }
+        toggleWebLLMSection();
+
+        // 监听后端切换 → 切换到 webllm 时立即弹出重要确认框（并让用户在确认中明确选择要下载哪个模型）
+        if (backendSel) {
+            backendSel.onchange = null; // 避免重复绑定
+            var prevBackend = currentBackend;
+            backendSel.addEventListener('change', function() {
+                toggleWebLLMSection();
+
+                if (this.value === 'webllm' && prevBackend !== 'webllm') {
+                    // 立即弹出（此时 webllmModelSection 已可见，用户可以看到/修改要下载的模型）
+                    // 使用新函数，isModelSwitch=false，让确认框内出现 1B / 3B 两个明确选择按钮
+                    showWebLLMConfirmForModel(null, false, null, function onCancel() {
+                        // 用户取消 → 切回远程
+                        backendSel.value = 'remote-api';
+                        if (webllmSection) webllmSection.classList.add('hidden');
+                        prevBackend = 'remote-api';
+                    });
+                }
+                prevBackend = this.value;
+            });
+        }
+
+        // 监听模型下拉变化：当后端已经是 webllm 时，更换模型要再次弹出进度条确认（下载新模型）
+        if (webllmSel) {
+            webllmSel.onchange = null;
+            webllmSel.addEventListener('change', function() {
+                if (backendSel && backendSel.value === 'webllm') {
+                    var newModel = this.value;
+                    var loaded = webllmCurrentModel;
+
+                    // 只有当和当前已加载的不同，或还没加载时，才弹出确认 + 进度
+                    if (!loaded || loaded !== newModel) {
+                        showWebLLMConfirmForModel(newModel, true, null, function onCancel() {
+                            // 取消更换 → 把下拉切回已加载的模型（或默认）
+                            webllmSel.value = loaded || 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
+                        });
+                    }
+                }
+            });
+        }
+
         // 显示当前存储后端 + 用量（Phase 1 增强）
         const backendEl = document.getElementById('storageBackend');
         const usageRow = document.getElementById('storageUsageRow');
@@ -10865,6 +11592,16 @@ function bindEvents() {
         state.settings.summarizeApiEndpoint = dom.summarizeApiEndpoint.value.trim();
         state.settings.summarizeApiKey = dom.summarizeApiKey.value.trim();
         state.settings.summarizeModel = dom.summarizeModel.value.trim() || 'deepseek-v4-flash';
+
+        // WebLLM 后端（从表单读取）
+        var backendSel2 = document.getElementById('inferenceBackend');
+        var webllmSel2 = document.getElementById('webllmModel');
+        if (backendSel2) {
+            state.settings.inferenceBackend = backendSel2.value || 'remote-api';
+        }
+        if (webllmSel2) {
+            state.settings.webllmModel = webllmSel2.value || 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
+        }
 
         persistState();
         dom.settingsModal.classList.add('hidden');
@@ -11240,7 +11977,8 @@ async function init() {
         switchView('library');
     }
 
-    if (!state.settings.apiKey || !state.settings.apiEndpoint) {
+    var useLocal = isWebLLMBackend();
+    if (!useLocal && (!state.settings.apiKey || !state.settings.apiEndpoint)) {
         dom.messageInput.placeholder = t('input_placeholder_no_api');
         dom.messageInput.disabled = true;
         dom.sendBtn.disabled = true;
