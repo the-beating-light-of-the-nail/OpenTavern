@@ -163,6 +163,7 @@ body {
    No custom highlight on the card itself (only default browser tap flash).
    The × is just the glyph with shadow, no background. */
 .show-delete .char-delete-btn,
+.show-delete .char-img-btn,
 .show-delete button[title*="删除角色卡"],
 .show-delete button[title*="移除角色卡"] {
   opacity: 1 !important;
@@ -178,20 +179,22 @@ body {
    Delete buttons are hidden on mobile via pointer-events:none so they never intercept taps.
    Desktop: group-hover reveals the × and enables pointer-events, allowing deletion. */
 
-/* Base for delete × buttons. pointer-events:none when invisible so taps pass through to the card.
-   Covers both char-delete-btn class and library card delete buttons.
-   Specificity kept low (0-1-1) so .group:hover override below can win. */
+/* Base for card action buttons (delete × and image import). 
+   pointer-events:none when invisible so taps pass through to the card.
+   Hidden by default (opacity-0 via classes), revealed on .group:hover.
+   Covers char-delete-btn, char-img-btn and title-based buttons. */
 .char-delete-btn,
+.char-img-btn,
 button[title="移除角色卡"],
 button[title="删除角色卡"] {
   text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-  font-weight: 700;
   pointer-events: none;
 }
 
-/* On desktop hover, allow delete buttons to receive clicks.
+/* On desktop hover, allow delete buttons (and image buttons for hover reveal) to receive clicks.
    Specificity 0-2-0 beats the 0-1-1 base rule above. */
 .group:hover .char-delete-btn,
+.group:hover .char-img-btn,
 .group:hover button[title="移除角色卡"],
 .group:hover button[title="删除角色卡"] {
   pointer-events: auto;
@@ -223,9 +226,9 @@ button[title="删除角色卡"] {
     .msg-actions { opacity: 1; }
     .msg-action-btn { width: 30px; height: 30px; border-radius: 8px; font-size: 13px; }
 
-    /* Mobile delete buttons: pure × glyph only, hidden on mobile by default (pointer-events:none).
-       Single tap on a card opens chat directly. Default browser tap flash provides feedback.
-       Desktop: delete buttons visible on group-hover with pointer-events:auto. */
+    /* Mobile action buttons on cards (delete + image import): hidden by default via opacity-0 + pointer-events:none.
+       Single tap on card opens chat. Desktop hover (group-hover) reveals them.
+       Pure × for delete; small icon for image import. */
     .char-delete-btn,
     #myCardsGrid .group button[title="移除角色卡"] {
         font-size: 20px !important;
@@ -235,6 +238,17 @@ button[title="删除角色卡"] {
     #myCardsGrid .group button[title="移除角色卡"]:active {
         color: #f87171 !important;
         transform: scale(1.1);
+    }
+    /* Image import icon sizing on mobile */
+    .char-img-btn,
+    #myCardsGrid .group .char-img-btn {
+        font-size: 13px !important;
+        line-height: 1;
+    }
+    .char-img-btn:active,
+    #myCardsGrid .group .char-img-btn:active {
+        color: #fcd34d !important;
+        transform: scale(1.05);
     }
 
     #messagesContainer { padding: 12px 12px; }
@@ -1634,6 +1648,8 @@ body.low-power .modal-overlay {
                 <div id="myCardsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                     <!-- JS populated grid cards -->
                 </div>
+                <!-- Tailwind CDN hint: ensure dynamic button variants are generated -->
+                <span class="hidden opacity-0 md:opacity-0 group-hover:opacity-100 md:group-hover:opacity-100 active:opacity-100 pointer-events-none group-hover:pointer-events-auto active:pointer-events-auto"></span>
                 <!-- Public Cards Grid (hidden by default, same grid style) -->
                 <div id="publicCardsGrid" class="hidden grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                     <!-- JS populated -->
@@ -9277,6 +9293,53 @@ function passesLibraryFilter(card) {
     return true;
 }
 
+function triggerCardImageUpload(char) {
+    if (!char || !char.name) return;
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.style.display = 'none';
+    document.body.appendChild(input);
+    input.onchange = function() {
+        const file = input.files && input.files[0];
+        if (!file) {
+            document.body.removeChild(input);
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            const dataUrl = ev.target.result;
+            const key = (char.name || '').trim().toLowerCase();
+            if (state.characters && state.characters[key]) {
+                state.characters[key].previewImage = dataUrl;
+                persistState(true);
+                if (typeof renderMyCards === 'function') renderMyCards();
+                // Refresh active chat avatars if this card is loaded
+                try {
+                    if (currentCharacterName && currentCharacterName.trim().toLowerCase() === key) {
+                        const chAvatar = document.getElementById('charAvatar');
+                        if (chAvatar) {
+                            chAvatar.innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover rounded-xl" alt="${(char.name || '').replace(/"/g,'&quot;')}">`;
+                            chAvatar.className = 'w-9 h-9 rounded-xl overflow-hidden bg-zinc-900 flex-shrink-0 border border-white/10';
+                        }
+                        const cardAvatar = document.getElementById('charCardAvatar');
+                        if (cardAvatar) {
+                            cardAvatar.innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover rounded-lg" alt="${(char.name || '').replace(/"/g,'&quot;')}">`;
+                            cardAvatar.className = 'w-7 h-7 rounded-lg overflow-hidden bg-zinc-900 flex-shrink-0 border border-white/10';
+                        }
+                    }
+                } catch (e) {}
+            }
+            document.body.removeChild(input);
+        };
+        reader.onerror = function() {
+            try { document.body.removeChild(input); } catch (_) {}
+        };
+        reader.readAsDataURL(file);
+    };
+    input.click();
+}
+
 function renderMyCards() {
     const grid = document.getElementById('myCardsGrid');
     if (!grid) return;
@@ -9324,8 +9387,8 @@ function renderMyCards() {
         const cardEl = document.createElement('div');
         cardEl.className = 'glass rounded-2xl overflow-hidden cursor-pointer hover:bg-white/5 transition-all border border-white/5 hover:border-white/10 flex flex-col group';
 
-        // Preview area 3:4 (top) — relative for absolute delete button
-        // 支持从公共库导入的 previewImage（以及未来可能的自定义头像）
+        // Preview area 3:4 (top) — relative for absolute controls
+        // 支持从公共库导入的 previewImage + 用户自定义上传的图片（data: URL）
         const preview = document.createElement('div');
         const pSrc = char.previewImage || char.avatar;
         const letter = (char.name || '?').charAt(0).toUpperCase();
@@ -9346,17 +9409,27 @@ function renderMyCards() {
             preview.textContent = letter;
         }
 
-        // Remove button (top-right corner)
+        // Top-right controls: image import button (left) + delete button (right)
+        // Image button is always tappable (safe), delete reveals on hover (destructive)
+        const controls = document.createElement('div');
+        controls.className = 'absolute top-1 right-1 flex items-center gap-1 z-10';
+
+        const imgBtn = document.createElement('button');
+        imgBtn.className = 'char-img-btn text-white/70 hover:text-amber-300 active:text-amber-400 text-sm leading-none p-0.5 transition-all opacity-0 md:opacity-0 group-hover:opacity-100 md:group-hover:opacity-100 active:opacity-100 pointer-events-none group-hover:pointer-events-auto active:pointer-events-auto';
+        imgBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+        imgBtn.title = '导入图片';
+        imgBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            triggerCardImageUpload(char);
+        });
+        controls.appendChild(imgBtn);
+
         const delBtn = document.createElement('button');
         // Hidden by default. On desktop: visible and clickable on group-hover.
         // On mobile (touch): pointer-events:none keeps it invisible, single tap on card opens chat.
-        // Pure × only, no background circle. Overlay directly on gradient to avoid seams/gaps.
-        delBtn.className = 'absolute top-1 right-1 text-white/80 hover:text-red-400 active:text-red-500 text-xl font-bold leading-none p-1 z-10 transition-all opacity-0 md:opacity-0 group-hover:opacity-100 md:group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto';
+        delBtn.className = 'char-delete-btn text-white/80 hover:text-red-400 active:text-red-500 text-xl font-bold leading-none p-1 transition-all opacity-0 md:opacity-0 group-hover:opacity-100 md:group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto';
         delBtn.innerHTML = '×';
         delBtn.title = '移除角色卡';
-        // --- Delete button (desktop hover access) ---
-        // Click handled inside the card click handler below (no separate listener needed).
-        // CSS pointer-events:none ensures the invisible button doesn't intercept taps on mobile.
         delBtn.addEventListener('click', (e) => {
             // Only fires on desktop hover (when pointer-events:auto via .group:hover CSS).
             // On mobile, pointer-events:none prevents this handler from ever running.
@@ -9369,7 +9442,9 @@ function renderMyCards() {
             deleteCharacterFromLibrary(key);
             if (typeof renderMyCards === 'function') renderMyCards();
         });
-        preview.appendChild(delBtn);
+        controls.appendChild(delBtn);
+
+        preview.appendChild(controls);
 
         // Name and tags directly below the preview
         const info = document.createElement('div');
@@ -9389,9 +9464,9 @@ function renderMyCards() {
         cardEl.appendChild(info);
 
         cardEl.addEventListener('click', (e) => {
-            // Skip if clicking on the visible delete button (handled by its own listener).
-            // On mobile, the delete button has pointer-events:none so this guard never matches.
-            if (e.target.closest('button[title="移除角色卡"]')) return;
+            // Skip if clicking on the image button or delete button (they have their own handlers).
+            // Image button is safe to tap (opens file picker), delete is hover-only on desktop.
+            if (e.target.closest('.char-img-btn') || e.target.closest('.char-delete-btn') || e.target.closest('button[title="移除角色卡"]')) return;
 
             // Single tap directly opens chat
             loadOrCreateChatForCharacter(char);
@@ -11693,8 +11768,16 @@ function bindEvents() {
         try {
             let json;
             const lowerName = (file.name || '').toLowerCase();
+            let attachedPreview = null;
 
             if (lowerName.endsWith('.png')) {
+                // For PNG cards, also capture the visual image itself as preview (so imported cards show their art)
+                attachedPreview = await new Promise(function(resolve, reject) {
+                    var r = new FileReader();
+                    r.onload = function() { resolve(r.result); };
+                    r.onerror = reject;
+                    r.readAsDataURL(file);
+                });
                 json = await extractCharaFromPng(file);
             } else {
                 // JSON path (original)
@@ -11708,6 +11791,9 @@ function bindEvents() {
             }
 
             var character = importCharacterCard(json);
+            if (attachedPreview) {
+                character.previewImage = attachedPreview;
+            }
             var conv = getActiveConv();
             if (!conv) { newConversation(); conv = getActiveConv(); }
 
