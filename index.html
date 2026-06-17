@@ -668,11 +668,11 @@ body.low-power .modal-overlay {
             <div>
                 <div class="flex items-center justify-between mb-1.5">
                     <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider" data-i18n="settings_context_length">上下文长度（消息条数）</label>
-                    <span id="contextLenVal" class="text-xs text-zinc-500 bg-white/5 px-2 py-0.5 rounded-full">10</span>
+                    <span id="contextLenVal" class="text-xs text-zinc-500 bg-white/5 px-2 py-0.5 rounded-full">20</span>
                 </div>
-                <input type="range" id="contextLength" min="1" max="50" value="10" class="w-full">
+                <input type="range" id="contextLength" min="1" max="50" value="20" class="w-full">
                 <p class="mt-1 text-[10px] text-zinc-500">
-                    建议值：至少设为 <strong>12~20</strong> 以上。数值太小会导致自动总结很难正常工作（需要给最近消息留缓冲空间）。
+                    默认 20 条。建议至少设为 <strong>12~30</strong> 以上。数值太小会导致自动总结很难正常工作（需要给最近消息留缓冲空间）。
                 </p>
             </div>
             <div>
@@ -4503,7 +4503,7 @@ function defaultSettings() {
         apiKey: '',
         saveApiKey: false,
         model: 'gpt-4o',
-        contextLength: 10,
+        contextLength: 20,
         maxTokens: 1024,
         temperature: 0.7,
         topP: 0.9,
@@ -12191,7 +12191,7 @@ function bindEvents() {
         state.settings.apiKey = dom.apiKey.value.trim();
         state.settings.saveApiKey = dom.saveApiKey ? !!dom.saveApiKey.checked : false;
         state.settings.model = dom.modelName.value.trim() || 'gpt-4o';
-        state.settings.contextLength = parseInt(dom.contextLength.value) || 10;
+        state.settings.contextLength = parseInt(dom.contextLength.value) || 20;
         state.settings.maxTokens = parseInt(dom.maxTokens.value) || 1024;
         state.settings.temperature = parseFloat(dom.temperature.value) || 0.7;
         state.settings.topP = parseFloat(dom.topP.value) || 0.9;
