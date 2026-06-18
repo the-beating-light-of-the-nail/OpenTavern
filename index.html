@@ -3547,6 +3547,10 @@ const OPFSStorage = {
     _root: null,
     _fileName: 'opentavern-data.json',
 
+    // 【Fix Bug 2】写锁：串行化所有 OPFS 写入，防止并发 createWritable() 冲突
+    // 多个 saveAll() 调用会排队依次执行，而非同时争抢同一个文件句柄
+    _writeLock: null,
+
     async _getRoot() {
         if (this._root) return this._root;
 
@@ -3596,7 +3600,17 @@ const OPFSStorage = {
         }
     },
 
+    // 【Fix Bug 2】公共入口：通过写锁串行化所有写入，防止并发 writable 冲突
     async saveAll(data) {
+        const doWrite = () => this._doSaveAll(data);
+        // 链式排队：等待上一个写入完成（无论成功或失败），然后执行本次写入
+        const prev = this._writeLock || Promise.resolve();
+        this._writeLock = prev.then(doWrite, doWrite);
+        return this._writeLock;
+    },
+
+    // 实际 OPFS 写入逻辑（由写锁串行调用）
+    async _doSaveAll(data) {
         try {
             const root = await this._getRoot();
             const fileHandle = await root.getFileHandle(this._fileName, { create: true });
@@ -3666,11 +3680,60 @@ var StorageService = {
                msg.includes('exceeded');
     },
 
+    // 【Fix Bug 1】页面关闭前最后防线：缓存最近一次保存的快照，pagehide 时同步写入 LS
+    _lastSaveSnapshot: null,
+    _pageHideInstalled: false,
+
+    _installPageHideHandler() {
+        if (this._pageHideInstalled) return;
+        this._pageHideInstalled = true;
+
+        // pagehide：页面即将被销毁（关闭/导航离开/后台丢弃）
+        // 此时异步操作可能无法完成，但同步 LS 写入是可靠的
+        window.addEventListener('pagehide', () => {
+            // 【Fix Bug 1】同步写入 localStorage 作为安全网
+            // 如果 OPFS/IDB 还没来得及完成写入，至少 LS 有最新快照
+            try {
+                const snapshot = this._lastSaveSnapshot;
+                if (snapshot) {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+                    console.log('[Storage] pagehide: sync-flushed snapshot to localStorage');
+                }
+            } catch (e) {
+                // LS 也满了——此时已无能为力
+            }
+
+            // 同时尝试唤醒持久化（persistState 会尽可能保存到主后端）
+            try {
+                if (typeof persistState === 'function') {
+                    persistState(true);
+                }
+            } catch (_) {}
+        });
+
+        // visibilitychange：页面切换标签页/最小化时立即触发持久化
+        // 这比 450ms debounce 更快响应用户切换行为
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                try {
+                    if (typeof persistState === 'function') {
+                        persistState(true);
+                    }
+                } catch (_) {}
+            }
+        });
+
+        console.log('[Storage] pagehide/visibilitychange persistence handlers installed');
+    },
+
     // 【Storage Fix】主动初始化 OPFS（在 app init 中调用）。失败时永久关闭本会话的 OPFS 尝试
     _opfsFailed: false,
     _opfsFailureReason: null,
 
     async init() {
+        // 【Fix Bug 1】尽早安装 pagehide handler（即使 OPFS 初始化失败也需要）
+        this._installPageHideHandler();
+
         if (!this._useOPFS || this._opfsFailed) return;
 
         // 预检：非安全上下文或 file:// 直接禁用
@@ -3763,12 +3826,15 @@ var StorageService = {
 
     async saveAll(data) {
         let lastErr = null;
+        // 【Fix Bug 3】跟踪是否已展示过配额警告，避免对同一操作多次弹出 alert
+        let quotaAlertShown = false;
 
         // 1. 尝试 OPFS（默认），但跳过已失败的情况
         if (this._useOPFS && !this._opfsFailed) {
             try {
                 await OPFSStorage.saveAll(data);
                 this._lastUsedBackend = 'opfs';
+                this._lastSaveSnapshot = data;  // 【Fix Bug 1】缓存最近一次成功写入的快照
                 // 【Storage Fix】成功后刷新存储显示
                 setTimeout(() => { try { if (typeof updateStorageInfo === 'function') updateStorageInfo(); } catch(_){} }, 60);
                 return;
@@ -3784,9 +3850,11 @@ var StorageService = {
                     this._opfsFailureReason = msg;
                 }
 
+                // 【Fix Bug 3】配额错误不再直接 throw——继续尝试 IDB/LS 降级
                 if (this._isQuotaError(e)) {
                     this._handleQuotaExceeded(e, data);
-                    throw e;
+                    quotaAlertShown = true;
+                    // 不 throw，让代码继续走到 IDB
                 }
             }
         }
@@ -3795,28 +3863,38 @@ var StorageService = {
         try {
             if (typeof this.saveAllToIDB === 'function') {
                 await this.saveAllToIDB(data);
+                this._lastUsedBackend = 'indexeddb';
+                this._lastSaveSnapshot = data;  // 【Fix Bug 1】
                 setTimeout(() => { try { if (typeof updateStorageInfo === 'function') updateStorageInfo(); } catch(_){} }, 60);
                 return;
             }
         } catch (e) {
             lastErr = e;
             console.error('[Storage] IDB saveAllToIDB failed:', e);
+            // 【Fix Bug 3】IDB 配额错误：仍尝试 LS 最后兜底
             if (this._isQuotaError(e)) {
-                this._handleQuotaExceeded(e, data);
-                throw e;
+                if (!quotaAlertShown) {
+                    this._handleQuotaExceeded(e, data);
+                    quotaAlertShown = true;
+                }
+                // 不 throw，继续走到 LS
             }
         }
 
         // 3. 最后 localStorage（容量很小）
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            this._lastUsedBackend = 'localStorage';
+            this._lastSaveSnapshot = data;  // 【Fix Bug 1】
             setTimeout(() => { try { if (typeof updateStorageInfo === 'function') updateStorageInfo(); } catch(_){} }, 60);
             return;
         } catch (e) {
             lastErr = e;
             console.error('[Storage] localStorage save failed:', e);
             if (this._isQuotaError(e)) {
-                this._handleQuotaExceeded(e, data);
+                if (!quotaAlertShown) {
+                    this._handleQuotaExceeded(e, data);
+                }
             }
             throw e || lastErr;
         }
@@ -4615,13 +4693,24 @@ function loadAll() {
 }
 
 function saveAll(data) {
-    // 【Storage Fix】兼容层：尽量走 StorageService（异步 fire-and-forget）
+    // 【Fix Bug 4】兼容层：更新 pagehide 安全快照，然后 fire-and-forget 到主后端
+    // pagehide handler 会在页面关闭时同步刷写快照到 LS，防止数据丢失
     try {
+        // 立即更新快照（同步，确保 pagehide 能拿到最新数据）
+        if (StorageService) {
+            StorageService._lastSaveSnapshot = data;
+        }
+        // 异步写入主后端（OPFS → IDB → LS）
         if (StorageService && typeof StorageService.saveAll === 'function') {
-            StorageService.saveAll(data);
+            StorageService.saveAll(data).catch(function(e) {
+                console.warn('[saveAll compat] async persist failed (may be recovered by pagehide snapshot):', e && e.message);
+            });
             return;
         }
-    } catch (e) {}
+    } catch (e) {
+        console.warn('[saveAll compat] StorageService path failed, falling back to LS:', e && e.message);
+    }
+    // 终极回退：同步写入 localStorage
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
 }
 
@@ -5652,6 +5741,12 @@ function persistState(immediate) {
         charactersMigrated: !!state._charactersMigrated,
         lastSaved: Date.now()                  // 用于双后端冲突解决和判断新鲜度（关键）
     };
+
+    // 【Fix Bug 1】立即缓存快照——即使异步写入尚未完成，pagehide handler
+    // 也能在页面关闭时将此快照同步刷写到 LS，防止数据丢失
+    if (StorageService) {
+        StorageService._lastSaveSnapshot = dataToSave;
+    }
 
     const doPersist = async () => {
         try {
@@ -11166,8 +11261,12 @@ function deleteCharacterFromLibrary(nameOrKey) {
             charactersMigrated: !!state._charactersMigrated,
             lastSaved: Date.now()
         };
+        // 【Fix Bug 1&4】更新快照以便 pagehide 在页面关闭时同步刷写
+        if (StorageService) {
+            StorageService._lastSaveSnapshot = directData;
+        }
         if (StorageService && typeof StorageService.saveAll === 'function') {
-            // 异步但立即触发
+            // 异步但立即触发（OPFS 写锁会串行化并发调用）
             StorageService.saveAll(directData);
         } else {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(directData));
