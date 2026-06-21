@@ -706,8 +706,11 @@ body.low-power .modal-overlay {
                 <textarea id="userDescription" rows="3" class="w-full mt-1.5 px-3 py-2.5 glass rounded-xl text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all resize-none" data-i18n-placeholder="settings_user_description_placeholder"></textarea>
             </div>
             <div>
-                <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider"><span data-i18n="settings_system_prompt">Custom System Prompt</span> <span class="text-zinc-600" data-i18n="settings_system_prompt_hint">(overrides character's system prompt)</span></label>
-                <textarea id="systemPrompt" rows="4" class="w-full mt-1.5 px-3 py-2.5 glass rounded-xl text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all resize-none" data-i18n-placeholder="settings_system_prompt_placeholder"></textarea>
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                    <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider"><span data-i18n="settings_system_prompt">Custom System Prompt</span> <span class="text-zinc-600" data-i18n="settings_system_prompt_hint">(overrides character's system prompt)</span></label>
+                    <button id="fillRoleplayPromptBtn" type="button" class="px-2.5 py-1 text-[11px] rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/20 transition-colors whitespace-nowrap" data-i18n="fill_roleplay_prompt">一键填入角色扮演提示词</button>
+                </div>
+                <textarea id="systemPrompt" rows="4" class="w-full px-3 py-2.5 glass rounded-xl text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all resize-none" data-i18n-placeholder="settings_system_prompt_placeholder"></textarea>
             </div>
             <hr class="border-white/5">
             <!-- 自动总结设置（清晰分离） -->
@@ -2192,6 +2195,7 @@ var i18n = {
         settings_system_prompt: '自定义系统提示词',
         settings_system_prompt_hint: '（覆盖角色卡的系统提示词）',
         settings_system_prompt_placeholder: '可选：自定义系统级指令...',
+        fill_roleplay_prompt: '一键填入角色扮演提示词',
         settings_user_description: '用户设定描述（你的角色/背景设定）',
         settings_user_description_hint: '会作为你的角色信息注入到提示词中（类似角色卡的 Description）。支持 {{char}} / {{user}} 占位符。',
         settings_user_description_placeholder: '例如：你是一个来自现代都市的年轻侦探，擅长逻辑推理与观察...（此内容将注入提示词）',
@@ -2564,6 +2568,7 @@ var i18n = {
         settings_system_prompt: '自訂系統提示詞',
         settings_system_prompt_hint: '（覆蓋角色卡的系統提示詞）',
         settings_system_prompt_placeholder: '可選：自訂系統級指令...',
+        fill_roleplay_prompt: '一鍵填入角色扮演提示詞',
         settings_user_description: '用戶設定描述（你的角色/背景設定）',
         settings_user_description_hint: '會作為你的角色資訊注入到提示詞中（類似角色卡的 Description）。支援 {{char}} / {{user}} 佔位符。',
         settings_user_description_placeholder: '例如：你是一個來自現代都市的年輕偵探，擅長邏輯推理與觀察...（此內容將注入提示詞）',
@@ -2889,6 +2894,7 @@ var i18n = {
         settings_system_prompt: 'Custom System Prompt',
         settings_system_prompt_hint: '(overrides character\'s system prompt)',
         settings_system_prompt_placeholder: 'Optional: Custom system-level instructions...',
+        fill_roleplay_prompt: 'Fill roleplay prompt',
         settings_user_description: 'User Description / Persona',
         settings_user_description_hint: 'This describes your character/background and will be injected into the system prompt (similar to a character\'s Description). Supports {{char}} / {{user}} placeholders.',
         settings_user_description_placeholder: 'e.g. You are a young detective from the modern city, skilled at deduction and observation... (this will be injected into the prompt)',
@@ -6140,14 +6146,8 @@ function buildMessagesForAPI() {
 
     var apiMessages = [];
 
-    // 只有当用户在设置中**手动输入**了自定义系统提示词时，才不注入基础系统指令（BASE_SYSTEM_PROMPT）
-    // 如果用户未设置自定义系统提示词，则始终在角色卡/群组指令前注入 BASE_SYSTEM_PROMPT（风格、角色一致性、格式与长度指导）
-    const hasUserSystemPrompt = !!(state.settings.systemPrompt && state.settings.systemPrompt.trim());
-
+    // 不再自动注入内置角色扮演提示词；仅当用户在设置中手动填写/点击按钮填入后才作为自定义系统提示词发送。
     let finalSystemContent = systemContent || '';
-    if (!hasUserSystemPrompt && typeof BASE_SYSTEM_PROMPT === 'string' && BASE_SYSTEM_PROMPT.length > 50) {
-        finalSystemContent = BASE_SYSTEM_PROMPT + '\n\n' + finalSystemContent;
-    }
 
     if (finalSystemContent) {
         apiMessages.push({ role: 'system', content: finalSystemContent });
@@ -10413,7 +10413,7 @@ function cacheDom() {
         'settingsModal','settingsBackdrop','settingsCloseBtn',
         'apiEndpoint','apiKey','saveApiKey','modelName','contextLength','contextLenVal',
         'maxTokens','maxTokensVal','temperature','tempVal','topP','topPVal',
-        'userName','systemPrompt','userDescription',
+        'userName','systemPrompt','fillRoleplayPromptBtn','userDescription',
         'importModal','importBackdrop','importCloseBtn','importFileInput','importStatus',
         'promptViewerModal','promptViewerBackdrop','promptViewerCloseBtn','promptViewerContent','copyPromptBtn',
         'archiveBtn','tokenInfo','tokenCount','tokenBar','tokenMax','newChatBtn',
@@ -12162,6 +12162,13 @@ function bindEvents() {
         dom.topPVal.textContent = state.settings.topP;
         dom.userName.value = state.settings.userName;
         dom.systemPrompt.value = state.settings.systemPrompt;
+        if (dom.fillRoleplayPromptBtn) {
+            dom.fillRoleplayPromptBtn.onclick = function() {
+                dom.systemPrompt.value = BASE_SYSTEM_PROMPT;
+                state.settings.systemPrompt = BASE_SYSTEM_PROMPT;
+                persistState(true);
+            };
+        }
         if (dom.userDescription) dom.userDescription.value = state.settings.userDescription || '';
         dom.summaryEnabled.checked = state.settings.summaryEnabled !== false;
         if (dom.summaryThreshold) {
