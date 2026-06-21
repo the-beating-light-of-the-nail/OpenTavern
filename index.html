@@ -3686,6 +3686,7 @@ var StorageService = {
     _lastSaveSnapshot: null,
     _pageHideInstalled: false,
     _lastUsedBackend: null,
+    _lastLoadedBackend: null,
     _lastQuotaAlert: 0,
 
     _isQuotaError(e) {
@@ -3835,7 +3836,9 @@ var StorageService = {
         }
     },
 
-    async loadAll() {
+    async loadAll(options = {}) {
+        const shouldSync = options.sync !== false;
+        const shouldReadLegacy = options.includeLegacy !== false;
         const candidates = [];
 
         if (this._useOPFS && !this._opfsFailed) {
@@ -3867,7 +3870,7 @@ var StorageService = {
         const lsData = this._readLocalSnapshot();
         if (lsData) candidates.push({ backend: 'localStorage', data: lsData });
 
-        if (typeof readLegacyIndexedDB === 'function') {
+        if (shouldReadLegacy && typeof readLegacyIndexedDB === 'function') {
             try {
                 const legacy = await readLegacyIndexedDB();
                 if (this._isValidSnapshot(legacy)) candidates.push({ backend: 'legacy-idb', data: legacy });
@@ -3877,13 +3880,14 @@ var StorageService = {
         const picked = this._pickNewest(candidates);
         if (!picked) return null;
 
-        this._lastUsedBackend = picked.backend;
+        this._lastLoadedBackend = picked.backend;
         console.log('[Storage] Loaded newest snapshot from', picked.backend);
-        await this._syncSnapshotToAvailableBackends(picked.data, picked.backend);
+        if (shouldSync) await this._syncSnapshotToAvailableBackends(picked.data, picked.backend);
         return picked.data;
     },
 
     async saveAll(data) {
+        data = this._cloneForPersist(data);
         this._lastSaveSnapshot = data;
         let savedPrimary = false;
         let lastError = null;
@@ -3982,7 +3986,22 @@ var StorageService = {
 
             let appUsed = 0;
             try {
-                const current = await this.loadAll();
+                let current = this._lastSaveSnapshot || null;
+                if (!this._isValidSnapshot(current)) {
+                    const candidates = [];
+                    if (this._useOPFS && !this._opfsFailed) {
+                        const opfsData = await OPFSStorage.loadAll();
+                        if (this._isValidSnapshot(opfsData)) candidates.push({ backend: 'opfs', data: opfsData });
+                    }
+                    if (this._idbAvailable && !this._idbFailed) {
+                        const idbData = await IDBStorage.loadAll();
+                        if (this._isValidSnapshot(idbData)) candidates.push({ backend: 'idb', data: idbData });
+                    }
+                    const lsData = this._readLocalSnapshot();
+                    if (lsData) candidates.push({ backend: 'localStorage', data: lsData });
+                    const picked = this._pickNewest(candidates);
+                    current = picked && picked.data;
+                }
                 if (current) appUsed = new Blob([JSON.stringify(current)]).size || 0;
             } catch (_) {}
 
