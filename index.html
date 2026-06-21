@@ -3442,6 +3442,7 @@ function applyPerformanceMode(enabled) {
 
 var STORAGE_KEY = 'opentavern-data-v1';
 var STORAGE_CLEAR_KEY = 'opentavern-cleared-at';
+var STORAGE_BACKUP_PREFIX = 'opentavern-data-v1-backup-';
 
 // ==================== 存储说明（简化后） ====================
 // OPFS 是主后端（大容量）。
@@ -3704,11 +3705,18 @@ var StorageService = {
                msg.includes('exceeded');
     },
 
-    _isValidSnapshot(data) {
+    _hasUserData(data) {
         return !!(data && (
             Object.keys(data.conversations || {}).length > 0 ||
-            data.lastSaved ||
-            data.settings
+            Object.keys(data.characters || {}).length > 0 ||
+            Object.keys(data.worldBooks || {}).length > 0
+        ));
+    },
+
+    _isValidSnapshot(data) {
+        return !!(data && (
+            this._hasUserData(data) ||
+            (data.settings && Object.keys(data.settings || {}).length > 0)
         ));
     },
 
@@ -3745,10 +3753,9 @@ var StorageService = {
     },
 
     _pickNewest(candidates) {
-        const clearedAt = this._clearMarkerTime();
-        return candidates
-            .filter(c => c && this._isValidSnapshot(c.data))
-            .filter(c => !clearedAt || this._snapshotTime(c.data) >= clearedAt)
+        const valid = candidates.filter(c => c && this._isValidSnapshot(c.data));
+        const withUserData = valid.filter(c => this._hasUserData(c.data));
+        return (withUserData.length ? withUserData : valid)
             .sort((a, b) => this._snapshotTime(b.data) - this._snapshotTime(a.data))[0] || null;
     },
 
@@ -3892,8 +3899,62 @@ var StorageService = {
         return picked.data;
     },
 
+    _isDangerouslyEmptySnapshot(data) {
+        const convs = Object.values((data && data.conversations) || {});
+        const hasChars = Object.keys((data && data.characters) || {}).length > 0;
+        const hasWorldBooks = Object.keys((data && data.worldBooks) || {}).length > 0;
+        if (hasChars || hasWorldBooks) return false;
+        if (convs.length === 0) return true;
+        if (convs.length > 1) return false;
+        const c = convs[0] || {};
+        return (!Array.isArray(c.messages) || c.messages.length === 0) && !c.character && !c.title;
+    },
+
+    async _readNewestStoredSnapshotNoSync() {
+        const candidates = [];
+        try {
+            if (this._useOPFS && !this._opfsFailed) {
+                const d = await OPFSStorage.loadAll();
+                if (this._isValidSnapshot(d)) candidates.push({ backend: 'opfs', data: d });
+            }
+        } catch (_) {}
+        try {
+            if (this._idbAvailable && !this._idbFailed) {
+                const d = await IDBStorage.loadAll();
+                if (this._isValidSnapshot(d)) candidates.push({ backend: 'idb', data: d });
+            }
+        } catch (_) {}
+        const ls = this._readLocalSnapshot();
+        if (ls) candidates.push({ backend: 'localStorage', data: ls });
+        return this._pickNewest(candidates);
+    },
+
+    _saveLocalHistorySnapshot(data) {
+        try {
+            if (!this._isValidSnapshot(data)) return;
+            const raw = JSON.stringify(data);
+            const ts = this._snapshotTime(data) || Date.now();
+            localStorage.setItem(STORAGE_BACKUP_PREFIX + ts, raw);
+            const keys = Object.keys(localStorage)
+                .filter(k => k.startsWith(STORAGE_BACKUP_PREFIX))
+                .sort()
+                .reverse();
+            keys.slice(5).forEach(k => { try { localStorage.removeItem(k); } catch (_) {} });
+        } catch (_) {}
+    },
     async saveAll(data) {
         data = this._cloneForPersist(data);
+
+        const previous = await this._readNewestStoredSnapshotNoSync().catch(() => null);
+        if (previous && previous.data) this._saveLocalHistorySnapshot(previous.data);
+
+        if (this._isDangerouslyEmptySnapshot(data) && previous && this._hasUserData(previous.data)) {
+            console.warn('[Storage] Refusing to overwrite existing user data with an empty startup snapshot.');
+            this._lastSaveSnapshot = previous.data;
+            await this._syncSnapshotToAvailableBackends(previous.data, previous.backend || 'unknown').catch(() => {});
+            return;
+        }
+
         this._lastSaveSnapshot = data;
         let savedPrimary = false;
         let lastError = null;
@@ -4553,6 +4614,26 @@ async function scanAllStorageBackends() {
         }
     } catch (e) { /* ignore */ }
 
+    // localStorage 历史备份槽（防止主快照被新版本误覆盖）
+    try {
+        Object.keys(localStorage)
+            .filter(k => k.startsWith(STORAGE_BACKUP_PREFIX))
+            .forEach(k => {
+                try {
+                    const data = JSON.parse(localStorage.getItem(k));
+                    if (data && (Object.keys(data.conversations || {}).length > 0 || Object.keys(data.characters || {}).length > 0 || Object.keys(data.worldBooks || {}).length > 0 || data.settings)) {
+                        candidates.push({
+                            backend: 'localStorage 历史备份',
+                            data: data,
+                            lastSaved: data.lastSaved || 0,
+                            convCount: Object.keys(data.conversations || {}).length,
+                            charCount: Object.keys(data.characters || {}).length,
+                            wbCount: Object.keys(data.worldBooks || {}).length
+                        });
+                    }
+                } catch (_) {}
+            });
+    } catch (e) { /* ignore */ }
     // 旧版 IndexedDB（只在这里尝试，使用原生 API）
     try {
         const legacy = await readLegacyIndexedDB();
@@ -4568,7 +4649,10 @@ async function scanAllStorageBackends() {
         }
     } catch (e) { /* ignore */ }
 
-    candidates.sort((a, b) => (b.lastSaved || 0) - (a.lastSaved || 0));
+    candidates.forEach(c => {
+        c.hasUserData = !!(c.convCount || c.charCount || c.wbCount);
+    });
+    candidates.sort((a, b) => ((b.hasUserData ? 1 : 0) - (a.hasUserData ? 1 : 0)) || ((b.lastSaved || 0) - (a.lastSaved || 0)));
     return candidates;
 }
 
@@ -5624,8 +5708,8 @@ async function initState() {
     if (!state._charactersMigrated) {
         migrateCharactersToRegistry(state.conversations || {});
         state._charactersMigrated = true;
-        // 持久化标记（以及任何本次迁移新增的卡），让删除操作真正持久
-        if (typeof persistState === 'function') persistState(true);
+        // 只有已有真实数据时才立即持久化迁移标记，避免空启动写入覆盖旧数据。
+        if (StorageService && StorageService._hasUserData && StorageService._hasUserData(state) && typeof persistState === 'function') persistState(true);
     }
 
     // === 更健壮的默认对话处理（防止加载好数据后却被重置为默认） ===
@@ -5652,10 +5736,7 @@ async function initState() {
             state.conversationOrder.unshift(conv.id);
             state.activeConvId = conv.id;
 
-            // 只有真正新建了默认对话，才需要立即落盘一次
-            if (typeof persistState === 'function') {
-                persistState(true);
-            }
+            // 启动阶段创建的空默认对话不立即落盘，避免覆盖用户已有但暂时未读出的数据。
         }
     }
 }
@@ -12453,7 +12534,7 @@ function bindEvents() {
                                 <div>
                                     <span class="font-medium text-blue-300">${cand.backend}</span>
                                     <span class="text-zinc-500 ml-1">${timeStr}</span><br>
-                                    <span class="text-zinc-400">对话 ${cand.convCount} · 角色 ${cand.charCount} · 世界书 ${cand.wbCount}</span>
+                                    <span class="text-zinc-400">${cand.hasUserData ? '' : '空快照 · '}对话 ${cand.convCount} · 角色 ${cand.charCount} · 世界书 ${cand.wbCount}</span>
                                 </div>
                             `;
                             const restoreBtn = document.createElement('button');
