@@ -3587,6 +3587,7 @@ var StorageService = {
     _lastSaveSnapshot: null,
     _pageHideInstalled: false,
     _lastUsedBackend: null,
+    _lastQuotaAlert: 0,
 
     // 统一 Quota 检测
     _isQuotaError(e) {
@@ -3602,7 +3603,7 @@ var StorageService = {
         if (this._pageHideInstalled) return;
         this._pageHideInstalled = true;
 
-        // pagehide：同步把最后快照刷到 LS（最可靠的兜底）
+        // pagehide：尽力同步刷 LS 快照（大数据可能失败，此时依赖 OPFS 最近的异步写入）
         window.addEventListener('pagehide', () => {
             try {
                 const snapshot = this._lastSaveSnapshot;
@@ -3611,7 +3612,7 @@ var StorageService = {
                     console.log('[Storage] pagehide: sync-flushed snapshot to localStorage');
                 }
             } catch (_) {}
-            // 再尽量触发一次异步 persist（可能成功）
+            // 再尽量触发一次异步 persist（走 OPFS 优先）
             try { if (typeof persistState === 'function') persistState(true); } catch (_) {}
         });
 
@@ -3701,29 +3702,18 @@ var StorageService = {
         return null;
     },
 
-    // 保存：**先同步写 localStorage 强快照**（可靠、立即），再尝试 OPFS（大容量）。
-    // 这样即使 OPFS 在手机上 flaky / 慢 / 失败，数据也不会丢。
+    // 保存：OPFS 为主（大容量），失败时才 fallback 到 localStorage。
+    // 避免在 OPFS 可用时因为 LS 配额小（~5-10MB）就误报“存储不足”。
     async saveAll(data) {
         this._lastSaveSnapshot = data;
 
-        // 1. 强快照：总是先同步写入 LS（关键修复手机刷新丢数据）
-        let wroteLS = false;
-        try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            wroteLS = true;
-            this._lastUsedBackend = 'localStorage';
-        } catch (e) {
-            if (this._isQuotaError(e)) {
-                this._handleQuotaExceeded(e, data);
-            }
-            console.error('[Storage] localStorage snapshot write failed:', e);
-        }
-
-        // 2. 尝试 OPFS 作为主存储（不阻塞 LS）
+        // 优先 OPFS
         if (this._useOPFS && !this._opfsFailed) {
             try {
                 await OPFSStorage.saveAll(data);
                 this._lastUsedBackend = 'opfs';
+                // 尽力镜像一份到 LS 作为快照（失败静默，不影响主流程）
+                try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (_) {}
                 setTimeout(() => { try { if (typeof updateStorageInfo === 'function') updateStorageInfo(); } catch(_) {} }, 60);
                 return;
             } catch (e) {
@@ -3735,25 +3725,35 @@ var StorageService = {
                     this._opfsFailureReason = msg;
                 }
                 if (this._isQuotaError(e)) {
-                    this._handleQuotaExceeded(e, data);
+                    // OPFS quota 罕见（通常 GB 级）；fallback 可能救回来
                 }
-                console.warn('[Storage] OPFS save failed (LS snapshot should be safe):', e && e.message);
+                console.warn('[Storage] OPFS save failed, will try localStorage fallback:', e && e.message);
             }
         }
 
-        // LS 已经写过了就刷新显示
-        if (wroteLS) {
+        // Fallback 到 LS（或只有 LS 可用时）
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            this._lastUsedBackend = 'localStorage';
             setTimeout(() => { try { if (typeof updateStorageInfo === 'function') updateStorageInfo(); } catch(_) {} }, 60);
             return;
-        }
-
-        if (!wroteLS) {
-            // 两者都失败才抛
-            throw new Error('Both OPFS and localStorage save failed');
+        } catch (e) {
+            if (this._isQuotaError(e)) {
+                this._handleQuotaExceeded(e, data);
+            }
+            console.error('[Storage] localStorage fallback save also failed:', e);
+            throw e;
         }
     },
 
     _handleQuotaExceeded(err, dataSnapshot) {
+        // 避免重复弹窗（手机上可能频繁触发）
+        const now = Date.now();
+        if (this._lastQuotaAlert && now - this._lastQuotaAlert < 60000) {
+            return;
+        }
+        this._lastQuotaAlert = now;
+
         try {
             const ts = new Date().toISOString().replace(/[:.]/g, '-');
             const backupName = `opentavern-backup-quota-${ts}.json`;
@@ -3795,7 +3795,7 @@ var StorageService = {
                 }
             } catch (_) {}
 
-            // 优先通过实际 load 数据计算“应用大小”（跨 OPFS/LS 都可靠），解决手机上一直 0MB 的问题
+            // 优先通过实际 load 数据计算“应用大小”
             let appUsed = 0;
             try {
                 const current = await this.loadAll();
@@ -3804,19 +3804,29 @@ var StorageService = {
                 }
             } catch (_) {}
 
-            // 仍然尝试走 OPFS 取 quota/originUsed（如果可用）
+            // 总是尽量获取 quota / originUsed（用于百分比和警告，避免 5MB 假基数导致 8MB 就报警）
+            let quota = null;
+            let originUsed = 0;
+            try {
+                if (navigator.storage && navigator.storage.estimate) {
+                    const est = await navigator.storage.estimate();
+                    quota = est.quota || null;
+                    originUsed = est.usage || 0;
+                }
+            } catch (_) {}
+
+            // OPFS 路径：优先用它
             if (this._useOPFS && !this._opfsFailed && typeof OPFSStorage !== 'undefined' && OPFSStorage.getStorageInfo) {
                 try {
                     const info = await OPFSStorage.getStorageInfo();
-                    const originUsed = info.originUsed || 0;
                     const finalUsed = appUsed > 0 ? appUsed : (info.used || 0);
                     return {
                         backend: 'opfs',
                         used: finalUsed,
                         webllmUsed,
                         totalUsed: finalUsed + webllmUsed,
-                        originUsed,
-                        quota: info.quota
+                        originUsed: info.originUsed || originUsed,
+                        quota: info.quota || quota
                     };
                 } catch (_) {}
             }
@@ -3827,22 +3837,19 @@ var StorageService = {
                     used: appUsed,
                     webllmUsed,
                     totalUsed: appUsed + webllmUsed,
-                    originUsed: 0,
-                    quota: null
+                    originUsed,
+                    quota
                 };
             }
 
-            if (navigator.storage && navigator.storage.estimate) {
-                const est = await navigator.storage.estimate();
-                return {
-                    backend: this.getBackend(),
-                    used: 0,
-                    webllmUsed,
-                    totalUsed: (est.usage || 0),
-                    originUsed: est.usage || 0,
-                    quota: est.quota
-                };
-            }
+            return {
+                backend: this.getBackend(),
+                used: 0,
+                webllmUsed,
+                totalUsed: originUsed,
+                originUsed,
+                quota
+            };
         } catch (e) {}
         return { backend: this.getBackend(), used: 0, webllmUsed: 0, totalUsed: 0, originUsed: 0, quota: null };
     },
@@ -4002,7 +4009,7 @@ function updateStorageInfo() {
                 : (appUsedVal + (info.webllmUsed || 0));
             const percent = (info.quota && info.quota > 0)
                 ? Math.min((overallForBar / info.quota) * 100, 100)
-                : Math.min(overallForBar / (5 * 1024 * 1024), 100);
+                : Math.min(overallForBar / (100 * 1024 * 1024), 100);  // 没有 quota 时用更合理的 100MB 基数，避免小数据就报警
             if (bar) bar.style.width = percent + '%';
 
             if (percent > 85) {
@@ -4092,26 +4099,29 @@ function updateStorageStatusUI() {
             } catch (_) {}
         }
         const appMB = (appU / 1024 / 1024).toFixed(1);
-        if (info && info.quota != null && info.quota > 0) {
-            const quotaGB = (info.quota / 1024 / 1024 / 1024).toFixed(1);
-            if (!StorageService._opfsFailed) {
-                tip += ` · 应用 ${appMB} MB / ~${quotaGB} GB`;
+        // 总是显示应用大小
+        if (!StorageService._opfsFailed) {
+            tip += ` · 应用 ${appMB} MB`;
+            if (info.quota && info.quota > 0) {
+                const quotaGB = (info.quota / 1024 / 1024 / 1024).toFixed(1);
+                tip += ` / ~${quotaGB} GB`;
             }
-            if (info.webllmUsed > 0) {
-                const wMB = (info.webllmUsed / 1024 / 1024).toFixed(1);
-                tip += ` · 模型 ${wMB} MB`;
-            }
+        }
+        if (info.webllmUsed > 0) {
+            const wMB = (info.webllmUsed / 1024 / 1024).toFixed(1);
+            tip += ` · 模型 ${wMB} MB`;
+        }
 
-            const overall = (info.originUsed && info.originUsed > 0) ? info.originUsed : (appU + (info.webllmUsed || 0));
-            const percent = Math.min((overall / info.quota) * 100, 100);
-            if (percent > 85) {
-                el.style.background = 'rgba(239,68,68,0.25)';
-                el.style.color = '#f87171';
-                tip += ` (${t('storage_high_warning') || '高使用率'})`;
-            } else if (percent > 75) {
-                el.style.background = 'rgba(245,158,11,0.25)';
-                el.style.color = '#fbbf24';
-            }
+        const overall = (info.originUsed && info.originUsed > 0) ? info.originUsed : (appU + (info.webllmUsed || 0));
+        const q = (info.quota && info.quota > 0) ? info.quota : (100 * 1024 * 1024);
+        const percent = Math.min((overall / q) * 100, 100);
+        if (percent > 85) {
+            el.style.background = 'rgba(239,68,68,0.25)';
+            el.style.color = '#f87171';
+            tip += ` (${t('storage_high_warning') || '高使用率'})`;
+        } else if (percent > 75) {
+            el.style.background = 'rgba(245,158,11,0.25)';
+            el.style.color = '#fbbf24';
         }
         el.title = tip;
     }).catch(() => {
@@ -12075,7 +12085,7 @@ function bindEvents() {
                         : (appUsedVal + (info.webllmUsed || 0));
                     const percent = (info.quota && info.quota > 0)
                         ? Math.min((overall / info.quota) * 100, 100)
-                        : 5;
+                        : Math.min(overall / (100 * 1024 * 1024), 100);
                     if (bar) bar.style.width = percent + '%';
 
                     if (percent > 85) {
