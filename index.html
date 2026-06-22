@@ -661,6 +661,11 @@ body.low-power .modal-overlay {
                         <option value="Llama-3.2-3B-Instruct-q4f16_1-MLC">Llama-3.2-3B (q4f16，约 2100 MB)</option>
                     </select>
                     <p class="mt-1 text-[10px] text-amber-400/90" data-i18n="settings_webllm_hint">首次使用需下载模型文件，建议 Wi-Fi 环境。需要浏览器支持 WebGPU。</p>
+                    <button id="detectWebGPUDeviceBtn" type="button"
+                            class="mt-2 w-full px-3 py-1.5 text-xs rounded-lg bg-white/5 hover:bg-amber-500/20 active:bg-amber-500/30 text-amber-300 hover:text-amber-200 border border-white/10 transition-all font-medium">
+                        检测当前 WebGPU 设备
+                    </button>
+                    <div id="webgpuDeviceInfo" class="mt-1.5 text-[10px] leading-relaxed text-zinc-500"></div>
                 </div>
             </div>
 
@@ -939,11 +944,34 @@ body.low-power .modal-overlay {
         </div>
         <div id="webllmProgressPercent" class="text-xs text-right text-zinc-400 tabular-nums">0%</div>
         <div class="mt-4 flex gap-2">
+            <button id="webllmDetectDeviceBtn"
+                    class="flex-1 px-4 py-2 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/15 text-amber-300 border border-white/10 transition-all">
+                    检测设备</button>
             <button id="webllmProgressCancelBtn"
                     class="flex-1 px-4 py-2 rounded-xl text-sm font-semibold bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 transition-all"
                     data-i18n="webllm_progress_cancel">取消并切回远程 API</button>
         </div>
         <p class="mt-2 text-[10px] text-zinc-500" data-i18n="webllm_progress_hint">请保持页面打开，不要锁屏或切换标签页过久。下载完成后即可使用本地推理。</p>
+    </div>
+</div>
+
+<!-- ===== Glass Alert / Confirm Dialog ===== -->
+<div id="appDialogModal" class="modal-overlay fixed inset-0 z-[220] flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" id="appDialogBackdrop"></div>
+    <div class="relative glass rounded-3xl w-[92%] max-w-md p-6 shadow-2xl animate-fade-in">
+        <div class="flex items-start gap-3 mb-4">
+            <div id="appDialogIcon" class="w-9 h-9 rounded-2xl bg-amber-500/15 text-amber-300 flex items-center justify-center text-lg flex-shrink-0">!</div>
+            <div class="min-w-0">
+                <h2 id="appDialogTitle" class="text-lg font-bold text-zinc-100">提示</h2>
+                <div id="appDialogMessage" class="mt-2 text-sm text-zinc-300 leading-relaxed whitespace-pre-line break-words"></div>
+            </div>
+        </div>
+        <div id="appDialogActions" class="flex gap-3 justify-end">
+            <button id="appDialogCancelBtn"
+                    class="px-4 py-2.5 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/15 text-zinc-300 transition-all">取消</button>
+            <button id="appDialogOkBtn"
+                    class="px-4 py-2.5 rounded-xl text-sm font-semibold bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-white shadow-lg shadow-amber-500/20 transition-all">确定</button>
+        </div>
     </div>
 </div>
 
@@ -1846,6 +1874,224 @@ const WEBLLM_MODEL_INFO = {
     'Llama-3.2-3B-Instruct-q4f16_1-MLC': { label: 'Llama-3.2-3B', sizeMB: 2100 }
 };
 
+
+const nativeAlert = window.alert ? window.alert.bind(window) : null;
+const nativeConfirm = window.confirm ? window.confirm.bind(window) : null;
+let _appDialogQueue = Promise.resolve();
+let webgpuLastDeviceReport = null;
+
+function showGlassDialog(options) {
+    options = options || {};
+    const run = function() {
+        return new Promise(function(resolve) {
+            const modal = document.getElementById('appDialogModal');
+            if (!modal) {
+                if (options.showCancel && nativeConfirm) resolve(nativeConfirm(String(options.message || '')));
+                else { if (nativeAlert) nativeAlert(String(options.message || '')); resolve(true); }
+                return;
+            }
+
+            const backdrop = document.getElementById('appDialogBackdrop');
+            const titleEl = document.getElementById('appDialogTitle');
+            const messageEl = document.getElementById('appDialogMessage');
+            const iconEl = document.getElementById('appDialogIcon');
+            const cancelBtn = document.getElementById('appDialogCancelBtn');
+            const okBtn = document.getElementById('appDialogOkBtn');
+            const showCancel = !!options.showCancel;
+
+            if (titleEl) titleEl.textContent = options.title || (showCancel ? '\u8bf7\u786e\u8ba4' : '\u63d0\u793a');
+            if (messageEl) messageEl.textContent = String(options.message || '');
+            if (iconEl) {
+                iconEl.textContent = options.icon || (showCancel ? '?' : '!');
+                iconEl.className = 'w-9 h-9 rounded-2xl flex items-center justify-center text-lg flex-shrink-0 ' +
+                    (options.danger ? 'bg-red-500/15 text-red-300' : 'bg-amber-500/15 text-amber-300');
+            }
+            if (cancelBtn) {
+                cancelBtn.style.display = showCancel ? '' : 'none';
+                cancelBtn.textContent = options.cancelText || '\u53d6\u6d88';
+            }
+            if (okBtn) {
+                okBtn.textContent = options.okText || '\u786e\u5b9a';
+                okBtn.className = 'px-4 py-2.5 rounded-xl text-sm font-semibold text-white shadow-lg transition-all ' +
+                    (options.danger ? 'bg-red-500 hover:bg-red-400 active:bg-red-600 shadow-red-500/20' : 'bg-amber-500 hover:bg-amber-400 active:bg-amber-600 shadow-amber-500/20');
+            }
+
+            function cleanup(value) {
+                modal.classList.add('hidden');
+                if (cancelBtn) cancelBtn.onclick = null;
+                if (okBtn) okBtn.onclick = null;
+                if (backdrop) backdrop.onclick = null;
+                document.removeEventListener('keydown', onKeyDown, true);
+                resolve(value);
+            }
+            function onKeyDown(ev) {
+                if (ev.key === 'Escape') cleanup(showCancel ? false : true);
+            }
+
+            if (cancelBtn) cancelBtn.onclick = function() { cleanup(false); };
+            if (okBtn) okBtn.onclick = function() { cleanup(true); };
+            if (backdrop) backdrop.onclick = function() { cleanup(showCancel ? false : true); };
+            document.addEventListener('keydown', onKeyDown, true);
+            modal.classList.remove('hidden');
+            setTimeout(function() { try { (showCancel && cancelBtn ? cancelBtn : okBtn).focus(); } catch (_) {} }, 0);
+        });
+    };
+    const next = _appDialogQueue.then(run, run);
+    _appDialogQueue = next.catch(function() {});
+    return next;
+}
+
+function showGlassAlert(message, options) {
+    options = Object.assign({ showCancel: false }, options || {}, { message: message });
+    return showGlassDialog(options);
+}
+
+function showGlassConfirm(message, options) {
+    options = Object.assign({ showCancel: true }, options || {}, { message: message });
+    return showGlassDialog(options);
+}
+
+function getPlainAdapterInfo(info) {
+    if (!info) return {};
+    return {
+        vendor: info.vendor || '',
+        architecture: info.architecture || '',
+        device: info.device || '',
+        description: info.description || ''
+    };
+}
+
+async function requestHighPerformanceWebGPUAdapter() {
+    if (!navigator.gpu) throw new Error('NO_WEBGPU');
+    let adapter = null;
+    try {
+        adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
+    } catch (e) {
+        console.warn('[WebGPU] high-performance requestAdapter failed:', e);
+    }
+    if (!adapter) adapter = await navigator.gpu.requestAdapter();
+    if (!adapter) throw new Error('\u6d4f\u89c8\u5668\u6ca1\u6709\u8fd4\u56de WebGPU Adapter');
+    return adapter;
+}
+
+async function readWebGPUAdapterInfo(adapter) {
+    try {
+        if (adapter && adapter.info) return getPlainAdapterInfo(adapter.info);
+        if (adapter && typeof adapter.requestAdapterInfo === 'function') {
+            return getPlainAdapterInfo(await adapter.requestAdapterInfo());
+        }
+    } catch (e) {
+        console.warn('[WebGPU] adapter info unavailable:', e);
+    }
+    return {};
+}
+
+function formatWebGPUDeviceReport(report) {
+    if (!report) return '';
+    const info = report.info || {};
+    const parts = [];
+    if (info.description) parts.push(info.description);
+    if (info.vendor) parts.push('Vendor: ' + info.vendor);
+    if (info.device) parts.push('Device: ' + info.device);
+    if (info.architecture) parts.push('Arch: ' + info.architecture);
+    if (report.features && report.features.length) parts.push('Features: ' + report.features.slice(0, 8).join(', '));
+    if (report.maxBufferSize) parts.push('Max buffer: ' + Math.round(report.maxBufferSize / 1024 / 1024) + ' MB');
+    return parts.length ? parts.join('\n') : '\u5df2\u83b7\u53d6 WebGPU \u8bbe\u5907\uff0c\u4f46\u6d4f\u89c8\u5668\u672a\u66b4\u9732\u663e\u5361\u540d\u79f0\u3002';
+}
+
+async function detectCurrentWebGPUDevice(options) {
+    options = options || {};
+    const statusEl = options.statusEl || document.getElementById('webgpuDeviceInfo');
+    if (statusEl) {
+        statusEl.textContent = '\u6b63\u5728\u8bf7\u6c42\u9ad8\u6027\u80fd WebGPU adapter...';
+        statusEl.style.color = '#fbbf24';
+    }
+    try {
+        const adapter = await requestHighPerformanceWebGPUAdapter();
+        const info = await readWebGPUAdapterInfo(adapter);
+        const device = await adapter.requestDevice();
+        const report = {
+            info: info,
+            features: Array.from(adapter.features || []),
+            maxBufferSize: adapter.limits && adapter.limits.maxBufferSize,
+            requestedPowerPreference: 'high-performance',
+            detectedAt: Date.now()
+        };
+        try { if (device && typeof device.destroy === 'function') device.destroy(); } catch (_) {}
+        webgpuLastDeviceReport = report;
+        const text = formatWebGPUDeviceReport(report);
+        if (statusEl) {
+            statusEl.textContent = text;
+            statusEl.style.color = '#a1a1aa';
+        }
+        if (options.showDialog) {
+            await showGlassAlert(text, { title: 'WebGPU \u8bbe\u5907\u68c0\u6d4b', icon: 'GPU' });
+        }
+        return report;
+    } catch (e) {
+        const msg = (e && e.message === 'NO_WEBGPU')
+            ? '\u5f53\u524d\u6d4f\u89c8\u5668\u6216\u9875\u9762\u73af\u5883\u4e0d\u652f\u6301 WebGPU\u3002'
+            : ('WebGPU \u8bbe\u5907\u68c0\u6d4b\u5931\u8d25\uff1a' + ((e && e.message) || e));
+        if (statusEl) {
+            statusEl.textContent = msg;
+            statusEl.style.color = '#f87171';
+        }
+        if (options.showDialog) await showGlassAlert(msg, { title: 'WebGPU \u8bbe\u5907\u68c0\u6d4b', danger: true });
+        throw e;
+    }
+}
+
+async function withHighPerformanceWebGPUAdapterRequest(fn) {
+    if (!navigator.gpu || typeof navigator.gpu.requestAdapter !== 'function') {
+        return fn();
+    }
+    const gpu = navigator.gpu;
+    const original = gpu.requestAdapter.bind(gpu);
+    const proto = Object.getPrototypeOf(gpu);
+    const protoDesc = proto ? Object.getOwnPropertyDescriptor(proto, 'requestAdapter') : null;
+    let patchTarget = null;
+    const wrapped = function(options) {
+        const nextOptions = Object.assign({}, options || {}, { powerPreference: 'high-performance' });
+        return original(nextOptions);
+    };
+    try {
+        gpu.requestAdapter = wrapped;
+        if (gpu.requestAdapter === wrapped) patchTarget = 'instance';
+    } catch (_) {}
+    if (!patchTarget) {
+        try {
+            Object.defineProperty(gpu, 'requestAdapter', { configurable: true, value: wrapped });
+            if (gpu.requestAdapter === wrapped) patchTarget = 'instance-define';
+        } catch (_) {}
+    }
+    if (!patchTarget && proto) {
+        try {
+            Object.defineProperty(proto, 'requestAdapter', { configurable: true, value: wrapped });
+            if (gpu.requestAdapter === wrapped) patchTarget = 'prototype';
+        } catch (_) {}
+    }
+    if (!patchTarget) console.warn('[WebGPU] Unable to wrap requestAdapter; browser may ignore high-performance preference patch.');
+    try {
+        return await fn();
+    } finally {
+        if (patchTarget === 'prototype' && proto) {
+            try {
+                if (protoDesc) Object.defineProperty(proto, 'requestAdapter', protoDesc);
+                else delete proto.requestAdapter;
+            } catch (_) {}
+        } else if (patchTarget) {
+            try { gpu.requestAdapter = original; } catch (_) {
+                try { Object.defineProperty(gpu, 'requestAdapter', { configurable: true, value: original }); } catch (__) {}
+            }
+        }
+    }
+}
+
+window.showGlassAlert = showGlassAlert;
+window.showGlassConfirm = showGlassConfirm;
+window.detectCurrentWebGPUDevice = detectCurrentWebGPUDevice;
+window.alert = function(message) { showGlassAlert(message); };
+
 function isWebLLMBackend() {
     return !!(state && state.settings && state.settings.inferenceBackend === 'webllm');
 }
@@ -1886,9 +2132,16 @@ async function ensureWebLLMEngine(modelId, onProgress) {
     }
 
     try {
-        const engine = await CreateMLCEngine(modelId, {
-            initProgressCallback: progressCallback
+        const engine = await withHighPerformanceWebGPUAdapterRequest(function() {
+            return CreateMLCEngine(modelId, {
+                initProgressCallback: progressCallback
+            });
         });
+        try {
+            if (engine && engine.device && engine.device.adapterInfo) {
+                webgpuLastDeviceReport = { info: getPlainAdapterInfo(engine.device.adapterInfo), detectedAt: Date.now(), source: 'WebLLM engine' };
+            }
+        } catch (_) {}
         webllmEngine = engine;
         webllmCurrentModel = modelId;
 
@@ -1936,11 +2189,13 @@ function showWebLLMConfirmForModel(targetModelId, isModelSwitch, onContinue, onC
         var m = targetModelId || (state && state.settings && state.settings.webllmModel) || 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
         var i = WEBLLM_MODEL_INFO[m] || {sizeMB: 1000};
         var s = i.sizeMB >= 1000 ? (i.sizeMB/1000).toFixed(1)+' GB' : i.sizeMB+' MB';
-        if (confirm('注意：启用/更换浏览器本地模型需要下载模型文件（约 ' + s + '）。\n首次下载会使用较多流量，建议在 Wi-Fi 环境下进行。\n是否继续？')) {
-            if (onContinue) onContinue(m);
-        } else {
-            if (onCancel) onCancel();
-        }
+        showGlassConfirm('注意：启用/更换浏览器本地模型需要下载模型文件（约 ' + s + '）。\n首次下载会使用较多流量，建议在 Wi-Fi 环境下进行。\n是否继续？', { title: '\u542f\u7528\u6d4f\u89c8\u5668\u672c\u5730\u6a21\u578b' }).then(function(ok) {
+            if (ok) {
+                if (onContinue) onContinue(m);
+            } else {
+                if (onCancel) onCancel();
+            }
+        });
         return;
     }
 
@@ -2059,6 +2314,7 @@ function startWebLLMInitialization(forcedModelId) {
     var progressStatus = document.getElementById('webllmProgressStatus');
     var progressPercent = document.getElementById('webllmProgressPercent');
     var cancelBtn = document.getElementById('webllmProgressCancelBtn');
+    var detectBtn = document.getElementById('webllmDetectDeviceBtn');
     var closeBtn = document.getElementById('webllmProgressCloseBtn');
     var backdrop = document.getElementById('webllmProgressBackdrop');
     var modelId = forcedModelId || getWebLLMModelId();
@@ -2075,7 +2331,7 @@ function startWebLLMInitialization(forcedModelId) {
                     : ((sInfo.totalUsed != null) ? sInfo.totalUsed : (sInfo.used || 0));
                 const freeEst = sInfo.quota - currentUsed;
                 if (freeEst < needMB * 1024 * 1024 * 1.6) {
-                    const ok = confirm(`存储空间可能不足（模型约 ${needMB}MB）。建议先清理 WebLLM 缓存或导出备份再继续。\n仍要继续吗？`);
+                    const ok = await showGlassConfirm(`\u5b58\u50a8\u7a7a\u95f4\u53ef\u80fd\u4e0d\u8db3\uff08\u6a21\u578b\u7ea6 ${needMB}MB\uff09\u3002\u5efa\u8bae\u5148\u6e05\u7406 WebLLM \u7f13\u5b58\u6216\u5bfc\u51fa\u5907\u4efd\u518d\u7ee7\u7eed\u3002\n\u4ecd\u8981\u7ee7\u7eed\u5417\uff1f`, { title: '\u5b58\u50a8\u7a7a\u95f4\u63d0\u9192' });
                     if (!ok) {
                         if (state && state.settings) state.settings.inferenceBackend = 'remote-api';
                         if (typeof persistState === 'function') await persistState(true);
@@ -2098,6 +2354,7 @@ function startWebLLMInitialization(forcedModelId) {
 
     function cleanupHandlers() {
         if (cancelBtn) cancelBtn.onclick = null;
+        if (detectBtn) detectBtn.onclick = null;
         if (closeBtn) closeBtn.onclick = null;
         if (backdrop) backdrop.onclick = null;
     }
@@ -2150,6 +2407,7 @@ function startWebLLMInitialization(forcedModelId) {
         progressModal.classList.remove('hidden');
 
         if (cancelBtn) cancelBtn.onclick = doCancel;
+        if (detectBtn) detectBtn.onclick = function() { detectCurrentWebGPUDevice({ showDialog: true }).catch(function() {}); };
         if (closeBtn) closeBtn.onclick = doCancel;
         if (backdrop) backdrop.onclick = doCancel;
 
@@ -4807,7 +5065,7 @@ async function restoreFromStorageCandidate(candidate) {
                 `对话: ${candidate.convCount}  角色卡: ${candidate.charCount}  世界书: ${candidate.wbCount}\n\n` +
                 `当前未保存的数据将会丢失，建议先点“Export All”备份！`;
 
-    if (!confirm(msg)) return;
+    if (!await showGlassConfirm(msg, { title: '\u6062\u590d\u5b58\u50a8\u6570\u636e', danger: true, okText: '\u6062\u590d' })) return;
 
     try {
         // 应用数据到 state
@@ -7338,9 +7596,9 @@ function duplicateCurrentEntry() {
     selectWIEntry(copy.uid);
 }
 
-function deleteCurrentEntry() {
+async function deleteCurrentEntry() {
     if (!wiState.selectedUid) return;
-    if (!confirm('删除当前条目？')) return;
+    if (!await showGlassConfirm('\u5220\u9664\u5f53\u524d\u6761\u76ee\uff1f', { title: '\u5220\u9664\u4e16\u754c\u4e66\u6761\u76ee', danger: true, okText: '\u5220\u9664' })) return;
     var wi = getActiveWI();
     delete wi.entries[wiState.selectedUid];
     wiState.dirty = true;
@@ -7350,8 +7608,8 @@ function deleteCurrentEntry() {
     showNoSelection();
 }
 
-function deleteAllWIEntries() {
-    if (!confirm(t('world_book_confirm_delete_all'))) return;
+async function deleteAllWIEntries() {
+    if (!await showGlassConfirm(t('world_book_confirm_delete_all'), { title: '\u5220\u9664\u5168\u90e8\u6761\u76ee', danger: true, okText: '\u5220\u9664' })) return;
     var wi = getActiveWI();
     wi.entries = {};
     wiState.selectedUid = null;
@@ -7361,14 +7619,14 @@ function deleteAllWIEntries() {
     showNoSelection();
 }
 
-function deleteWorldBook(wbId) {
+async function deleteWorldBook(wbId) {
     if (!wbId || !state.worldBooks || !state.worldBooks[wbId]) return;
 
     var wb = state.worldBooks[wbId];
     var entryCount = Object.keys(wb.entries || {}).length;
     var msg = t('world_book_confirm_delete_book') || '确定彻底删除这个世界书？此操作不可撤销。关联到此世界书的对话将自动解除关联。';
 
-    if (!confirm(msg)) return;
+    if (!await showGlassConfirm(msg, { title: '\u5220\u9664\u4e16\u754c\u4e66', danger: true, okText: '\u5220\u9664' })) return;
 
     // Remove the book
     delete state.worldBooks[wbId];
@@ -7562,9 +7820,9 @@ function renderWIEntryList(filter) {
         });
 
         // delete from list
-        row.querySelector('.wi-list-del').addEventListener('click', function(ev) {
+        row.querySelector('.wi-list-del').addEventListener('click', async function(ev) {
             ev.stopPropagation();
-            if (!confirm('删除此条目？')) return;
+            if (!await showGlassConfirm('\u5220\u9664\u6b64\u6761\u76ee\uff1f', { title: '\u5220\u9664\u4e16\u754c\u4e66\u6761\u76ee', danger: true, okText: '\u5220\u9664' })) return;
             delete wi.entries[uidStr];
             wiState.dirty = true;
             updateWIDirtyIndicator();
@@ -8889,8 +9147,8 @@ function editSummary(id) {
     });
 }
 
-function deleteSummary(id) {
-    if (!confirm(t('summary_delete_confirm'))) return;
+async function deleteSummary(id) {
+    if (!await showGlassConfirm(t('summary_delete_confirm'), { title: '\u5220\u9664\u6458\u8981', danger: true, okText: '\u5220\u9664' })) return;
     var conv = getActiveConv();
     if (!conv) return;
     conv.summaries = conv.summaries.filter(function(s) { return s.id !== id; });
@@ -9320,10 +9578,10 @@ function showNewChatCharacterPicker() {
             // On mobile, CSS pointer-events:none prevents this handler from running.
             const delBtn = card.querySelector('.char-delete-btn');
             if (delBtn) {
-                delBtn.addEventListener('click', function(e) {
+                delBtn.addEventListener('click', async function(e) {
                     e.stopPropagation();
                     const displayName = character.name || '该角色卡';
-                    if (!confirm(`确定从角色库中删除「${displayName}」？\n已有对话中的角色卡数据不会受影响。`)) {
+                    if (!await showGlassConfirm(`\u786e\u5b9a\u4ece\u89d2\u8272\u5e93\u4e2d\u5220\u9664\u300c${displayName}\u300d\uff1f\n\u5df2\u6709\u5bf9\u8bdd\u4e2d\u7684\u89d2\u8272\u5361\u6570\u636e\u4e0d\u4f1a\u53d7\u5f71\u54cd\u3002`, { title: '\u5220\u9664\u89d2\u8272\u5361', danger: true, okText: '\u5220\u9664' })) {
                         return;
                     }
                     deleteCharacterFromLibrary(key);
@@ -10284,12 +10542,12 @@ function renderMyCards() {
         delBtn.className = 'char-delete-btn text-white/80 hover:text-red-400 active:text-red-500 text-xl font-bold leading-none p-1 transition-all opacity-0 md:opacity-0 group-hover:opacity-100 md:group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto';
         delBtn.innerHTML = '×';
         delBtn.title = '移除角色卡';
-        delBtn.addEventListener('click', (e) => {
+        delBtn.addEventListener('click', async (e) => {
             // Only fires on desktop hover (when pointer-events:auto via .group:hover CSS).
             // On mobile, pointer-events:none prevents this handler from ever running.
             e.stopPropagation();
             const displayName = char.name || '该角色卡';
-            if (!confirm(`确定从角色库中删除「${displayName}」？\n已有对话中的角色卡数据不会受影响。`)) {
+            if (!await showGlassConfirm(`\u786e\u5b9a\u4ece\u89d2\u8272\u5e93\u4e2d\u5220\u9664\u300c${displayName}\u300d\uff1f\n\u5df2\u6709\u5bf9\u8bdd\u4e2d\u7684\u89d2\u8272\u5361\u6570\u636e\u4e0d\u4f1a\u53d7\u5f71\u54cd\u3002`, { title: '\u5220\u9664\u89d2\u8272\u5361', danger: true, okText: '\u5220\u9664' })) {
                 return;
             }
             const key = (char.name || '').trim().toLowerCase();
@@ -10548,9 +10806,9 @@ function renderLibrary() {
     if (worldBlock2) worldBlock2.style.display = 'none';
 }
 
-function loadConversation(id) {
+async function loadConversation(id) {
     if (state.isGenerating) {
-        if (!confirm(t('generation_abort_confirm'))) return;
+        if (!await showGlassConfirm(t('generation_abort_confirm'), { title: '\u505c\u6b62\u751f\u6210' })) return;
         stopGeneration();
     }
     saveCurrentConversation();
@@ -10605,8 +10863,8 @@ function loadConversation(id) {
     if (isMobile()) closeSidebar();
 }
 
-function deleteConversation(id) {
-    if (!confirm(t('delete_confirm'))) return;
+async function deleteConversation(id) {
+    if (!await showGlassConfirm(t('delete_confirm'), { title: '\u5220\u9664\u5bf9\u8bdd', danger: true, okText: '\u5220\u9664' })) return;
     delete state.conversations[id];
     state.conversationOrder = state.conversationOrder.filter(function(x) { return x !== id; });
     if (state.activeConvId === id) {
@@ -11613,8 +11871,8 @@ function renderCharacterCard() {
     renderWorldInfoBadge();
 }
 
-function removeCharacter() {
-    if (!confirm(t('char_remove_confirm'))) return;
+async function removeCharacter() {
+    if (!await showGlassConfirm(t('char_remove_confirm'), { title: '\u79fb\u9664\u89d2\u8272\u5361', danger: true, okText: '\u79fb\u9664' })) return;
     var conv = getActiveConv();
     if (!conv) return;
     conv.character = null;
@@ -12732,6 +12990,17 @@ function bindEvents() {
         }
 
         // 显示当前存储后端 + 用量（Phase 1 增强）
+        var detectWebGPUBtn = document.getElementById('detectWebGPUDeviceBtn');
+        var webgpuDeviceInfo = document.getElementById('webgpuDeviceInfo');
+        if (detectWebGPUBtn) {
+            detectWebGPUBtn.onclick = function() {
+                detectCurrentWebGPUDevice({ statusEl: webgpuDeviceInfo, showDialog: false }).catch(function() {});
+            };
+        }
+        if (webgpuDeviceInfo && webgpuLastDeviceReport) {
+            webgpuDeviceInfo.textContent = formatWebGPUDeviceReport(webgpuLastDeviceReport);
+        }
+
         const backendEl = document.getElementById('storageBackend');
         const usageRow = document.getElementById('storageUsageRow');
         const usageEl = document.getElementById('storageUsage');
@@ -12801,7 +13070,7 @@ function bindEvents() {
             }
 
             clearBtn.onclick = async function() {
-                if (!confirm('确定要永久删除所有用户数据吗？\n包括角色卡、对话、世界书、WebLLM 模型缓存等。\n此操作不可恢复，页面将重新加载。')) {
+                if (!await showGlassConfirm('\u786e\u5b9a\u8981\u6c38\u4e45\u5220\u9664\u6240\u6709\u7528\u6237\u6570\u636e\u5417\uff1f\n\u5305\u62ec\u89d2\u8272\u5361\u3001\u5bf9\u8bdd\u3001\u4e16\u754c\u4e66\u3001WebLLM \u6a21\u578b\u7f13\u5b58\u7b49\u3002\n\u6b64\u64cd\u4f5c\u4e0d\u53ef\u6062\u590d\uff0c\u9875\u9762\u5c06\u91cd\u65b0\u52a0\u8f7d\u3002', { title: '\u6e05\u9664\u6240\u6709\u7528\u6237\u6570\u636e', danger: true, okText: '\u6c38\u4e45\u5220\u9664' })) {
                     return;
                 }
 
@@ -12842,7 +13111,7 @@ function bindEvents() {
         const clearWebLLMBtn = document.getElementById('clearWebLLMBtn');
         if (clearWebLLMBtn) {
             clearWebLLMBtn.onclick = async function() {
-                if (!confirm('确定要清除 WebLLM 下载的模型缓存吗？\n这会释放大量空间，但下次使用本地模型时需要重新下载。')) return;
+                if (!await showGlassConfirm('\u786e\u5b9a\u8981\u6e05\u9664 WebLLM \u4e0b\u8f7d\u7684\u6a21\u578b\u7f13\u5b58\u5417\uff1f\n\u8fd9\u4f1a\u91ca\u653e\u5927\u91cf\u7a7a\u95f4\uff0c\u4f46\u4e0b\u6b21\u4f7f\u7528\u672c\u5730\u6a21\u578b\u65f6\u9700\u8981\u91cd\u65b0\u4e0b\u8f7d\u3002', { title: '\u6e05\u9664 WebLLM \u6a21\u578b\u7f13\u5b58', okText: '\u6e05\u9664' })) return;
                 if (typeof clearWebLLMCache === 'function') {
                     await clearWebLLMCache();
                 }
