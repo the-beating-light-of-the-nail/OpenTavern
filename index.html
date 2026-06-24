@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN" class="dark">
 <head>
 <meta charset="UTF-8">
@@ -1387,6 +1387,7 @@ body.theme-new-dark ::-webkit-scrollbar-thumb:hover { background: rgba(40, 35, 3
                     <div class="flex gap-1.5 flex-shrink-0">
                         <button id="stPresetImportBtn" type="button" class="px-2.5 py-1 text-[11px] rounded-lg bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10 transition-colors" data-i18n="settings_st_preset_import">Import</button>
                         <button id="stPresetExportBtn" type="button" class="px-2.5 py-1 text-[11px] rounded-lg bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10 transition-colors" data-i18n="settings_st_preset_export">Export</button>
+                        <button id="stPresetDeleteBtn" type="button" class="px-2.5 py-1 text-[11px] rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/20 transition-colors" data-i18n="settings_st_preset_delete">Delete</button>
                     </div>
                 </div>
                 <input id="stPresetImportFile" type="file" accept=".json,application/json" class="hidden">
@@ -3144,6 +3145,9 @@ var i18n = {
         settings_st_preset_hint: '仅导入提示词文本，并插入到系统提示词之后。',
         settings_st_preset_import: '导入 JSON',
         settings_st_preset_export: '导出 JSON',
+        settings_st_preset_delete: '删除',
+        settings_st_preset_delete_confirm: '删除所有已导入的 SillyTavern 预设提示词？',
+        settings_st_preset_delete_success: '已删除 SillyTavern 预设提示词。',
         settings_st_preset_empty: '尚未导入预设提示词。',
         settings_st_preset_import_success: 'SillyTavern 预设提示词已导入。',
         settings_st_preset_import_error: '无效的 SillyTavern 预设文件',
@@ -3529,6 +3533,9 @@ var i18n = {
         settings_st_preset_hint: '僅匯入提示詞文字，並插入到系統提示詞之後。',
         settings_st_preset_import: '匯入 JSON',
         settings_st_preset_export: '匯出 JSON',
+        settings_st_preset_delete: '刪除',
+        settings_st_preset_delete_confirm: '刪除所有已匯入的 SillyTavern 預設提示詞？',
+        settings_st_preset_delete_success: '已刪除 SillyTavern 預設提示詞。',
         settings_st_preset_empty: '尚未匯入預設提示詞。',
         settings_st_preset_import_success: 'SillyTavern 預設提示詞已匯入。',
         settings_st_preset_import_error: '無效的 SillyTavern 預設檔案',
@@ -3867,6 +3874,9 @@ var i18n = {
         settings_st_preset_hint: 'Only prompt text is imported and inserted after the system prompt.',
         settings_st_preset_import: 'Import JSON',
         settings_st_preset_export: 'Export JSON',
+        settings_st_preset_delete: 'Delete',
+        settings_st_preset_delete_confirm: 'Delete all imported SillyTavern preset prompts?',
+        settings_st_preset_delete_success: 'SillyTavern preset prompts deleted.',
         settings_st_preset_empty: 'No preset prompts imported.',
         settings_st_preset_import_success: 'SillyTavern preset prompts imported.',
         settings_st_preset_import_error: 'Invalid SillyTavern preset file',
@@ -11601,7 +11611,7 @@ function cacheDom() {
         'apiEndpoint','apiKey','saveApiKey','modelName','contextLength','contextLenVal',
         'maxTokens','maxTokensVal','temperature','tempVal','topP','topPVal',
         'userName','systemPrompt','fillRoleplayPromptBtn','userDescription',
-        'stPresetImportBtn','stPresetExportBtn','stPresetImportFile','stPresetStatus','stPresetList',
+        'stPresetImportBtn','stPresetExportBtn','stPresetDeleteBtn','stPresetImportFile','stPresetStatus','stPresetList',
         'importModal','importBackdrop','importCloseBtn','importFileInput','importStatus',
         'promptViewerModal','promptViewerBackdrop','promptViewerCloseBtn','promptViewerContent','copyPromptBtn',
         'archiveBtn','tokenInfo','tokenCount','tokenBar','tokenMax','newChatBtn',
@@ -11801,6 +11811,10 @@ function renderSillyTavernPresetSettings() {
             dom.stPresetExportBtn.disabled = true;
             dom.stPresetExportBtn.classList.add('opacity-50', 'cursor-not-allowed');
         }
+        if (dom.stPresetDeleteBtn) {
+            dom.stPresetDeleteBtn.disabled = true;
+            dom.stPresetDeleteBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
         return;
     }
 
@@ -11808,6 +11822,10 @@ function renderSillyTavernPresetSettings() {
     if (dom.stPresetExportBtn) {
         dom.stPresetExportBtn.disabled = false;
         dom.stPresetExportBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+    if (dom.stPresetDeleteBtn) {
+        dom.stPresetDeleteBtn.disabled = false;
+        dom.stPresetDeleteBtn.classList.remove('opacity-50', 'cursor-not-allowed');
     }
 
     dom.stPresetList.innerHTML = rows.map(function(row) {
@@ -11897,6 +11915,21 @@ function exportSillyTavernPreset() {
         }
     };
     downloadJsonFile(data, 'sillytavern_preset_prompts_' + new Date().toISOString().slice(0, 10) + '.json');
+}
+
+function deleteSillyTavernPreset() {
+    var preset = ensureSillyTavernPresetSettings();
+    if (!preset.prompts.length) {
+        alert(t('settings_st_preset_empty'));
+        return;
+    }
+    if (!confirm(t('settings_st_preset_delete_confirm'))) return;
+    state.settings.sillyTavernPreset = defaultSillyTavernPreset();
+    renderSillyTavernPresetSettings();
+    persistState(true);
+    renderTokenBar();
+    appStore.notify('settings');
+    alert(t('settings_st_preset_delete_success'));
 }
 
 function appendSillyTavernPresetPrompts(parts, charName, userName) {
@@ -13974,6 +14007,7 @@ function bindEvents() {
         if (file) importSillyTavernPresetFile(file);
     });
     if (dom.stPresetExportBtn) dom.stPresetExportBtn.addEventListener('click', exportSillyTavernPreset);
+    if (dom.stPresetDeleteBtn) dom.stPresetDeleteBtn.addEventListener('click', deleteSillyTavernPreset);
 
     // Settings sliders
     function bindSlider(slider, valEl, format) {
