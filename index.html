@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>OpenTavern — AI Character Chat</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
 <script>
 tailwind.config = {
     darkMode: 'class',
@@ -133,6 +134,9 @@ body {
 .msg-user .msg-bubble { background: rgba(245,158,11,0.10); border: 1px solid rgba(245,158,11,0.18); border-radius: 20px 20px 4px 20px; }
 .msg-assistant .msg-bubble { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px 20px 20px 4px; }
 .msg-bubble { padding: 14px 18px; line-height: 1.7; font-size: 0.925rem; white-space: pre-wrap; word-break: break-word; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.msg-bubble details.status-bar { white-space: normal; margin: 0.35rem 0; border: 1px solid rgba(255,255,255,0.10); border-radius: 10px; overflow: hidden; background: rgba(0,0,0,0.18); }
+.msg-bubble details.status-bar summary { cursor: pointer; padding: 8px 12px; background: rgba(255,255,255,0.08); color: #f4f4f5; font-weight: 700; user-select: none; }
+.msg-bubble details.status-bar .status-bar-content { padding: 12px; color: #d4d4d8; line-height: 1.7; }
 
 .dialogue-highlight { color: #f59e0b; }
 
@@ -6684,7 +6688,7 @@ function appendFinalAssistantMessage(conv, fullContent) {
     msgDiv.innerHTML = `
         <div class="max-w-[80%] msg-wrapper">
             <p class="text-[10px] text-zinc-500 mb-1 ml-1 font-medium">${escapeHtml(senderName)}</p>
-            <div class="msg-bubble">${highlightDialogue(fullContent)}</div>
+            <div class="msg-bubble">${renderAssistantContent(fullContent)}</div>
             <div class="msg-actions">
                 <button class="msg-action-btn copy-btn" data-action="copy" data-msg-idx="${actualIdx}" title="${t('copy')}">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -12359,7 +12363,7 @@ function renderMessages() {
             msgDiv.innerHTML = `
                 <div class="max-w-[80%] msg-wrapper">
                     ${!isUser ? `<p class="text-[10px] text-zinc-500 mb-1 ml-1 font-medium">${escapeHtml(senderName)}</p>` : ''}
-                    <div class="msg-bubble">${isUser ? escapeHtml(msg.content) : highlightDialogue(msg.content)}</div>
+                    <div class="msg-bubble">${isUser ? escapeHtml(msg.content) : renderAssistantContent(msg.content)}</div>
                     <div class="msg-actions">
                         <button class="msg-action-btn copy-btn" data-action="copy" data-msg-idx="${actualIdx}" title="${t('copy')}">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -12407,7 +12411,7 @@ function renderMessages() {
         html += '<div class="msg-enter ' + (isUser ? 'msg-user flex justify-end' : 'msg-assistant flex justify-start') + '">';
         html += '<div class="max-w-[80%] msg-wrapper">';
         if (!isUser) html += '<p class="text-[10px] text-zinc-500 mb-1 ml-1 font-medium">' + escapeHtml(senderName) + '</p>';
-        html += '<div class="msg-bubble">' + (isUser ? escapeHtml(msg.content) : highlightDialogue(msg.content)) + '</div>';
+        html += '<div class="msg-bubble">' + (isUser ? escapeHtml(msg.content) : renderAssistantContent(msg.content)) + '</div>';
         html += '<div class="msg-actions">';
         html += '<button class="msg-action-btn copy-btn" data-action="copy" data-msg-idx="' + actualIdx + '" title="' + t('copy') + '"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>';
         html += '<button class="msg-action-btn edit-btn" data-action="edit" data-msg-idx="' + actualIdx + '" title="' + t('edit_msg') + '"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>';
@@ -12464,7 +12468,7 @@ function renderMessagesFullHistory(conv) {
         html += '<div class="msg-enter ' + (isUser ? 'msg-user flex justify-end' : 'msg-assistant flex justify-start') + '">';
         html += '<div class="max-w-[80%] msg-wrapper">';
         if (!isUser) html += '<p class="text-[10px] text-zinc-500 mb-1 ml-1 font-medium">' + escapeHtml(senderName) + '</p>';
-        html += '<div class="msg-bubble">' + (isUser ? escapeHtml(msg.content) : highlightDialogue(msg.content)) + '</div>';
+        html += '<div class="msg-bubble">' + (isUser ? escapeHtml(msg.content) : renderAssistantContent(msg.content)) + '</div>';
         html += '<div class="msg-actions">';
         html += '<button class="msg-action-btn copy-btn" data-action="copy" data-msg-idx="' + actualIdx + '" title="' + t('copy') + '"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>';
         html += '<button class="msg-action-btn edit-btn" data-action="edit" data-msg-idx="' + actualIdx + '" title="' + t('edit_msg') + '"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>';
@@ -12979,6 +12983,47 @@ function highlightDialogue(text) {
     return escaped;
 }
 
+function sanitizeStatusBarHtml(html) {
+    if (!window.DOMPurify) return highlightDialogue(html);
+
+    var clean = DOMPurify.sanitize(html, {
+        ALLOWED_TAGS: ['details', 'summary', 'div', 'br', 'span', 'b', 'strong'],
+        ALLOWED_ATTR: ['open'],
+        ALLOW_DATA_ATTR: false,
+        FORBID_ATTR: ['style', 'class', 'id', 'onclick', 'onerror', 'onload']
+    });
+
+    clean = clean.replace(/<details([^>]*)>/i, function(match, attrs) {
+        return '<details class="status-bar"' + (/\bopen\b/i.test(attrs || '') ? ' open' : '') + '>';
+    });
+    clean = clean.replace(/<summary>/i, '<summary>');
+    clean = clean.replace(/(<\/summary>)([\s\S]*?)(<\/details>)/i, '$1<div class="status-bar-content">$2</div>$3');
+
+    return clean;
+}
+
+function renderAssistantContent(text) {
+    if (!text) return '';
+
+    var raw = String(text);
+    var html = '';
+    var lastIndex = 0;
+    var statusBlockRe = /<details\b[\s\S]*?<\/details>/gi;
+    var match;
+
+    while ((match = statusBlockRe.exec(raw)) !== null) {
+        var block = match[0];
+        if (block.indexOf('状态栏') === -1 && block.indexOf('狀態欄') === -1) continue;
+
+        html += highlightDialogue(raw.slice(lastIndex, match.index));
+        html += sanitizeStatusBarHtml(block);
+        lastIndex = match.index + block.length;
+    }
+
+    html += highlightDialogue(raw.slice(lastIndex));
+    return html;
+}
+
 // ==================== Message Actions ====================
 function deleteMessage(actualIdx) {
     var conv = getActiveConv();
@@ -13042,7 +13087,7 @@ function regenerateMessage(actualIdx) {
                     function onToken(token, fullContent) {
                         var streamingEl = document.getElementById('streamingContent');
                         if (streamingEl) {
-                            streamingEl.innerHTML = highlightDialogue(fullContent);
+                            streamingEl.innerHTML = renderAssistantContent(fullContent);
                         } else {
                             var div = document.createElement('div');
                             div.id = 'streamingMsg';
@@ -13050,7 +13095,7 @@ function regenerateMessage(actualIdx) {
                             div.innerHTML = '<div class="max-w-[80%]"><p class="text-[10px] text-zinc-500 mb-1 ml-1 font-medium">' +
                                 escapeHtml(getCurrentGeneratingSpeakerName(conv)) +
                                 '</p><div class="msg-bubble typing-cursor" id="streamingContent">' +
-                                highlightDialogue(fullContent) + '</div></div>';
+                                renderAssistantContent(fullContent) + '</div></div>';
                             dom.messagesContainer.appendChild(div);
                         }
                         dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
@@ -13111,7 +13156,7 @@ function regenerateMessage(actualIdx) {
             function onToken(token, fullContent) {
                 var streamingEl = document.getElementById('streamingContent');
                 if (streamingEl) {
-                    streamingEl.innerHTML = highlightDialogue(fullContent);
+                    streamingEl.innerHTML = renderAssistantContent(fullContent);
                 } else {
                     var div = document.createElement('div');
                     div.id = 'streamingMsg';
@@ -13119,7 +13164,7 @@ function regenerateMessage(actualIdx) {
                     div.innerHTML = '<div class="max-w-[80%]"><p class="text-[10px] text-zinc-500 mb-1 ml-1 font-medium">' +
                         escapeHtml(getCurrentGeneratingSpeakerName(conv)) +
                         '</p><div class="msg-bubble typing-cursor" id="streamingContent">' +
-                        highlightDialogue(fullContent) + '</div></div>';
+                        renderAssistantContent(fullContent) + '</div></div>';
                     dom.messagesContainer.appendChild(div);
                 }
                 dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
@@ -13328,7 +13373,7 @@ function sendMessage() {
                     function onToken(token, fullContent) {
             var streamingEl = document.getElementById('streamingContent');
             if (streamingEl) {
-                streamingEl.innerHTML = highlightDialogue(fullContent);
+                streamingEl.innerHTML = renderAssistantContent(fullContent);
             } else {
                 var div = document.createElement('div');
                 div.id = 'streamingMsg';
@@ -13336,7 +13381,7 @@ function sendMessage() {
                 div.innerHTML = '<div class="max-w-[80%]"><p class="text-[10px] text-zinc-500 mb-1 ml-1 font-medium">' +
                     escapeHtml(getCurrentGeneratingSpeakerName(conv)) +
                     '</p><div class="msg-bubble typing-cursor" id="streamingContent">' +
-                    highlightDialogue(fullContent) + '</div></div>';
+                    renderAssistantContent(fullContent) + '</div></div>';
                 dom.messagesContainer.appendChild(div);
             }
             dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
@@ -13401,7 +13446,7 @@ function sendMessage() {
             function onToken(token, fullContent) {
                 var streamingEl = document.getElementById('streamingContent');
                 if (streamingEl) {
-                    streamingEl.innerHTML = highlightDialogue(fullContent);
+                    streamingEl.innerHTML = renderAssistantContent(fullContent);
                 } else {
                     var div = document.createElement('div');
                     div.id = 'streamingMsg';
@@ -13409,7 +13454,7 @@ function sendMessage() {
                     div.innerHTML = '<div class="max-w-[80%]"><p class="text-[10px] text-zinc-500 mb-1 ml-1 font-medium">' +
                         escapeHtml(getCurrentGeneratingSpeakerName(conv)) +
                         '</p><div class="msg-bubble typing-cursor" id="streamingContent">' +
-                        highlightDialogue(fullContent) + '</div></div>';
+                        renderAssistantContent(fullContent) + '</div></div>';
                     dom.messagesContainer.appendChild(div);
                 }
                 dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
