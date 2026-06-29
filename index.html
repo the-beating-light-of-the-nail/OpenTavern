@@ -1329,6 +1329,18 @@ body.theme-new-dark ::-webkit-scrollbar-thumb:hover { background: rgba(40, 35, 3
                     </div>
                 </div>
             </div>
+            <div class="glass rounded-2xl p-3 border border-white/5">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider" data-i18n="settings_ollama_compat_label">Ollama 兼容模式</label>
+                        <p class="text-[10px] text-zinc-600 mt-0.5" data-i18n="settings_ollama_compat_hint">开启后会在发送前合并/降级多条 system 消息，避免部分本地模型的 Jinja 模板报错。</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-3">
+                        <input type="checkbox" id="ollamaCompatMode" class="sr-only peer">
+                        <div class="w-9 h-5 bg-white/10 rounded-full peer-checked:bg-amber-500/60 peer-checked:ring-1 peer-checked:ring-amber-500/40 transition-all after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></div>
+                    </label>
+                </div>
+            </div>
             <div>
                 <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider" data-i18n="settings_model">Model</label>
                 <input id="modelName" type="text" class="w-full mt-1.5 px-3 py-2.5 glass rounded-xl text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all" placeholder="gpt-4o">
@@ -3224,6 +3236,8 @@ var i18n = {
         settings_api_presets: '一键填入 DeepSeek 地址（推荐）',
         settings_api_presets_short: '推荐：',
         settings_api_key: 'API 密钥',
+        settings_ollama_compat_label: 'Ollama 兼容模式',
+        settings_ollama_compat_hint: '开启后会在发送前合并/降级多条 system 消息，避免部分本地模型的 Jinja 模板报错。',
         settings_model: '模型',
         api_test_button: '测试 API 连接',
         api_test_hint: '测试前请填写 Endpoint 与 Key',
@@ -3639,6 +3653,8 @@ var i18n = {
         settings_api_presets: '一鍵填入 DeepSeek 地址（推薦）',
         settings_api_presets_short: '推薦：',
         settings_api_key: 'API 金鑰',
+        settings_ollama_compat_label: 'Ollama 相容模式',
+        settings_ollama_compat_hint: '開啟後會在送出前合併/降級多條 system 訊息，避免部分本地模型的 Jinja 模板報錯。',
         settings_model: '模型',
         api_test_button: '測試 API 連接',
         api_test_hint: '測試前請填寫 Endpoint 與 Key',
@@ -4007,6 +4023,8 @@ var i18n = {
         settings_api_presets: 'Quick fill DeepSeek address (recommended)',
         settings_api_presets_short: 'Recommended:',
         settings_api_key: 'API Key',
+        settings_ollama_compat_label: 'Ollama Compatibility Mode',
+        settings_ollama_compat_hint: 'Merges or downgrades multiple system messages before sending to avoid Jinja template errors in some local models.',
         settings_model: 'Model',
         api_test_button: 'Test API Connection',
         api_test_hint: 'Fill Endpoint and Key before testing',
@@ -6167,6 +6185,7 @@ function defaultSettings() {
         apiEndpoint: 'https://api.openai.com/v1/chat/completions',
         apiKey: '',
         saveApiKey: false,
+        ollamaCompatMode: false,
         model: 'gpt-4o',
         contextLength: 20,
         maxTokens: 1024,
@@ -6480,6 +6499,63 @@ function normalizeApiEndpoint(raw) {
         url += '/v1';
     }
     return url + '/chat/completions';
+}
+
+function isLikelyOllamaEndpoint(raw) {
+    if (!raw) return false;
+    var s = String(raw).toLowerCase();
+    return s.indexOf('ollama') !== -1 || s.indexOf(':11434') !== -1;
+}
+
+function shouldUseOllamaCompat(endpoint) {
+    var settings = state && state.settings ? state.settings : {};
+    return !!settings.ollamaCompatMode || isLikelyOllamaEndpoint(endpoint);
+}
+
+function normalizeMessagesForOllamaCompatibility(messages) {
+    if (!Array.isArray(messages) || messages.length === 0) return messages || [];
+
+    var systemParts = [];
+    var normalized = [];
+    var seenNonSystem = false;
+
+    messages.forEach(function(msg) {
+        if (!msg) return;
+        var role = normalizePromptRole(msg.role || 'user');
+        var content = msg.content == null ? '' : String(msg.content);
+        if (!content.trim()) return;
+
+        if (role === 'system') {
+            if (!seenNonSystem) {
+                systemParts.push(content);
+            } else {
+                normalized.push({
+                    role: 'user',
+                    content: '[System / developer instruction]\n' + content
+                });
+            }
+            return;
+        }
+
+        seenNonSystem = true;
+        normalized.push({ role: role, content: content });
+    });
+
+    var result = [];
+    if (systemParts.length > 0) {
+        result.push({ role: 'system', content: systemParts.join('\n\n') });
+    }
+    result = result.concat(normalized);
+
+    return result.reduce(function(acc, msg) {
+        var last = acc[acc.length - 1];
+        if (last && last.role === msg.role) {
+            last.content += '\n\n' + msg.content;
+        } else {
+            acc.push({ role: msg.role, content: msg.content });
+        }
+        return acc;
+    }, []);
 }
 
 function defaultConversation() {
@@ -7047,6 +7123,9 @@ async function initState() {
     }
     if (typeof state.settings.lowPowerMode === 'undefined') {
         state.settings.lowPowerMode = false;
+    }
+    if (typeof state.settings.ollamaCompatMode !== 'boolean') {
+        state.settings.ollamaCompatMode = false;
     }
     if (typeof state.settings.twoStageEnabled !== 'boolean') {
         state.settings.twoStageEnabled = false;
@@ -9820,6 +9899,9 @@ function streamChatWithMessages(messages, onToken, onComplete, onError, requestO
     appStore.notify('isGenerating');
 
     var endpoint = normalizeApiEndpoint(settings.apiEndpoint);
+    if (shouldUseOllamaCompat(settings.apiEndpoint)) {
+        messages = normalizeMessagesForOllamaCompatibility(messages);
+    }
     requestOptions = requestOptions || {};
     var captureCot = !!settings.requestCotEnabled && requestOptions.requestCot !== false;
     var payload = {
@@ -10274,6 +10356,9 @@ function generateSummary(messages, callback) {
     ];
 
     var endpoint = normalizeApiEndpoint(apiEndpoint);
+    if (shouldUseOllamaCompat(apiEndpoint)) {
+        summaryMessages = normalizeMessagesForOllamaCompatibility(summaryMessages);
+    }
 
     fetch(endpoint, {
         method: 'POST',
@@ -12325,7 +12410,7 @@ function cacheDom() {
         'sidebar','convList','noConvHint','chatTopBar','charAvatar','chatTitle','chatSubtitle',
         'messagesContainer','emptyState','messageInput','sendBtn','stopBtn','mentionBtn','mentionPill','mentionPillName','mentionPillClear',
         'settingsModal','settingsBackdrop','settingsCloseBtn',
-        'apiEndpoint','apiKey','saveApiKey','modelName','contextLength','contextLenVal',
+        'apiEndpoint','apiKey','saveApiKey','ollamaCompatMode','modelName','contextLength','contextLenVal',
         'maxTokens','maxTokensVal','temperature','tempVal','topP','topPVal',
         'userName','systemPrompt','postHistoryInstructions','fillPostHistoryBtn','fillRoleplayPromptBtn','twoStageEnabled','twoStageTemperature','twoStageTempVal','twoStageTopP','twoStageTopPVal','twoStageIncludeRecentContext','twoStageSystemPrompt','twoStagePostHistoryInstructions','restoreTwoStagePromptBtn','requestCotEnabled','showCotEnabled','userDescription',
         'stPresetImportBtn','stPresetExportBtn','stPresetDeleteBtn','stPresetImportFile','stPresetStatus','stPresetList',
@@ -12406,6 +12491,7 @@ function ensureSillyTavernPresetSettings() {
     if (!state.settings.twoStageSystemPrompt) state.settings.twoStageSystemPrompt = DEFAULT_TWO_STAGE_PROMPT;
     if (typeof state.settings.requestCotEnabled !== 'boolean') state.settings.requestCotEnabled = false;
     if (typeof state.settings.showCotEnabled !== 'boolean') state.settings.showCotEnabled = true;
+    if (typeof state.settings.ollamaCompatMode !== 'boolean') state.settings.ollamaCompatMode = false;
     if (typeof state.settings.postHistoryInstructions !== 'string') state.settings.postHistoryInstructions = '';
     if (typeof state.settings.twoStagePostHistoryInstructions !== 'string') state.settings.twoStagePostHistoryInstructions = '';
     if (typeof state.settings.summaryPrompt !== 'string') state.settings.summaryPrompt = '';
@@ -14402,6 +14488,7 @@ function bindEvents() {
         dom.apiEndpoint.value = state.settings.apiEndpoint;
         dom.apiKey.value = state.settings.apiKey;
         if (dom.saveApiKey) dom.saveApiKey.checked = !!state.settings.saveApiKey;
+        if (dom.ollamaCompatMode) dom.ollamaCompatMode.checked = !!state.settings.ollamaCompatMode;
         dom.modelName.value = state.settings.model;
         dom.contextLength.value = state.settings.contextLength;
         dom.contextLenVal.textContent = state.settings.contextLength;
@@ -14731,6 +14818,7 @@ function bindEvents() {
         state.settings.apiEndpoint = dom.apiEndpoint.value.trim();
         state.settings.apiKey = dom.apiKey.value.trim();
         state.settings.saveApiKey = dom.saveApiKey ? !!dom.saveApiKey.checked : false;
+        state.settings.ollamaCompatMode = dom.ollamaCompatMode ? !!dom.ollamaCompatMode.checked : false;
         state.settings.model = dom.modelName.value.trim() || 'gpt-4o';
         state.settings.contextLength = parseInt(dom.contextLength.value) || 20;
         state.settings.maxTokens = parseInt(dom.maxTokens.value) || 1024;
