@@ -1,9 +1,12 @@
-本项目采用 AGPL v3 许可。
-如需商业用途（闭源使用、商业产品集成、SaaS 服务等），请联系作者获取商业许可。
+## 许可说明/License
 
-This project is licensed under the AGPL v3.
+本项目（包括源代码和附带的 SillyTavern 角色卡 JSON 文件）均采用 **GNU Affero General Public License v3.0 (AGPL-3.0)** 许可。
 
-For commercial use (including closed-source distribution, commercial product integration, or SaaS deployment), please contact the author to obtain a commercial license.
+角色卡 JSON 文件作为项目的一部分，受 AGPL v3 许可保护。任何人使用、修改或分发这些角色卡时，应遵守 AGPL v3 条款。
+
+This entire project, including the source code and the included SillyTavern character card JSON files, is licensed under **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+
+The character cards are part of this licensed work. Any use, modification, or distribution of the project or its components must follow the AGPL-3.0 terms.
 # OpenTavern
 
 **A lightweight, powerful, single-file AI character chat app**  
