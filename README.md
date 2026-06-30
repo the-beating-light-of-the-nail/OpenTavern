@@ -367,12 +367,6 @@ Please open issues or submit pull requests on GitHub.
 
 ---
 
-## 📜 License
-
-MIT License — Free for personal and commercial use.
-
----
-
 ## 💬 Feedback & Support
 
 - GitHub Issues: Report bugs, suggest features, ask questions
