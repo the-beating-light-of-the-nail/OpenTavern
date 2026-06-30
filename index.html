@@ -137,6 +137,9 @@ body {
 .msg-bubble details.status-bar { white-space: normal; margin: 0.35rem 0; border: 1px solid rgba(255,255,255,0.10); border-radius: 10px; overflow: hidden; background: rgba(0,0,0,0.18); }
 .msg-bubble details.status-bar summary { cursor: pointer; padding: 8px 12px; background: rgba(255,255,255,0.08); color: #f4f4f5; font-weight: 700; user-select: none; }
 .msg-bubble details.status-bar .status-bar-content { padding: 12px; color: #d4d4d8; line-height: 1.7; }
+.msg-attachments { display: grid; gap: 8px; margin-top: 10px; white-space: normal; }
+.msg-attachment-image { display: block; width: min(100%, 420px); max-height: 520px; object-fit: contain; border-radius: 14px; border: 1px solid rgba(255,255,255,0.10); background: rgba(0,0,0,0.18); }
+.msg-attachment-caption { font-size: 10px; line-height: 1.35; color: rgba(161,161,170,0.9); white-space: normal; word-break: break-word; }
 .msg-cot { margin-bottom: 6px; border: 1px solid rgba(213,108,78,0.24); border-radius: 14px; overflow: hidden; background: rgba(213,108,78,0.07); color: #d4d4d8; font-size: 0.78rem; line-height: 1.6; }
 .msg-cot summary { cursor: pointer; padding: 7px 10px; color: #D56C4E; font-weight: 600; user-select: none; list-style-position: inside; }
 .msg-cot-content { padding: 0 10px 10px; white-space: pre-wrap; word-break: break-word; color: #a1a1aa; }
@@ -1029,6 +1032,10 @@ body.theme-new-dark #mentionPillClear { color: #D56C4E !important; }
 body.theme-new-light #mentionBtn:hover,
 body.theme-new-dark #mentionBtn:hover { color: #D56C4E !important; }
 
+/* ComfyUI image button hover */
+body.theme-new-light #comfyGenerateBtn:hover,
+body.theme-new-dark #comfyGenerateBtn:hover { color: #D56C4E !important; }
+
 /* Edit buttons hover (character card + summary) */
 body.theme-new-light #charEditBtn:hover,
 body.theme-new-dark #charEditBtn:hover,
@@ -1344,6 +1351,53 @@ body.theme-new-dark ::-webkit-scrollbar-thumb:hover { background: rgba(40, 35, 3
             <div>
                 <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider" data-i18n="settings_model">Model</label>
                 <input id="modelName" type="text" class="w-full mt-1.5 px-3 py-2.5 glass rounded-xl text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all" placeholder="gpt-4o">
+            </div>
+
+            <!-- ComfyUI txt2img local image generation -->
+            <div class="glass rounded-2xl p-3 border border-white/5">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider" data-i18n="settings_comfy_title">ComfyUI 图像生成</label>
+                        <p class="text-[10px] text-zinc-600 mt-0.5" data-i18n="settings_comfy_hint">连接本机 ComfyUI，通过导入 API workflow 手动生成图片并附加到聊天。</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-3">
+                        <input type="checkbox" id="comfyEnabled" class="sr-only peer">
+                        <div class="w-9 h-5 bg-white/10 rounded-full peer-checked:bg-amber-500/60 peer-checked:ring-1 peer-checked:ring-amber-500/40 transition-all after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></div>
+                    </label>
+                </div>
+                <div class="mt-3 space-y-2">
+                    <div>
+                        <label class="text-xs font-semibold text-zinc-400" data-i18n="settings_comfy_server">ComfyUI 地址</label>
+                        <input id="comfyServer" type="text" class="w-full mt-1 px-3 py-2 text-sm glass rounded-xl text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/30" placeholder="http://127.0.0.1:8188">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-xs font-semibold text-zinc-400" data-i18n="settings_comfy_positive_node">正向提示词节点 ID</label>
+                            <input id="comfyPositiveNodeId" type="text" class="w-full mt-1 px-3 py-2 text-sm glass rounded-xl text-zinc-200" placeholder="6">
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-zinc-400" data-i18n="settings_comfy_negative_node">负向提示词节点 ID</label>
+                            <input id="comfyNegativeNodeId" type="text" class="w-full mt-1 px-3 py-2 text-sm glass rounded-xl text-zinc-200" placeholder="7">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-xs font-semibold text-zinc-400" data-i18n="settings_comfy_seed_node">Seed 节点 ID</label>
+                            <input id="comfySeedNodeId" type="text" class="w-full mt-1 px-3 py-2 text-sm glass rounded-xl text-zinc-200" placeholder="3">
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-zinc-400" data-i18n="settings_comfy_negative_prompt">默认负向提示词</label>
+                            <input id="comfyNegativePrompt" type="text" class="w-full mt-1 px-3 py-2 text-sm glass rounded-xl text-zinc-200" placeholder="low quality, blurry">
+                        </div>
+                    </div>
+                    <textarea id="comfyPromptTemplate" rows="3" class="w-full px-3 py-2 text-sm glass rounded-xl text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/30 resize-y" data-i18n-placeholder="settings_comfy_prompt_template_placeholder"></textarea>
+                    <input id="comfyWorkflowFile" type="file" accept=".json,application/json" class="hidden">
+                    <div class="flex flex-wrap gap-2">
+                        <button id="comfyImportWorkflowBtn" type="button" class="px-3 py-1.5 text-xs rounded-lg bg-white/5 hover:bg-amber-500/20 active:bg-amber-500/30 text-amber-300 hover:text-amber-200 border border-white/10 transition-all font-medium" data-i18n="settings_comfy_import_workflow">导入 API Workflow</button>
+                        <button id="comfyTestBtn" type="button" class="px-3 py-1.5 text-xs rounded-lg bg-white/5 hover:bg-amber-500/20 active:bg-amber-500/30 text-zinc-300 hover:text-amber-200 border border-white/10 transition-all font-medium" data-i18n="settings_comfy_test">测试连接</button>
+                    </div>
+                    <div id="comfyWorkflowStatus" class="text-[10px] leading-relaxed text-zinc-500" data-i18n="settings_comfy_no_workflow">尚未导入 workflow。</div>
+                </div>
             </div>
 
             <!-- WebLLM 本地后端选择（零加载：仅用户在设置中主动切换并确认后才动态 import） -->
@@ -2606,6 +2660,12 @@ body.theme-new-dark ::-webkit-scrollbar-thumb:hover { background: rgba(40, 35, 3
                           class="flex-1 px-4 py-3 glass rounded-2xl text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none transition-all min-h-[44px]"
                           data-i18n-placeholder="input_placeholder"
                           disabled></textarea>
+                <button id="comfyGenerateBtn"
+                        class="hidden flex-shrink-0 w-11 h-11 rounded-2xl glass text-zinc-400 hover:text-amber-300 hover:bg-white/10 active:bg-white/15 transition-all duration-200 items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed"
+                        data-i18n-title="comfy_generate_title"
+                        disabled>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/><path d="M14 14l2 2"/></svg>
+                </button>
                 <button id="sendBtn"
                         class="flex-shrink-0 w-11 h-11 rounded-2xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-white font-semibold shadow-lg shadow-amber-500/20 hover:shadow-amber-500/35 transition-all duration-200 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed"
                         disabled>
@@ -3239,6 +3299,30 @@ var i18n = {
         settings_ollama_compat_label: 'Ollama 兼容模式',
         settings_ollama_compat_hint: '开启后会在发送前合并/降级多条 system 消息，避免部分本地模型的 Jinja 模板报错。',
         settings_model: '模型',
+        settings_comfy_title: 'ComfyUI 图像生成',
+        settings_comfy_hint: '连接本机 ComfyUI，通过导入 API workflow 手动生成图片并附加到聊天。',
+        settings_comfy_server: 'ComfyUI 地址',
+        settings_comfy_positive_node: '正向提示词节点 ID',
+        settings_comfy_negative_node: '负向提示词节点 ID',
+        settings_comfy_seed_node: 'Seed 节点 ID',
+        settings_comfy_negative_prompt: '默认负向提示词',
+        settings_comfy_prompt_template_placeholder: '提示词模板。可用：{{scene}} {{last_assistant}} {{input}} {{char}} {{user}}',
+        settings_comfy_import_workflow: '导入 API Workflow',
+        settings_comfy_test: '测试连接',
+        settings_comfy_no_workflow: '尚未导入 workflow。',
+        settings_comfy_import_success: 'ComfyUI workflow 已导入。',
+        settings_comfy_test_success: 'ComfyUI 连接成功。',
+        comfy_generate_title: '使用 ComfyUI 生成图像',
+        comfy_error_prefix: 'ComfyUI 错误：',
+        comfy_error_disabled: '请先在设置中启用 ComfyUI 图像生成。',
+        comfy_error_no_workflow: '请先导入 ComfyUI API workflow JSON。',
+        comfy_error_workflow_invalid: '无效的 ComfyUI workflow JSON。',
+        comfy_error_positive_node: '正向提示词节点无效：请填写包含 inputs.text 的节点 ID。',
+        comfy_error_timeout: '等待生成超时。',
+        comfy_error_ws: 'WebSocket 连接失败，请确认 ComfyUI 已启动并允许 CORS。',
+        comfy_error_prompt_id: 'ComfyUI 未返回 prompt_id。',
+        comfy_error_no_image: '生成完成，但 history 中没有找到输出图片。',
+        comfy_error_fetch_hint: '无法连接 ComfyUI。请确认地址/端口正确，并用 --enable-cors-header "*" 启动 ComfyUI；如果网页是 127.0.0.1:5500，ComfyUI 不能拒绝该 Origin。',
         api_test_button: '测试 API 连接',
         api_test_hint: '测试前请填写 Endpoint 与 Key',
         api_test_testing: '正在测试连接...',
@@ -3656,6 +3740,30 @@ var i18n = {
         settings_ollama_compat_label: 'Ollama 相容模式',
         settings_ollama_compat_hint: '開啟後會在送出前合併/降級多條 system 訊息，避免部分本地模型的 Jinja 模板報錯。',
         settings_model: '模型',
+        settings_comfy_title: 'ComfyUI 圖像生成',
+        settings_comfy_hint: '連接本機 ComfyUI，透過匯入 API workflow 手動生成圖片並附加到聊天。',
+        settings_comfy_server: 'ComfyUI 地址',
+        settings_comfy_positive_node: '正向提示詞節點 ID',
+        settings_comfy_negative_node: '負向提示詞節點 ID',
+        settings_comfy_seed_node: 'Seed 節點 ID',
+        settings_comfy_negative_prompt: '預設負向提示詞',
+        settings_comfy_prompt_template_placeholder: '提示詞模板。可用：{{scene}} {{last_assistant}} {{input}} {{char}} {{user}}',
+        settings_comfy_import_workflow: '匯入 API Workflow',
+        settings_comfy_test: '測試連接',
+        settings_comfy_no_workflow: '尚未匯入 workflow。',
+        settings_comfy_import_success: 'ComfyUI workflow 已匯入。',
+        settings_comfy_test_success: 'ComfyUI 連接成功。',
+        comfy_generate_title: '使用 ComfyUI 生成圖像',
+        comfy_error_prefix: 'ComfyUI 錯誤：',
+        comfy_error_disabled: '請先在設定中啟用 ComfyUI 圖像生成。',
+        comfy_error_no_workflow: '請先匯入 ComfyUI API workflow JSON。',
+        comfy_error_workflow_invalid: '無效的 ComfyUI workflow JSON。',
+        comfy_error_positive_node: '正向提示詞節點無效：請填寫包含 inputs.text 的節點 ID。',
+        comfy_error_timeout: '等待生成逾時。',
+        comfy_error_ws: 'WebSocket 連接失敗，請確認 ComfyUI 已啟動並允許 CORS。',
+        comfy_error_prompt_id: 'ComfyUI 未返回 prompt_id。',
+        comfy_error_no_image: '生成完成，但 history 中沒有找到輸出圖片。',
+        comfy_error_fetch_hint: '無法連接 ComfyUI。請確認地址/連接埠正確，並用 --enable-cors-header "*" 啟動 ComfyUI；如果網頁是 127.0.0.1:5500，ComfyUI 不能拒絕該 Origin。',
         api_test_button: '測試 API 連接',
         api_test_hint: '測試前請填寫 Endpoint 與 Key',
         api_test_testing: '正在測試連接...',
@@ -4026,6 +4134,30 @@ var i18n = {
         settings_ollama_compat_label: 'Ollama Compatibility Mode',
         settings_ollama_compat_hint: 'Merges or downgrades multiple system messages before sending to avoid Jinja template errors in some local models.',
         settings_model: 'Model',
+        settings_comfy_title: 'ComfyUI Image Generation',
+        settings_comfy_hint: 'Connect to local ComfyUI, import an API workflow, then manually generate images into chat.',
+        settings_comfy_server: 'ComfyUI Server',
+        settings_comfy_positive_node: 'Positive Prompt Node ID',
+        settings_comfy_negative_node: 'Negative Prompt Node ID',
+        settings_comfy_seed_node: 'Seed Node ID',
+        settings_comfy_negative_prompt: 'Default Negative Prompt',
+        settings_comfy_prompt_template_placeholder: 'Prompt template. Available: {{scene}} {{last_assistant}} {{input}} {{char}} {{user}}',
+        settings_comfy_import_workflow: 'Import API Workflow',
+        settings_comfy_test: 'Test Connection',
+        settings_comfy_no_workflow: 'No workflow imported yet.',
+        settings_comfy_import_success: 'ComfyUI workflow imported.',
+        settings_comfy_test_success: 'ComfyUI connection succeeded.',
+        comfy_generate_title: 'Generate image with ComfyUI',
+        comfy_error_prefix: 'ComfyUI error: ',
+        comfy_error_disabled: 'Enable ComfyUI image generation in Settings first.',
+        comfy_error_no_workflow: 'Import a ComfyUI API workflow JSON first.',
+        comfy_error_workflow_invalid: 'Invalid ComfyUI workflow JSON.',
+        comfy_error_positive_node: 'Invalid positive prompt node: enter a node ID with inputs.text.',
+        comfy_error_timeout: 'Timed out waiting for generation.',
+        comfy_error_ws: 'WebSocket failed. Make sure ComfyUI is running and CORS is enabled.',
+        comfy_error_prompt_id: 'ComfyUI did not return prompt_id.',
+        comfy_error_no_image: 'Generation finished, but no output image was found in history.',
+        comfy_error_fetch_hint: 'Cannot reach ComfyUI. Check the server URL/port and start ComfyUI with --enable-cors-header "*"; if the page is 127.0.0.1:5500, ComfyUI must allow that Origin.',
         api_test_button: 'Test API Connection',
         api_test_hint: 'Fill Endpoint and Key before testing',
         api_test_testing: 'Testing API connection...',
@@ -6231,7 +6363,18 @@ function defaultSettings() {
 
         // WebLLM 本地推理后端（仅在用户主动选择并确认后才加载）
         inferenceBackend: 'remote-api',
-        webllmModel: 'Llama-3.2-1B-Instruct-q4f16_1-MLC'
+        webllmModel: 'Llama-3.2-1B-Instruct-q4f16_1-MLC',
+
+        // ComfyUI local txt2img integration
+        comfyEnabled: false,
+        comfyServer: 'http://127.0.0.1:8188',
+        comfyWorkflow: null,
+        comfyWorkflowName: '',
+        comfyPositiveNodeId: '',
+        comfyNegativeNodeId: '',
+        comfySeedNodeId: '',
+        comfyNegativePrompt: 'low quality, blurry, bad anatomy, bad hands',
+        comfyPromptTemplate: 'masterpiece, best quality, anime style, {{char}}, {{scene}}'
     };
 }
 
@@ -7837,7 +7980,9 @@ function buildMessagesForAPI() {
     // 【核心修复1 兼容增强】基于最后一个 summary 的 coveredEnd 向前裁剪
     // 1. 新总结会通过 performSummarization 物理移除消息（最优路径）
     // 2. 旧存档 / 未 prune 的对话也能立刻受益，不会把已总结的旧消息再塞进 prompt
-    var regularMsgs = conv.messages.filter(function(m) { return m.role !== 'system'; });
+    var regularMsgs = conv.messages.filter(function(m) {
+        return m.role !== 'system' && String(m.content || '').trim();
+    });
     var lastCovered = -1;
     if (conv.summaries && conv.summaries.length > 0) {
         conv.summaries.forEach(function(s) {
@@ -10013,6 +10158,289 @@ function streamChat(onToken, onComplete, onError) {
         return;
     }
     streamChatWithMessages(messages, onToken, onComplete, onError);
+}
+
+// ==================== ComfyUI txt2img ====================
+let comfyIsGenerating = false;
+
+function normalizeComfyServer(url) {
+    url = String(url || '').trim() || 'http://127.0.0.1:8188';
+    return url.replace(/\/+$/, '');
+}
+
+function makeComfyClientId() {
+    return 'opentavern-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+}
+
+function cloneComfyWorkflow() {
+    ensureComfySettings();
+    if (!state.settings.comfyWorkflow || typeof state.settings.comfyWorkflow !== 'object') {
+        throw new Error(t('comfy_error_no_workflow'));
+    }
+    return JSON.parse(JSON.stringify(state.settings.comfyWorkflow));
+}
+
+function setComfyNodeInput(workflow, nodeId, inputName, value) {
+    if (!nodeId) return false;
+    var node = workflow[String(nodeId)];
+    if (!node || !node.inputs || !(inputName in node.inputs)) return false;
+    node.inputs[inputName] = value;
+    return true;
+}
+
+function buildComfyPromptText(conv) {
+    ensureComfySettings();
+    var latestAssistant = '';
+    if (conv && Array.isArray(conv.messages)) {
+        for (var i = conv.messages.length - 1; i >= 0; i--) {
+            if (conv.messages[i] && conv.messages[i].role === 'assistant' && conv.messages[i].content) {
+                latestAssistant = conv.messages[i].content;
+                break;
+            }
+        }
+    }
+    var inputText = dom.messageInput ? dom.messageInput.value.trim() : '';
+    var scene = inputText || latestAssistant || (conv && conv.title) || '';
+    var character = '';
+    if (conv) {
+        if (isGroupChat(conv)) {
+            character = getGroupMembers(conv).map(function(m) {
+                return m && m.character ? m.character.name : '';
+            }).filter(Boolean).join(', ');
+        } else if (conv.character && conv.character.name) {
+            character = conv.character.name;
+        }
+    }
+    var text = state.settings.comfyPromptTemplate || '{{scene}}';
+    text = text.replace(/\{\{scene\}\}/gi, scene)
+        .replace(/\{\{last_assistant\}\}/gi, latestAssistant)
+        .replace(/\{\{input\}\}/gi, inputText)
+        .replace(/\{\{char\}\}/gi, character)
+        .replace(/\{\{user\}\}/gi, state.settings.userName || 'User');
+    return text.trim() || scene || character || 'roleplay scene';
+}
+
+function applyComfyPromptToWorkflow(workflow, promptText) {
+    ensureComfySettings();
+    var posId = String(state.settings.comfyPositiveNodeId || '').trim();
+    var negId = String(state.settings.comfyNegativeNodeId || '').trim();
+    var seedId = String(state.settings.comfySeedNodeId || '').trim();
+    if (!setComfyNodeInput(workflow, posId, 'text', promptText)) {
+        throw new Error(t('comfy_error_positive_node'));
+    }
+    if (negId) setComfyNodeInput(workflow, negId, 'text', state.settings.comfyNegativePrompt || '');
+    if (seedId) {
+        var node = workflow[seedId];
+        if (node && node.inputs) {
+            if ('seed' in node.inputs) node.inputs.seed = Math.floor(Math.random() * 9007199254740991);
+            else if ('noise_seed' in node.inputs) node.inputs.noise_seed = Math.floor(Math.random() * 9007199254740991);
+        }
+    }
+}
+
+function waitForComfyPrompt(server, clientId, promptId, timeoutMs) {
+    return new Promise(function(resolve, reject) {
+        var wsUrl = server.replace(/^http/i, 'ws') + '/ws?clientId=' + encodeURIComponent(clientId);
+        var ws;
+        var done = false;
+        var pollTimer = null;
+        var timer = setTimeout(function() {
+            cleanup();
+            reject(new Error(t('comfy_error_timeout')));
+        }, timeoutMs || 180000);
+
+        function cleanup() {
+            done = true;
+            clearTimeout(timer);
+            if (pollTimer) clearInterval(pollTimer);
+            try { if (ws) ws.close(); } catch (_) {}
+        }
+
+        async function pollHistory() {
+            if (done) return;
+            try {
+                var res = await fetch(server + '/history/' + encodeURIComponent(promptId));
+                if (!res.ok) return;
+                var json = await res.json();
+                if (json && (json[promptId] || json.outputs)) {
+                    cleanup();
+                    resolve();
+                }
+            } catch (_) {}
+        }
+        pollTimer = setInterval(pollHistory, 2500);
+
+        try {
+            ws = new WebSocket(wsUrl);
+        } catch (e) {
+            cleanup();
+            reject(e);
+            return;
+        }
+
+        ws.onerror = function() {
+            if (!done) {
+                cleanup();
+                reject(new Error(t('comfy_error_ws')));
+            }
+        };
+        ws.onmessage = function(ev) {
+            if (done || typeof ev.data !== 'string') return;
+            try {
+                var msg = JSON.parse(ev.data);
+                if (msg.type === 'executing' && msg.data && msg.data.prompt_id === promptId && msg.data.node === null) {
+                    cleanup();
+                    resolve();
+                }
+            } catch (_) {}
+        };
+    });
+}
+
+function findComfyOutputImage(history, promptId) {
+    var item = history && (history[promptId] || history);
+    var outputs = item && item.outputs ? item.outputs : {};
+    var nodeIds = Object.keys(outputs || {});
+    for (var i = 0; i < nodeIds.length; i++) {
+        var images = outputs[nodeIds[i]] && outputs[nodeIds[i]].images;
+        if (Array.isArray(images) && images.length > 0) return images[0];
+    }
+    return null;
+}
+
+async function fetchBlobAsDataUrl(url) {
+    var res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var blob = await res.blob();
+    return await new Promise(function(resolve, reject) {
+        var reader = new FileReader();
+        reader.onload = function() { resolve(reader.result); };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+}
+
+async function generateComfyImageForCurrentChat() {
+    if (comfyIsGenerating || state.isGenerating) return;
+    ensureComfySettings();
+    if (!state.settings.comfyEnabled) {
+        alert(t('comfy_error_disabled'));
+        return;
+    }
+    var conv = getActiveConv();
+    if (!conv) return;
+
+    var server = normalizeComfyServer(state.settings.comfyServer);
+    var promptText = buildComfyPromptText(conv);
+    var workflow = cloneComfyWorkflow();
+    applyComfyPromptToWorkflow(workflow, promptText);
+
+    comfyIsGenerating = true;
+    updateInputState();
+    if (dom.comfyGenerateBtn) dom.comfyGenerateBtn.classList.add('animate-pulse');
+
+    try {
+        var clientId = makeComfyClientId();
+        var submitRes = await fetch(server + '/prompt', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: workflow, client_id: clientId })
+        });
+        if (!submitRes.ok) throw new Error('HTTP ' + submitRes.status + ': ' + (await submitRes.text()).slice(0, 200));
+        var submitJson = await submitRes.json();
+        var promptId = submitJson.prompt_id;
+        if (!promptId) throw new Error(t('comfy_error_prompt_id'));
+
+        await waitForComfyPrompt(server, clientId, promptId, 180000);
+        var histRes = await fetch(server + '/history/' + encodeURIComponent(promptId));
+        if (!histRes.ok) throw new Error('HTTP ' + histRes.status);
+        var history = await histRes.json();
+        var image = findComfyOutputImage(history, promptId);
+        if (!image) throw new Error(t('comfy_error_no_image'));
+
+        var viewUrl = server + '/view?filename=' + encodeURIComponent(image.filename || '') +
+            '&subfolder=' + encodeURIComponent(image.subfolder || '') +
+            '&type=' + encodeURIComponent(image.type || 'output');
+        var dataUrl = await fetchBlobAsDataUrl(viewUrl);
+        var msg = {
+            role: 'assistant',
+            content: '',
+            attachments: [{
+                type: 'image',
+                source: 'comfyui',
+                mime: dataUrl.slice(5, dataUrl.indexOf(';')) || 'image/png',
+                dataUrl: dataUrl,
+                prompt: promptText,
+                comfyPromptId: promptId,
+                filename: image.filename || '',
+                createdAt: Date.now()
+            }]
+        };
+        conv.messages.push(msg);
+        conv.updated = Date.now();
+        conv._lastRenderedVisibleCount = 0;
+        persistState();
+        renderMessagesOnly();
+        renderConversationListOnly();
+    } catch (e) {
+        alert(t('comfy_error_prefix') + formatComfyError(e));
+    } finally {
+        comfyIsGenerating = false;
+        if (dom.comfyGenerateBtn) dom.comfyGenerateBtn.classList.remove('animate-pulse');
+        updateInputState();
+    }
+}
+
+async function importComfyWorkflowFile(file) {
+    if (!file) return;
+    try {
+        var text = await file.text();
+        var json = JSON.parse(text);
+        if (!json || typeof json !== 'object' || Array.isArray(json)) throw new Error(t('comfy_error_workflow_invalid'));
+        ensureComfySettings();
+        state.settings.comfyWorkflow = json;
+        state.settings.comfyWorkflowName = file.name || 'workflow.json';
+        persistState(true);
+        updateComfyWorkflowStatus();
+        alert(t('settings_comfy_import_success'));
+    } catch (e) {
+        alert(t('comfy_error_prefix') + formatComfyError(e));
+    } finally {
+        if (dom.comfyWorkflowFile) dom.comfyWorkflowFile.value = '';
+    }
+}
+
+function updateComfyWorkflowStatus() {
+    if (!dom.comfyWorkflowStatus) return;
+    ensureComfySettings();
+    if (state.settings.comfyWorkflow) {
+        var count = Object.keys(state.settings.comfyWorkflow).length;
+        dom.comfyWorkflowStatus.textContent = (state.settings.comfyWorkflowName || 'workflow.json') + ' · ' + count + ' nodes';
+        dom.comfyWorkflowStatus.style.color = '#86efac';
+    } else {
+        dom.comfyWorkflowStatus.textContent = t('settings_comfy_no_workflow');
+        dom.comfyWorkflowStatus.style.color = '';
+    }
+}
+
+async function testComfyConnection() {
+    ensureComfySettings();
+    var server = normalizeComfyServer(dom.comfyServer ? dom.comfyServer.value : state.settings.comfyServer);
+    try {
+        var res = await fetch(server + '/system_stats');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        alert(t('settings_comfy_test_success'));
+    } catch (e) {
+        alert(t('comfy_error_prefix') + (e.message || e));
+    }
+}
+
+function formatComfyError(e) {
+    var msg = (e && e.message) || String(e || '');
+    if (/failed to fetch|networkerror|load failed/i.test(msg)) {
+        return t('comfy_error_fetch_hint') + '\n\n' + msg;
+    }
+    return msg;
 }
 
 // ==================== WebLLM 本地生成（仅在 ensure 成功后调用） ====================
@@ -12408,7 +12836,7 @@ var dom = {};
 function cacheDom() {
     var ids = [
         'sidebar','convList','noConvHint','chatTopBar','charAvatar','chatTitle','chatSubtitle',
-        'messagesContainer','emptyState','messageInput','sendBtn','stopBtn','mentionBtn','mentionPill','mentionPillName','mentionPillClear',
+        'messagesContainer','emptyState','messageInput','sendBtn','stopBtn','mentionBtn','mentionPill','mentionPillName','mentionPillClear','comfyGenerateBtn',
         'settingsModal','settingsBackdrop','settingsCloseBtn',
         'apiEndpoint','apiKey','saveApiKey','ollamaCompatMode','modelName','contextLength','contextLenVal',
         'maxTokens','maxTokensVal','temperature','tempVal','topP','topPVal',
@@ -12461,6 +12889,8 @@ function cacheDom() {
         'uiTheme','lowPowerMode',
         'summarizeUseMainAPI','summarizeApiEndpoint','summarizeApiKey','summarizeModel',
         'summarizeCustomApiSection',
+        'comfyEnabled','comfyServer','comfyPositiveNodeId','comfyNegativeNodeId','comfySeedNodeId',
+        'comfyNegativePrompt','comfyPromptTemplate','comfyImportWorkflowBtn','comfyWorkflowFile','comfyTestBtn','comfyWorkflowStatus',
         // Announcement modal
         'announceModal','announceBackdrop','announceCloseBtn','announceDontShow','announceGotItBtn',
         // New Chat Character Picker
@@ -12480,6 +12910,34 @@ function cacheDom() {
 
 function defaultSillyTavernPreset() {
     return { name: '', importedAt: '', prompts: [], promptOrder: [] };
+}
+
+function ensureComfySettings() {
+    if (!state.settings) state.settings = defaultSettings();
+    var defs = defaultSettings();
+    [
+        'comfyEnabled',
+        'comfyServer',
+        'comfyWorkflow',
+        'comfyWorkflowName',
+        'comfyPositiveNodeId',
+        'comfyNegativeNodeId',
+        'comfySeedNodeId',
+        'comfyNegativePrompt',
+        'comfyPromptTemplate'
+    ].forEach(function(key) {
+        if (state.settings[key] === undefined || state.settings[key] === null) {
+            state.settings[key] = defs[key];
+        }
+    });
+    state.settings.comfyServer = String(state.settings.comfyServer || defs.comfyServer);
+    state.settings.comfyWorkflowName = String(state.settings.comfyWorkflowName || '');
+    state.settings.comfyPositiveNodeId = String(state.settings.comfyPositiveNodeId || '');
+    state.settings.comfyNegativeNodeId = String(state.settings.comfyNegativeNodeId || '');
+    state.settings.comfySeedNodeId = String(state.settings.comfySeedNodeId || '');
+    state.settings.comfyNegativePrompt = String(state.settings.comfyNegativePrompt || '');
+    state.settings.comfyPromptTemplate = String(state.settings.comfyPromptTemplate || defs.comfyPromptTemplate);
+    return state.settings;
 }
 
 function ensureSillyTavernPresetSettings() {
@@ -13333,7 +13791,7 @@ function renderMessages() {
                 <div class="max-w-[80%] msg-wrapper">
                     ${!isUser ? `<p class="text-[10px] text-zinc-500 mb-1 ml-1 font-medium">${escapeHtml(senderName)}</p>` : ''}
                     ${!isUser ? renderCotBlock(msg.cot) : ''}
-                    <div class="msg-bubble">${isUser ? escapeHtml(msg.content) : renderAssistantContent(msg.content)}</div>
+                    <div class="msg-bubble">${renderMessageBubbleContent(msg, isUser)}</div>
                     <div class="msg-actions">
                         <button class="msg-action-btn copy-btn" data-action="copy" data-msg-idx="${actualIdx}" title="${t('copy')}">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -13382,7 +13840,7 @@ function renderMessages() {
         html += '<div class="max-w-[80%] msg-wrapper">';
         if (!isUser) html += '<p class="text-[10px] text-zinc-500 mb-1 ml-1 font-medium">' + escapeHtml(senderName) + '</p>';
         if (!isUser) html += renderCotBlock(msg.cot);
-        html += '<div class="msg-bubble">' + (isUser ? escapeHtml(msg.content) : renderAssistantContent(msg.content)) + '</div>';
+        html += '<div class="msg-bubble">' + renderMessageBubbleContent(msg, isUser) + '</div>';
         html += '<div class="msg-actions">';
         html += '<button class="msg-action-btn copy-btn" data-action="copy" data-msg-idx="' + actualIdx + '" title="' + t('copy') + '"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>';
         html += '<button class="msg-action-btn edit-btn" data-action="edit" data-msg-idx="' + actualIdx + '" title="' + t('edit_msg') + '"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>';
@@ -13441,7 +13899,7 @@ function renderMessagesFullHistory(conv) {
         html += '<div class="max-w-[80%] msg-wrapper">';
         if (!isUser) html += '<p class="text-[10px] text-zinc-500 mb-1 ml-1 font-medium">' + escapeHtml(senderName) + '</p>';
         if (!isUser) html += renderCotBlock(msg.cot);
-        html += '<div class="msg-bubble">' + (isUser ? escapeHtml(msg.content) : renderAssistantContent(msg.content)) + '</div>';
+        html += '<div class="msg-bubble">' + renderMessageBubbleContent(msg, isUser) + '</div>';
         html += '<div class="msg-actions">';
         html += '<button class="msg-action-btn copy-btn" data-action="copy" data-msg-idx="' + actualIdx + '" title="' + t('copy') + '"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>';
         html += '<button class="msg-action-btn edit-btn" data-action="edit" data-msg-idx="' + actualIdx + '" title="' + t('edit_msg') + '"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>';
@@ -13806,14 +14264,20 @@ function updateInputState() {
     var hasApiKey = !!(state.settings.apiKey && state.settings.apiEndpoint);
     // 本地 WebLLM 模式不需要远程 API Key
     var canSend = useLocal || hasApiKey;
+    ensureComfySettings();
+    var showComfy = !!state.settings.comfyEnabled;
+    var canComfy = !!getActiveConv() && showComfy && !!state.settings.comfyWorkflow && !state.isGenerating && !comfyIsGenerating;
     dom.messageInput.disabled = !canSend || state.isGenerating;
     dom.sendBtn.disabled = !canSend || state.isGenerating;
+    if (dom.comfyGenerateBtn) dom.comfyGenerateBtn.disabled = !canComfy;
     if (state.isGenerating) {
         dom.stopBtn.classList.remove('hidden');
         dom.sendBtn.classList.add('hidden');
+        if (dom.comfyGenerateBtn) dom.comfyGenerateBtn.classList.add('hidden');
     } else {
         dom.stopBtn.classList.add('hidden');
         dom.sendBtn.classList.remove('hidden');
+        if (dom.comfyGenerateBtn) dom.comfyGenerateBtn.classList.toggle('hidden', !showComfy);
     }
     if (!canSend && !state.isGenerating) {
         dom.messageInput.placeholder = t('input_placeholder_no_api');
@@ -13998,6 +14462,29 @@ function renderAssistantContent(text) {
 
     html += highlightDialogue(raw.slice(lastIndex));
     return html;
+}
+
+function renderMessageAttachments(msg) {
+    if (!msg || !Array.isArray(msg.attachments) || msg.attachments.length === 0) return '';
+    var html = '<div class="msg-attachments">';
+    msg.attachments.forEach(function(att) {
+        if (!att || att.type !== 'image') return;
+        var src = att.dataUrl || att.url || '';
+        if (!src) return;
+        var label = att.source === 'comfyui' ? 'ComfyUI' : (att.source || 'Image');
+        var prompt = att.prompt ? String(att.prompt) : '';
+        html += '<figure>';
+        html += '<img class="msg-attachment-image" src="' + escapeHtml(src) + '" alt="' + escapeHtml(label) + '" loading="lazy">';
+        html += '<figcaption class="msg-attachment-caption">' + escapeHtml(label + (prompt ? ' · ' + prompt.slice(0, 180) : '')) + '</figcaption>';
+        html += '</figure>';
+    });
+    html += '</div>';
+    return html;
+}
+
+function renderMessageBubbleContent(msg, isUser) {
+    var content = isUser ? escapeHtml(msg && msg.content) : renderAssistantContent(msg && msg.content);
+    return content + renderMessageAttachments(msg);
 }
 
 function renderCotBlock(cot, streaming) {
@@ -14325,6 +14812,7 @@ function sendMessage() {
 // ==================== Event Bindings ====================
 function bindEvents() {
     dom.sendBtn.addEventListener('click', sendMessage);
+    if (dom.comfyGenerateBtn) dom.comfyGenerateBtn.addEventListener('click', generateComfyImageForCurrentChat);
     dom.messageInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
     });
@@ -14571,6 +15059,17 @@ function bindEvents() {
         dom.summarizeApiEndpoint.value = state.settings.summarizeApiEndpoint || '';
         dom.summarizeApiKey.value = state.settings.summarizeApiKey || '';
         dom.summarizeModel.value = state.settings.summarizeModel || 'deepseek-v4-flash';
+
+        // ComfyUI txt2img
+        ensureComfySettings();
+        if (dom.comfyEnabled) dom.comfyEnabled.checked = !!state.settings.comfyEnabled;
+        if (dom.comfyServer) dom.comfyServer.value = state.settings.comfyServer || 'http://127.0.0.1:8188';
+        if (dom.comfyPositiveNodeId) dom.comfyPositiveNodeId.value = state.settings.comfyPositiveNodeId || '';
+        if (dom.comfyNegativeNodeId) dom.comfyNegativeNodeId.value = state.settings.comfyNegativeNodeId || '';
+        if (dom.comfySeedNodeId) dom.comfySeedNodeId.value = state.settings.comfySeedNodeId || '';
+        if (dom.comfyNegativePrompt) dom.comfyNegativePrompt.value = state.settings.comfyNegativePrompt || '';
+        if (dom.comfyPromptTemplate) dom.comfyPromptTemplate.value = state.settings.comfyPromptTemplate || '';
+        updateComfyWorkflowStatus();
 
         // Toggle custom section visibility
         toggleSummarizeCustomSection();
@@ -14864,6 +15363,16 @@ function bindEvents() {
         state.settings.summarizeApiKey = dom.summarizeApiKey.value.trim();
         state.settings.summarizeModel = dom.summarizeModel.value.trim() || 'deepseek-v4-flash';
 
+        // ComfyUI txt2img
+        ensureComfySettings();
+        if (dom.comfyEnabled) state.settings.comfyEnabled = !!dom.comfyEnabled.checked;
+        if (dom.comfyServer) state.settings.comfyServer = normalizeComfyServer(dom.comfyServer.value);
+        if (dom.comfyPositiveNodeId) state.settings.comfyPositiveNodeId = dom.comfyPositiveNodeId.value.trim();
+        if (dom.comfyNegativeNodeId) state.settings.comfyNegativeNodeId = dom.comfyNegativeNodeId.value.trim();
+        if (dom.comfySeedNodeId) state.settings.comfySeedNodeId = dom.comfySeedNodeId.value.trim();
+        if (dom.comfyNegativePrompt) state.settings.comfyNegativePrompt = dom.comfyNegativePrompt.value.trim();
+        if (dom.comfyPromptTemplate) state.settings.comfyPromptTemplate = dom.comfyPromptTemplate.value.trim() || defaultSettings().comfyPromptTemplate;
+
         // WebLLM 后端（从表单读取）
         var backendSel2 = document.getElementById('inferenceBackend');
         var webllmSel2 = document.getElementById('webllmModel');
@@ -14886,6 +15395,7 @@ function bindEvents() {
         if (typeof applyPerformanceMode === 'function') {
             applyPerformanceMode(state.settings.lowPowerMode);
         }
+        updateInputState();
 
         // 设置变更后清理相关缓存，确保 token 条和世界书激活正确刷新
         var conv = getActiveConv();
@@ -14916,6 +15426,14 @@ function bindEvents() {
     });
     if (dom.stPresetExportBtn) dom.stPresetExportBtn.addEventListener('click', exportSillyTavernPreset);
     if (dom.stPresetDeleteBtn) dom.stPresetDeleteBtn.addEventListener('click', deleteSillyTavernPreset);
+    if (dom.comfyImportWorkflowBtn) dom.comfyImportWorkflowBtn.addEventListener('click', function() {
+        if (dom.comfyWorkflowFile) dom.comfyWorkflowFile.click();
+    });
+    if (dom.comfyWorkflowFile) dom.comfyWorkflowFile.addEventListener('change', function(e) {
+        var file = e.target.files && e.target.files[0];
+        if (file) importComfyWorkflowFile(file);
+    });
+    if (dom.comfyTestBtn) dom.comfyTestBtn.addEventListener('click', testComfyConnection);
 
     // Settings sliders
     function bindSlider(slider, valEl, format) {
