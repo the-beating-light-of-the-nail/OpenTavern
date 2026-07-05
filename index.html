@@ -7165,6 +7165,7 @@ function appendFinalAssistantMessage(conv, fullContent, fullCot) {
             </div>
         </div>`;
 
+    var scrollSnapshot = captureMessagesScroll(container);
     container.appendChild(msgDiv);
 
     // 更新增量渲染计数
@@ -7173,10 +7174,7 @@ function appendFinalAssistantMessage(conv, fullContent, fullCot) {
     }
 
     // 只有当用户当前在底部时才自动滚动到底部
-    var isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 150;
-    if (isNearBottom) {
-        container.scrollTop = container.scrollHeight;
-    }
+    restoreMessagesScroll(container, scrollSnapshot, false);
 
     // 更新 token 信息栏（函数独立性考虑，即使调用方也会调用一次）
     renderTokenBar();
@@ -10563,7 +10561,34 @@ function removeLinkedSecondStageMessages(conv, parentMsg) {
     }
 }
 
+var MESSAGE_AUTOSCROLL_THRESHOLD = 150;
+
+function isMessagesNearBottom(container) {
+    if (!container) return true;
+    return container.scrollHeight - container.scrollTop - container.clientHeight < MESSAGE_AUTOSCROLL_THRESHOLD;
+}
+
+function captureMessagesScroll(container) {
+    return {
+        nearBottom: isMessagesNearBottom(container),
+        scrollTop: container ? container.scrollTop : 0
+    };
+}
+
+function restoreMessagesScroll(container, snapshot, forceBottom) {
+    if (!container) return;
+    if (forceBottom || !snapshot || snapshot.nearBottom) {
+        container.scrollTop = container.scrollHeight;
+        return;
+    }
+    var maxScrollTop = Math.max(0, container.scrollHeight - container.clientHeight);
+    container.scrollTop = Math.min(snapshot.scrollTop, maxScrollTop);
+}
+
 function updateStreamingBubble(fullContent, conv, label, fullCot) {
+    var container = dom.messagesContainer;
+    if (!container) return;
+    var scrollSnapshot = captureMessagesScroll(container);
     var streamingEl = document.getElementById('streamingContent');
     if (streamingEl) {
         streamingEl.innerHTML = renderAssistantContent(fullContent);
@@ -10577,11 +10602,10 @@ function updateStreamingBubble(fullContent, conv, label, fullCot) {
             escapeHtml(label || getCurrentGeneratingSpeakerName(conv)) +
             '</p><div id="streamingCot">' + renderCotBlock(fullCot, true) + '</div><div class="msg-bubble typing-cursor" id="streamingContent">' +
             renderAssistantContent(fullContent) + '</div></div>';
-        dom.messagesContainer.appendChild(div);
+        container.appendChild(div);
     }
-    dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+    restoreMessagesScroll(container, scrollSnapshot, false);
 }
-
 function finishAssistantMessage(conv, fullContent, speakerForMsg, stage, parentId, fullCot) {
     if (!conv || !fullContent) return null;
     var pushObj = { role: 'assistant', content: fullContent, id: makeId() };
@@ -13758,6 +13782,9 @@ function renderMessages() {
     if (dom.emptyState) dom.emptyState.style.display = 'none';
     if (dom.tokenInfo) dom.tokenInfo.classList.remove('hidden');
 
+    var scrollSnapshot = captureMessagesScroll(container);
+    var keepScrollDuringGeneration = state.isGenerating && container.children.length > 0 && !scrollSnapshot.nearBottom;
+
     // === 增量 DOM 更新 + Windowed Rendering (支持长对话历史) ===
     // 默认只渲染最近 N 条以保持性能；用户向上滚动或点击按钮可加载更早消息
     var DEFAULT_WINDOW = 150;
@@ -13818,7 +13845,7 @@ function renderMessages() {
             fragment.appendChild(msgDiv);
         }
         container.appendChild(fragment);
-        container.scrollTop = container.scrollHeight;
+        restoreMessagesScroll(container, scrollSnapshot, !keepScrollDuringGeneration);
 
         conv._lastRenderedVisibleCount = currentVisibleCount;
 
@@ -13872,7 +13899,7 @@ function renderMessages() {
     }
 
     container.innerHTML = html;
-    container.scrollTop = container.scrollHeight;
+    restoreMessagesScroll(container, scrollSnapshot, !keepScrollDuringGeneration);
 
     conv._lastRenderedVisibleCount = currentVisibleCount;
 
