@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN" class="dark">
 <head>
 <meta charset="UTF-8">
@@ -1378,7 +1378,7 @@ body.theme-new-dark ::-webkit-scrollbar-thumb:hover { background: rgba(40, 35, 3
             <hr class="border-white/5">
             <div>
                 <div class="flex items-center justify-between mb-1.5">
-                    <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider" data-i18n="settings_context_length">上下文长度（消息条数）</label>
+                    <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider" data-i18n="settings_context_length">上下文长度（对话气泡数）</label>
                     <span id="contextLenVal" class="text-xs text-zinc-500 bg-white/5 px-2 py-0.5 rounded-full">20</span>
                 </div>
                 <input type="range" id="contextLength" min="1" max="50" value="20" class="w-full">
@@ -1520,7 +1520,7 @@ body.theme-new-dark ::-webkit-scrollbar-thumb:hover { background: rgba(40, 35, 3
             <div class="flex items-center justify-between">
                 <div>
                     <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider" data-i18n="summary_auto_label">启用自动总结</label>
-                    <p class="text-[10px] text-zinc-600 mt-0.5" data-i18n="summary_auto_hint">开启后，当消息数量达到下方“触发阈值”时自动总结旧内容并移除原始注入。</p>
+                    <p class="text-[10px] text-zinc-600 mt-0.5" data-i18n="summary_auto_hint">开启后，当对话气泡数量达到下方“触发阈值”时自动总结旧内容并移除原始注入。</p>
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-3">
                     <input type="checkbox" id="summaryEnabled" class="sr-only peer">
@@ -1531,7 +1531,7 @@ body.theme-new-dark ::-webkit-scrollbar-thumb:hover { background: rgba(40, 35, 3
             <!-- 触发阈值 + 警告 -->
             <div class="mt-3">
                 <div class="flex items-center justify-between mb-1">
-                    <label class="text-xs font-semibold text-zinc-400" data-i18n="settings_summary_threshold">自动总结触发阈值（消息条数）</label>
+                    <label class="text-xs font-semibold text-zinc-400" data-i18n="settings_summary_threshold">自动总结触发阈值（对话气泡数）</label>
                     <span id="summaryThresholdVal" class="text-xs text-zinc-500 bg-white/5 px-2 py-0.5 rounded-full">10</span>
                 </div>
                 <input type="range" id="summaryThreshold" min="1" max="100" value="10" class="w-full">
@@ -3353,7 +3353,7 @@ var i18n = {
         api_test_suggest_apikey: 'API Key 格式：sk-... （或 provider 特定前缀），并确保 Key 有调用 /models 与 chat 权限。',
         api_test_suggest_stream: '服务器是否开启了 streaming 支持？本次测试主要用 stream:false + /models，非流式若也失败则基本不可用。',
         api_test_suggest_gateway: '502/503/504：检查 nginx / 反向代理 / 后端服务是否正常运行。',
-        settings_context_length: '上下文长度（消息条数）',
+        settings_context_length: '上下文长度（对话气泡数）',
         settings_max_tokens: '最大回复 Token 数',
         settings_temperature: '温度',
         settings_top_p: 'Top P',
@@ -3434,7 +3434,7 @@ var i18n = {
         summary_btn: '总结',
         summary_title: '对话总结',
         summary_auto_label: '启用自动总结',
-        summary_auto_hint: '当消息数量达到下方“触发阈值”时自动总结。建议上下文长度 ≥12，阈值设为上下文的 50%~70% 效果最佳。',
+        summary_auto_hint: '当对话气泡数量达到下方“触发阈值”时自动总结。建议上下文长度 ≥12，阈值设为上下文的 50%~70% 效果最佳。',
         auto_summarize_on_reply_label: '回复后自动生成总结',
         auto_summarize_on_reply_hint: '（进阶）控制是否在回复后执行自动总结检查。核心“超过轮数自动总结”由上方开关独立控制（默认开启）',
         summary_manual_title: '手动总结',
@@ -3467,7 +3467,7 @@ var i18n = {
         summary_covered_legacy: '（创建时索引）',
         // 新增：总结截断警告（修复 #2）
         summary_truncated_warning: '【注意：总结因模型输出上限或输入过长被截断。建议：1) 调高“总结字数限制” 2) 使用支持长输出的模型（如 deepseek-chat） 3) 手动总结时减小轮数/范围】',
-        settings_summary_threshold: '自动总结触发阈值（消息条数）',
+        settings_summary_threshold: '自动总结触发阈值（对话气泡数）',
         settings_summary_max_words: '总结字数限制（0为不限制）',
         settings_summary_prompt: '自定义总结提示词',
         settings_summary_prompt_hint: '留空时使用内置总结提示词；填写后覆盖内置提示词，字数限制仍会追加到末尾。',
@@ -3794,7 +3794,7 @@ var i18n = {
         api_test_suggest_apikey: 'API Key 格式：sk-... （或 provider 特定前綴），並確保 Key 有呼叫 /models 與 chat 權限。',
         api_test_suggest_stream: '伺服器是否開啟了 streaming 支援？本次測試主要用 stream:false + /models，非串流若也失敗則基本不可用。',
         api_test_suggest_gateway: '502/503/504：檢查 nginx / 反向代理 / 後端服務是否正常運作。',
-        settings_context_length: '上下文長度（訊息條數）',
+        settings_context_length: '上下文長度（對話氣泡數）',
         settings_max_tokens: '最大回覆 Token 數',
         settings_temperature: '溫度',
         settings_top_p: 'Top P',
@@ -3875,7 +3875,7 @@ var i18n = {
         summary_btn: '總結',
         summary_title: '對話總結',
         summary_auto_label: '啟用自動總結',
-        summary_auto_hint: '當訊息數量達到下方「觸發閾值」時自動總結。建議上下文長度 ≥12，閾值設為上下文的 50%~70% 效果最佳。',
+        summary_auto_hint: '當對話氣泡數達到下方「觸發閾值」時自動總結。建議上下文長度 ≥12，閾值設為上下文的 50%~70% 效果最佳。',
         auto_summarize_on_reply_label: '回覆後自動產生總結',
         auto_summarize_on_reply_hint: '（進階）控制是否在回覆後執行自動總結檢查。核心「超過輪數自動總結」由上方開關獨立控制（預設開啟）',
         summary_manual_title: '手動總結',
@@ -3908,7 +3908,7 @@ var i18n = {
         summary_covered_legacy: '（建立時索引）',
         // 新增：总结截断警告（修复 #2）
         summary_truncated_warning: '【注意：總結因模型輸出上限或輸入過長被截斷。建議：1) 調高「總結字數限制」 2) 使用支援長輸出的模型（如 deepseek-chat） 3) 手動總結時減小輪數/範圍】',
-        settings_summary_threshold: '自動總結觸發閾值（訊息條數）',
+        settings_summary_threshold: '自動總結觸發閾值（對話氣泡數）',
         settings_summary_max_words: '總結字數限制（0為不限制）',
         settings_summary_prompt: '自訂總結提示詞',
         settings_summary_prompt_hint: '留空時使用內建總結提示詞；填寫後覆蓋內建提示詞，字數限制仍會追加到末尾。',
@@ -4188,7 +4188,7 @@ var i18n = {
         api_test_suggest_apikey: 'API Key format should be sk-... (or provider-specific prefix). Ensure the key has permission to call /models and chat endpoints.',
         api_test_suggest_stream: 'Does the server support streaming? This test primarily uses stream:false + /v1/models. If non-streaming also fails the server may not be usable.',
         api_test_suggest_gateway: '502/503/504: Check your nginx / reverse proxy / backend service status.',
-        settings_context_length: 'Context Length (messages)',
+        settings_context_length: 'Context Length (chat bubbles)',
         settings_max_tokens: 'Max Response Tokens',
         settings_temperature: 'Temperature',
         settings_top_p: 'Top P',
@@ -4269,7 +4269,7 @@ var i18n = {
         summary_btn: 'Summarize',
         summary_title: 'Chat Summary',
         summary_auto_label: 'Enable Auto-Summarize',
-        summary_auto_hint: 'When messages reach the trigger threshold below, auto-summarize. Recommended: Context Length ≥12, Threshold = 50~70% of context for best results.',
+        summary_auto_hint: 'When chat bubbles reach the trigger threshold below, auto-summarize. Recommended: Context Length ≥12, Threshold = 50~70% of context for best results.',
         auto_summarize_on_reply_label: 'Auto-generate summary after reply',
         auto_summarize_on_reply_hint: '(Advanced) Controls whether to run auto-summary check after replies. Core "summarize when over limit" is controlled by the switch above (on by default).',
         summary_manual_title: 'Manual Summarize',
@@ -4302,7 +4302,7 @@ var i18n = {
         summary_covered_legacy: ' (index at creation)',
         // New: truncation warning for summary (fix #2)
         summary_truncated_warning: '[Note: Summary truncated due to model output cap or very long input. Suggestions: 1) Raise "Summary word limit" 2) Use a model good at long outputs (e.g. deepseek-chat) 3) For manual summary, reduce turns/range]',
-        settings_summary_threshold: 'Auto-Summarize Trigger Threshold (messages)',
+        settings_summary_threshold: 'Auto-Summarize Trigger Threshold (chat bubbles)',
         settings_summary_max_words: 'Summary Word Count Limit (0 = unlimited)',
         settings_summary_prompt: 'Custom Summary Prompt',
         settings_summary_prompt_hint: 'Leave blank to use the built-in summary prompt. When filled, it overrides the built-in prompt; word limits are still appended.',
@@ -10891,7 +10891,7 @@ function triggerSummarization(turns) {
     });
 }
 
-// 简化后的上下文压力检测：直接使用“上下文长度（消息条数）”作为上限
+// 简化后的上下文压力检测：直接使用“上下文长度（对话气泡数）”作为上限
 function isUnderContextPressure(messageCount) {
     var contextMax = state.settings.contextLength || 20;
     return messageCount > contextMax;
@@ -10917,12 +10917,12 @@ function autoSummarize() {
     var conv = getActiveConv();
     if (!conv) return;
 
-    var allRegular = conv.messages.filter(function(m) { return m.role !== 'system'; });
+    var allRegular = getConversationBubbleMessages(conv);
     if (allRegular.length < 6) return;
 
     var threshold = state.settings.summaryThreshold || 12;
 
-    // === 主路径：轻量计算（基于历史总结的 lastCovered）===
+    // === 主路径：只按未总结的真实对话气泡计数 ===
     var lastCovered = getMaxSummaryCoveredEnd(conv.summaries || []);
     var currentVisibleCount = Math.max(0, allRegular.length - lastCovered - 1);
 
@@ -10936,18 +10936,9 @@ function autoSummarize() {
 
     var shouldSummarize = false;
 
-    // 主条件：未总结尾部明显超过 (保留量 + 最小批次)，才值得做一次像样的总结
-    if (currentVisibleCount > targetKeep + minSummarizeBatch) {
+    // 主条件：未总结的真实对话气泡达到用户设置的阈值即触发。
+    if (currentVisibleCount >= threshold) {
         shouldSummarize = true;
-    }
-
-    // 兜底条件（中途修改阈值后、或 context 压力下强制检查）
-    // 使用 getActualVisibleCountForSummary() 尽量贴近用户在 token bar 看到的数字
-    if (!shouldSummarize) {
-        var actualVisible = getActualVisibleCountForSummary();
-        if (actualVisible >= threshold) {
-            shouldSummarize = true;
-        }
     }
 
     if (!shouldSummarize) {
@@ -10982,34 +10973,41 @@ function getMaxSummaryCoveredEnd(summaries) {
     return max;
 }
 
+function getConversationBubbleMessages(conv) {
+    if (!conv || !Array.isArray(conv.messages)) return [];
+    return conv.messages.filter(function(m) {
+        return m && m.role !== 'system';
+    });
+}
+
+function getContextBubbleMessages(conv) {
+    var bubbleMsgs = getConversationBubbleMessages(conv);
+    var lastCovered = getMaxSummaryCoveredEnd((conv && conv.summaries) || []);
+
+    if (lastCovered >= 0 && lastCovered < bubbleMsgs.length - 1) {
+        bubbleMsgs = bubbleMsgs.slice(lastCovered + 1);
+    }
+
+    var max = (state.settings && state.settings.contextLength) || 20;
+    if (bubbleMsgs.length > max) {
+        bubbleMsgs = bubbleMsgs.slice(bubbleMsgs.length - max);
+    }
+
+    return bubbleMsgs;
+}
+
 /**
  * 轻量版“当前实际可见消息数”计算（用于自动总结兜底判断）
  * 
  * 目的：
  * - 尽量接近用户在界面底部看到的 “Context: X msgs” 数字
- * - 比 buildMessagesForAPI() 轻很多（不构建完整 system prompt、世界书、群聊逻辑）
+ * - 只计算真实对话气泡，不把预设、世界书或其他 prompt 注入算进去
  * - 解决“中途修改总结阈值后，即使界面显示数字很高也完全不触发”的问题
  */
 function getActualVisibleCountForSummary() {
     var conv = getActiveConv();
-    if (!conv) return 0;
-
-    var regularMsgs = conv.messages.filter(function(m) { return m.role !== 'system'; });
-    var lastCovered = getMaxSummaryCoveredEnd(conv.summaries || []);
-
-    // 先按历史总结裁剪
-    var visible = (lastCovered >= 0)
-        ? Math.max(0, regularMsgs.length - lastCovered - 1)
-        : regularMsgs.length;
-
-    // 再模拟 buildMessagesForAPI 里的 contextLength 硬截断（用户实际看到的就是这个数字）
-    var max = state.settings.contextLength || 20;
-    if (visible > max) {
-        visible = max;
-    }
-    return visible;
+    return getContextBubbleMessages(conv).length;
 }
-
 function renderSummaryHistory() {
     var conv = getActiveConv();
     if (!conv || !dom.summaryHistoryList) return;
@@ -13963,9 +13961,8 @@ function renderTokenBar() {
     var conv = getActiveConv();
     if (!conv) return;
     if (!dom.tokenCount || !dom.tokenMax || !dom.tokenBar) return;
-    // 【核心修复2】必须使用 buildMessagesForAPI 的实际输出，而不是存储层消息总数
-    var apiMessages = buildMessagesForAPI();
-    var msgCount = apiMessages.filter(function(m) { return m.role !== 'system'; }).length;
+    // 只统计当前上下文窗口里的真实对话气泡，预设/世界书/summary 注入不计入进度条。
+    var msgCount = getContextBubbleMessages(conv).length;
     var max = state.settings.contextLength;
     dom.tokenCount.textContent = msgCount;
     dom.tokenMax.textContent = 'max ' + max + ' ' + t('msgs_label');
