@@ -7,8 +7,16 @@ export default defineNuxtConfig({
 
   modules: ['@nuxtjs/i18n', '@pinia/nuxt'],
 
-  // Tailwind v3 经标准 postcss.config.cjs 接入（弃用 @nuxtjs/tailwindcss 模块：与 Nuxt3.17/Vite6 不兼容）
+  // Tailwind v3 经 postcss 插件接入（弃用 @nuxtjs/tailwindcss 模块：与 Nuxt3.17/Vite6 不兼容）
+  // 注：必须写在 nuxt.config 的 postcss 键里；根目录 postcss.config.cjs 会被 Nuxt 内联配置忽略
   css: ['~/assets/css/main.css'],
+
+  postcss: {
+    plugins: {
+      tailwindcss: { config: './tailwind.config.ts' },
+      autoprefixer: {},
+    },
+  },
 
   // Vercel 部署目标（SPA 模式下自动处理路由 fallback）
   nitro: {

@@ -91,7 +91,10 @@ function currentCharName(): string {
 
     <!-- Conversation list -->
     <div id="convList" class="flex-1 overflow-y-auto py-2 px-2 space-y-0.5">
-      <p v-if="!conversations.length" id="noConvHint" class="text-xs text-zinc-500 text-center py-8 px-2">{{ t('no_conversations') }}</p>
+      <div v-if="!conversations.length" id="noConvHint" class="text-xs text-zinc-500 text-center py-8 px-2 space-y-1">
+        <p>{{ t('no_conversations') }}</p>
+        <p class="text-amber-400/70">{{ t('no_conversations_hint') }}</p>
+      </div>
       <div
         v-for="conv in conversations"
         :key="conv.id"
