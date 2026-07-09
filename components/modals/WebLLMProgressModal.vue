@@ -1,7 +1,13 @@
 <script setup lang="ts">
+import { useWebLLM } from '~/composables/useWebLLM';
+
 const { t } = useI18n();
-const percent = ref(0);
-const status = ref('准备中...');
+const webllm = useWebLLM();
+const percent = computed(() => webllm.progressPercent.value);
+const status = computed(() => webllm.progressStatus.value);
+
+function onCancel() { webllm.cancelInit(); }
+function onDetect() { webllm.detectWebGPUDevice({ showDialog: true }).catch(() => {}); }
 </script>
 
 <template>
@@ -15,8 +21,8 @@ const status = ref('准备中...');
     </div>
     <div id="webllmProgressPercent" class="text-xs text-right text-zinc-400 tabular-nums">{{ percent }}%</div>
     <div class="mt-4 flex gap-2">
-      <button id="webllmDetectDeviceBtn" class="flex-1 px-4 py-2 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/15 text-amber-300 border border-white/10 transition-all">检测设备</button>
-      <button id="webllmProgressCancelBtn" class="flex-1 px-4 py-2 rounded-xl text-sm font-semibold bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 transition-all">{{ t('webllm_progress_cancel') }}</button>
+      <button id="webllmDetectDeviceBtn" class="flex-1 px-4 py-2 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/15 text-amber-300 border border-white/10 transition-all" @click="onDetect">检测设备</button>
+      <button id="webllmProgressCancelBtn" class="flex-1 px-4 py-2 rounded-xl text-sm font-semibold bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 transition-all" @click="onCancel">{{ t('webllm_progress_cancel') }}</button>
     </div>
     <p class="mt-2 text-[10px] text-zinc-500">{{ t('webllm_progress_hint') }}</p>
   </AppModal>
