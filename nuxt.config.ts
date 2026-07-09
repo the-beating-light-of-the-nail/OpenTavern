@@ -1,4 +1,4 @@
-// Nuxt configuration — OpenTavern (Cloudflare Pages, SPA)
+// Nuxt configuration — OpenTavern (Vercel, SPA)
 export default defineNuxtConfig({
   // 本应用为纯客户端 SPA（重度依赖 OPFS / WebGPU / localStorage），关闭 SSR 避免 hydration 与浏览器 API 报错
   ssr: false,
@@ -10,10 +10,9 @@ export default defineNuxtConfig({
   // Tailwind v3 经标准 postcss.config.cjs 接入（弃用 @nuxtjs/tailwindcss 模块：与 Nuxt3.17/Vite6 不兼容）
   css: ['~/assets/css/main.css'],
 
-  // Cloudflare Pages 部署目标
+  // Vercel 部署目标（SPA 模式下自动处理路由 fallback）
   nitro: {
-    preset: 'cloudflare-pages',
-    cloudflare: { nodeCompat: true },
+    preset: 'vercel',
   },
 
   app: {
