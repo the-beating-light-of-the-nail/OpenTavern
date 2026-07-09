@@ -3,6 +3,7 @@
 .output
 .data
 dist
+.vercel
 
 # deps
 node_modules
