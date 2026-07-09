@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { useAppStore } from '~/stores/app';
 import { useChat } from '~/composables/useChat';
+import { useGroupMention } from '~/composables/useGroupMention';
+import { useComfy } from '~/composables/useComfy';
+import { isGroupChat } from '~/utils/group-helpers';
 import { nextTick } from 'vue';
 
 const store = useAppStore();
 const ui = useUiStore();
 const { t, locale, locales, setLocale } = useI18n();
 const { sendMessage, stopGeneration, regenerate, isGenerating, streamingContent, streamingCot } = useChat();
+const groupMention = useGroupMention();
+const comfy = useComfy();
 
 const availableLocales = computed(() => (locales.value as any[]).map((l) => ({ code: l.code, name: l.name })));
 const conv = computed(() => store.activeConversation);
@@ -15,13 +20,30 @@ const inputText = ref('');
 const messagesContainer = ref<HTMLElement | null>(null);
 const textarea = ref<HTMLTextAreaElement | null>(null);
 
+const isGroup = computed(() => isGroupChat(conv.value));
+const groupMembers = computed(() => (isGroup.value && conv.value?.group?.members) ? conv.value.group.members : []);
+
 const charName = computed(() => {
   const c = conv.value;
+  if (isGroup.value) {
+    const sp = c?._nextGroupSpeaker?.name || c?.group?.members?.[0]?.character?.name;
+    if (sp) return sp;
+  }
   const ch = c?.characterId ? store.characters[c.characterId] : null;
   return ch?.data?.name || ch?.name || c?.characterName || (c?.character?.name) || t('no_character');
 });
 
+/** 群聊发言者名（消息展示用）：优先 speaker，否则 charName */
+function senderFor(m: any): string {
+  if (m.role === 'user') return store.settings.userName;
+  if (m.speaker) return m.speaker;
+  return charName.value;
+}
+
 const hasActiveConv = computed(() => !!conv.value);
+
+// ComfyUI 生成按钮可见性：启用 + 有会话；可用性由 comfy.canGenerate()
+const showComfyBtn = computed(() => !!store.settings.comfyEnabled && hasActiveConv.value);
 
 function switchLang(code: string) {
   setLocale(code as any);
@@ -63,6 +85,16 @@ async function scrollToBottom() {
 
 // 流式内容变化时自动滚到底
 watch(streamingContent, () => { scrollToBottom(); });
+
+/** @ 提及按钮：群聊打开面板，否则提示 */
+function onMentionClick() {
+  groupMention.openPanel(conv.value, t('group_mention_no_group'));
+}
+
+/** ComfyUI 生成（带当前输入文本） */
+function onComfyGenerate() {
+  comfy.generateForCurrentChat(inputText.value).then(scrollToBottom);
+}
 </script>
 
 <template>
@@ -107,7 +139,8 @@ watch(streamingContent, () => { scrollToBottom(); });
         :role="m.role"
         :content="m.content"
         :cot="m.cot"
-        :sender-name="m.role === 'assistant' ? charName : store.settings.userName"
+        :attachments="m.attachments"
+        :sender-name="senderFor(m)"
       />
       <!-- 流式生成中的临时气泡 -->
       <MessageBubble
@@ -122,8 +155,13 @@ watch(streamingContent, () => { scrollToBottom(); });
 
     <!-- Input Area -->
     <div class="flex-shrink-0 px-4 py-3 border-t border-white/5 bg-zinc-950/15 backdrop-blur-2xl">
+      <!-- @ 提及气泡（群聊选择后显示，原版 mentionPill，byte ~2650） -->
+      <div v-if="groupMention.hasPending.value" id="mentionPill" class="mb-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-200 text-xs font-medium">
+        <span id="mentionPillName">{{ groupMention.pillDisplayName.value }}</span>
+        <button id="mentionPillClear" class="text-amber-300/70 hover:text-amber-100 text-sm leading-none" @click="groupMention.clear()">&times;</button>
+      </div>
       <div class="flex items-center gap-2 sm:gap-2.5">
-        <button id="mentionBtn" class="flex-shrink-0 w-11 h-11 rounded-xl glass text-zinc-400 hover:text-amber-300 hover:bg-white/10 active:bg-white/15 transition-all flex items-center justify-center text-xl font-bold touch-manipulation" aria-label="Mention Character">@</button>
+        <button id="mentionBtn" class="flex-shrink-0 w-11 h-11 rounded-xl glass text-zinc-400 hover:text-amber-300 hover:bg-white/10 active:bg-white/15 transition-all flex items-center justify-center text-xl font-bold touch-manipulation" :title="t('mention_button_title')" aria-label="Mention Character" @click="onMentionClick">@</button>
         <textarea
           ref="textarea"
           id="messageInput"
@@ -135,6 +173,18 @@ watch(streamingContent, () => { scrollToBottom(); });
           @keydown="onKeydown"
           @input="autoGrow"
         />
+        <!-- ComfyUI 生成按钮（启用时显示） -->
+        <button
+          v-if="showComfyBtn"
+          id="comfyGenerateBtn"
+          class="flex-shrink-0 w-11 h-11 rounded-2xl glass text-amber-300 hover:text-amber-200 hover:bg-amber-500/10 transition-all duration-200 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed"
+          :class="{ 'animate-pulse': comfy.isGenerating.value }"
+          :disabled="!comfy.canGenerate()"
+          :title="t('comfy_generate_title')"
+          @click="onComfyGenerate"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
+        </button>
         <!-- 停止按钮（生成中显示） -->
         <button v-if="isGenerating" id="stopBtn" class="flex-shrink-0 w-11 h-11 rounded-2xl glass text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 flex items-center justify-center" @click="stopGeneration">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2" /></svg>

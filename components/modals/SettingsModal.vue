@@ -1,11 +1,46 @@
 <script setup lang="ts">
 import { useAppStore } from '~/stores/app';
+import { useUiStore } from '~/stores/ui';
+import { useWebLLM } from '~/composables/useWebLLM';
+import { useComfy } from '~/composables/useComfy';
 const store = useAppStore();
+const ui = useUiStore();
 const { t } = useI18n();
+const webllm = useWebLLM();
+const comfy = useComfy();
 
 const s = computed(() => store.settings);
 const isWebLLM = computed(() => s.value.inferenceBackend === 'webllm');
 function persist() { store.persist(); }
+
+// 推理后端切换：记录“上一值”，切到 webllm 时弹确认；取消则回退（原版 byte 755600）
+const prevBackend = ref(s.value.inferenceBackend || 'remote-api');
+// 确认模态关闭后（确认/取消都会关闭）按实际设置同步 prevBackend，避免状态错位
+watch(() => ui.isOpen('webllmConfirm'), (open) => {
+  if (!open) prevBackend.value = s.value.inferenceBackend || 'remote-api';
+});
+
+function onBackendChange() {
+  const next = s.value.inferenceBackend;
+  const prev = prevBackend.value;
+  if (next === prev) { store.persist(); return; }
+  prevBackend.value = next; // 乐观更新；若取消，上面的 watcher 会回正
+  webllm.onBackendChange(next, prev);
+}
+function onModelChange() {
+  webllm.onModelChange(s.value.webllmModel);
+}
+
+// ComfyUI workflow 导入（隐藏 file input）
+const comfyWorkflowFile = ref<HTMLInputElement | null>(null);
+function triggerImport() { comfyWorkflowFile.value?.click(); }
+async function onWorkflowFile(e: Event) {
+  const target = e.target as HTMLInputElement;
+  const file = target.files && target.files[0];
+  if (file) await comfy.importWorkflowFile(file);
+  if (target) target.value = '';
+}
+function onTestComfy() { comfy.testConnection(); }
 </script>
 
 <template>
@@ -52,13 +87,13 @@ function persist() { store.persist(); }
       <!-- Inference backend -->
       <div>
         <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">{{ t('settings_inference_backend') }}</label>
-        <select v-model="s.inferenceBackend" class="w-full mt-1.5 px-3 py-2.5 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all" @change="persist">
+        <select v-model="s.inferenceBackend" class="w-full mt-1.5 px-3 py-2.5 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all" @change="onBackendChange">
           <option value="remote-api">{{ t('settings_backend_remote') }}</option>
           <option value="webllm">{{ t('settings_backend_webllm') }}</option>
         </select>
         <div v-show="isWebLLM" class="mt-2">
           <label class="text-xs font-semibold text-zinc-400">{{ t('settings_webllm_model') }}</label>
-          <select v-model="s.webllmModel" class="w-full mt-1 px-3 py-2 text-sm glass rounded-xl text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30" @change="persist">
+          <select v-model="s.webllmModel" class="w-full mt-1 px-3 py-2 text-sm glass rounded-xl text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30" @change="onModelChange">
             <option value="Llama-3.2-1B-Instruct-q4f16_1-MLC">Llama-3.2-1B (q4f16，约 850 MB)</option>
             <option value="Llama-3.2-3B-Instruct-q4f16_1-MLC">Llama-3.2-3B (q4f16，约 2100 MB)</option>
           </select>
@@ -200,16 +235,43 @@ function persist() { store.persist(); }
           <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">{{ t('settings_comfy_title') }}</label>
           <input v-model="s.comfyEnabled" type="checkbox" class="accent-amber-500" @change="persist">
         </div>
+        <p class="text-[10px] text-zinc-600 mt-1">{{ t('settings_comfy_hint') }}</p>
         <div class="mt-3 space-y-2">
-          <input v-model="s.comfyServer" type="text" class="w-full px-3 py-2 text-sm glass rounded-xl text-zinc-200" placeholder="http://127.0.0.1:8188" @change="persist">
-          <input v-model="s.comfyPositiveNodeId" type="text" class="w-full px-3 py-2 text-sm glass rounded-xl text-zinc-200" placeholder="正向节点 ID" @change="persist">
-          <input v-model="s.comfyNegativeNodeId" type="text" class="w-full px-3 py-2 text-sm glass rounded-xl text-zinc-200" placeholder="负向节点 ID" @change="persist">
-          <input v-model="s.comfySeedNodeId" type="text" class="w-full px-3 py-2 text-sm glass rounded-xl text-zinc-200" placeholder="Seed 节点 ID" @change="persist">
-          <input v-model="s.comfyNegativePrompt" type="text" class="w-full px-3 py-2 text-sm glass rounded-xl text-zinc-200" placeholder="low quality, blurry" @change="persist">
-          <textarea v-model="s.comfyPromptTemplate" rows="3" class="w-full px-3 py-2 text-sm glass rounded-xl text-zinc-200 resize-y" @change="persist" />
-          <div class="flex flex-wrap gap-2">
-            <button class="px-3 py-1.5 text-xs rounded-lg bg-white/5 hover:bg-amber-500/20 text-amber-300 border border-white/10 font-medium">{{ t('settings_comfy_import_workflow') }}</button>
-            <button class="px-3 py-1.5 text-xs rounded-lg bg-white/5 hover:bg-amber-500/20 text-zinc-300 border border-white/10 font-medium">{{ t('settings_comfy_test') }}</button>
+          <div>
+            <label class="text-[11px] text-zinc-500">{{ t('settings_comfy_server') }}</label>
+            <input v-model="s.comfyServer" type="text" class="w-full mt-1 px-3 py-2 text-sm glass rounded-xl text-zinc-200" placeholder="http://127.0.0.1:8188" @change="persist">
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="text-[11px] text-zinc-500">{{ t('settings_comfy_positive_node') }}</label>
+              <input v-model="s.comfyPositiveNodeId" type="text" class="w-full mt-1 px-2 py-2 text-sm glass rounded-xl text-zinc-200" placeholder="6" @change="persist">
+            </div>
+            <div>
+              <label class="text-[11px] text-zinc-500">{{ t('settings_comfy_negative_node') }}</label>
+              <input v-model="s.comfyNegativeNodeId" type="text" class="w-full mt-1 px-2 py-2 text-sm glass rounded-xl text-zinc-200" placeholder="7" @change="persist">
+            </div>
+            <div>
+              <label class="text-[11px] text-zinc-500">{{ t('settings_comfy_seed_node') }}</label>
+              <input v-model="s.comfySeedNodeId" type="text" class="w-full mt-1 px-2 py-2 text-sm glass rounded-xl text-zinc-200" placeholder="3" @change="persist">
+            </div>
+          </div>
+          <div>
+            <label class="text-[11px] text-zinc-500">{{ t('settings_comfy_negative_prompt') }}</label>
+            <input v-model="s.comfyNegativePrompt" type="text" class="w-full mt-1 px-3 py-2 text-sm glass rounded-xl text-zinc-200" placeholder="low quality, blurry" @change="persist">
+          </div>
+          <div>
+            <label class="text-[11px] text-zinc-500">{{ t('settings_comfy_prompt_template_placeholder') }}</label>
+            <textarea v-model="s.comfyPromptTemplate" rows="3" class="w-full mt-1 px-3 py-2 text-sm glass rounded-xl text-zinc-200 resize-y" @change="persist" />
+          </div>
+          <!-- 隐藏的 workflow 文件输入 -->
+          <input ref="comfyWorkflowFile" type="file" accept=".json,application/json" class="hidden" @change="onWorkflowFile">
+          <div class="flex flex-wrap gap-2 items-center">
+            <button class="px-3 py-1.5 text-xs rounded-lg bg-white/5 hover:bg-amber-500/20 text-amber-300 border border-white/10 font-medium" @click="triggerImport">{{ t('settings_comfy_import_workflow') }}</button>
+            <button class="px-3 py-1.5 text-xs rounded-lg bg-white/5 hover:bg-amber-500/20 text-zinc-300 border border-white/10 font-medium" @click="onTestComfy">{{ t('settings_comfy_test') }}</button>
+          </div>
+          <!-- workflow 状态 -->
+          <div class="text-[11px]" :class="comfy.hasWorkflow.value ? 'text-emerald-300' : 'text-zinc-500'">
+            {{ comfy.workflowStatus.value }}
           </div>
         </div>
       </div>

@@ -113,3 +113,70 @@ export interface StorageInfo {
   quota: number | null;
   originUsed?: number;
 }
+
+/**
+ * 群组聊天数据模型（1:1 对齐原版 index.html，见 byte 371148 defaultConversation）。
+ * 字段宽松（[k:string]:any）以兼容历史数据无损往返。
+ */
+export interface GroupMember {
+  /** 完整角色卡（深拷贝，1:1 原版行为） */
+  character: any;
+  muted: boolean;
+  order: number;
+  [k: string]: any;
+}
+
+export interface Group {
+  id: string;
+  name: string;
+  members: GroupMember[];
+  replyStrategy: string;
+  generationMode: string;
+  scenarioOverride: string | null;
+  mergeIncludeMuted: boolean;
+  allowSelfResponse: boolean;
+  autoMode: boolean;
+  [k: string]: any;
+}
+
+export interface Conversation {
+  id: string;
+  title: string;
+  /** 单角色模式：完整角色卡（向后兼容，与原版一致） */
+  character: any;
+  characterId?: string;
+  characterName?: string;
+  messages: any[];
+  summaries: any[];
+  worldBookIds: any[];
+  /** 群组模式：group 非 null 且 members.length>=2 即群聊 */
+  group: Group | null;
+  created: number;
+  updated: number;
+  [k: string]: any;
+}
+
+export interface MessageAttachment {
+  type: string;
+  source?: string;
+  mime?: string;
+  dataUrl?: string;
+  prompt?: string;
+  comfyPromptId?: string;
+  filename?: string;
+  createdAt?: number;
+  [k: string]: any;
+}
+
+export interface Message {
+  role: string;
+  content: string;
+  id?: string;
+  /** 群聊：本条消息的发言角色名 */
+  speaker?: string;
+  cot?: string;
+  stage?: string;
+  parentId?: string;
+  attachments?: MessageAttachment[];
+  [k: string]: any;
+}

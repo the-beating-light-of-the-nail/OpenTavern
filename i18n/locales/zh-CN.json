@@ -394,9 +394,9 @@
   "filter_all": "全部",
   "filter_male": "男性向",
   "filter_female": "女性向",
-  "mention_button_title": "提及角色 (#)",
+  "mention_button_title": "提及角色 ({'@'})",
   "group_mention_title": "选择要提及的角色",
   "group_mention_hint": "选择后将在输入栏左侧显示指定角色（气泡），本轮回复将由该角色驱动",
   "group_mention_no_group": "当前不是群组聊天",
-  "group_mention_insert": "指定 #"
+  "group_mention_insert": "指定 {'@'}"
 }

@@ -379,5 +379,18 @@
   "library_search_placeholder": "搜尋名稱、標籤、描述...",
   "filter_all": "全部",
   "filter_male": "男性向",
-  "filter_female": "女性向"
+  "filter_female": "女性向",
+  "mention_button_title": "提及角色 ({'@'})",
+  "group_mention_title": "選擇要提及的角色",
+  "group_mention_hint": "選擇後將在輸入欄左側顯示指定角色（氣泡），本輪回覆將由該角色驅動",
+  "group_mention_no_group": "目前不是群組聊天",
+  "group_mention_insert": "指定 {'@'}",
+  "new_chat_multi_select": "多選建立群組聊天",
+  "new_chat_multi_exit": "退出多選模式",
+  "new_chat_multi_hint": "多選模式：點擊角色進行選擇",
+  "new_chat_create_group": "建立群組聊天",
+  "new_chat_cancel_multi": "取消",
+  "new_chat_multi_selected_prefix": "已選",
+  "new_chat_multi_people": "人",
+  "quick_new_group": "建立新群聊（進入選擇介面）"
 }

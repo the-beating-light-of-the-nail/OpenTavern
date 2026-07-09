@@ -2,6 +2,8 @@ import { defineStore } from 'pinia';
 import type { AppData, AppState, Settings } from '~/types/state';
 import { createDefaultState, defaultSettings, defaultSillyTavernPreset, DEFAULT_TWO_STAGE_PROMPT } from '~/utils/defaults';
 import { useStorage } from '~/composables/useStorage';
+import { replacePlaceholders, makeId } from '~/utils/chat-helpers';
+import { normalizeConversation } from '~/utils/group-helpers';
 
 // 防抖计时器（模块级，与原版 _persistTimeout 一致）
 let _persistTimer: ReturnType<typeof setTimeout> | null = null;
@@ -131,6 +133,91 @@ export const useAppStore = defineStore('app', {
     setActiveConv(id: string | null) {
       this.activeConvId = id;
       this.persist();
+    },
+
+    /**
+     * 创建新会话（单角色 / 群组）。
+     * 逐字移植原版 newConversation（index.html:574585）。
+     * - 单角色：传入角色卡条目（含 .data）或裸角色对象；存 conv.character 深拷贝 + characterId/Name。
+     * - 群组：传入长度>=2 的数组；成员 1:1 深拷贝整张卡（原版行为），首成员开场白带 speaker。
+     * charEntry.data 视为平坦角色卡（name/first_mes/...）。
+     */
+    createConversation(charOrEntries?: any | any[]): string {
+      this.persist();
+
+      const conv: any = {
+        id: makeId(),
+        title: 'New Chat',
+        character: null,
+        messages: [],
+        summaries: [],
+        worldBookIds: [],
+        group: null,
+        created: Date.now(),
+        updated: Date.now(),
+      };
+
+      const userName = this.settings.userName || 'User';
+      // 角色卡条目 → 平坦角色（深拷贝）
+      const flatChar = (entry: any): any => {
+        if (!entry) return null;
+        const src = entry && entry.data ? entry.data : entry;
+        return src ? JSON.parse(JSON.stringify(src)) : null;
+      };
+
+      // i18n（在 Nuxt 上下文中可用）
+      let t: (k: string) => string = (k) => k;
+      try {
+        const app: any = useNuxtApp();
+        if (app?.$i18n?.t) t = (k: string) => app.$i18n.t(k);
+      } catch { /* noop */ }
+
+      if (Array.isArray(charOrEntries) && charOrEntries.length >= 2) {
+        // 群组模式
+        const members = charOrEntries.map((entry: any, idx: number) => ({
+          character: flatChar(entry),
+          muted: false,
+          order: idx,
+        }));
+        conv.group = {
+          id: makeId(),
+          name: members.map((m: any) => m.character?.name).filter(Boolean).join('、') + ' 的群聊',
+          members,
+          replyStrategy: 'list_order',
+          generationMode: 'switch',
+          mergeIncludeMuted: false,
+          scenarioOverride: null,
+          allowSelfResponse: false,
+          autoMode: false,
+        };
+        const first = members[0].character;
+        if (first && first.first_mes) {
+          const fm = replacePlaceholders(first.first_mes, first.name, userName);
+          if (fm) conv.messages.push({ role: 'assistant', content: fm, speaker: first.name });
+        }
+        conv.title = conv.group.name;
+      } else {
+        // 单角色模式（含数组长度=1 的兜底）
+        const entry: any = Array.isArray(charOrEntries) ? charOrEntries[0] : charOrEntries;
+        const character = flatChar(entry);
+        if (character) {
+          conv.character = character;
+          if (entry && entry.id) conv.characterId = entry.id;
+          conv.characterName = character.name;
+          const charName = character.name || 'Assistant';
+          const fm = replacePlaceholders(character.first_mes, charName, userName);
+          if (fm) conv.messages.push({ role: 'assistant', content: fm });
+          conv.title = t('chat_with') + (character.name || '');
+        }
+      }
+
+      normalizeConversation(conv);
+      this.conversations[conv.id] = conv;
+      this.conversationOrder.unshift(conv.id);
+      this.activeConvId = conv.id;
+      this.currentView = 'chat';
+      this.persist();
+      return conv.id;
     },
   },
 });

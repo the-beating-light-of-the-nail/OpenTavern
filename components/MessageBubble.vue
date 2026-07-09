@@ -6,6 +6,7 @@ const props = defineProps<{
   role: 'user' | 'assistant' | string;
   content: string;
   cot?: string;
+  attachments?: any[];
   senderName?: string;
   streaming?: boolean;
 }>();
@@ -17,6 +18,12 @@ const safeHtml = computed(() => {
   // 保留纯文本的换行（whitespace-pre-wrap 在 CSS 中处理）
   return DOMPurify.sanitize(raw, { ALLOWED_TAGS: ['br', 'b', 'i', 'em', 'strong', 'span'], ALLOWED_ATTR: [] });
 });
+
+/** 图片附件（原版 renderMessageAttachments，仅渲染 type=image） */
+const imageAttachments = computed(() => {
+  if (!props.attachments || !Array.isArray(props.attachments)) return [];
+  return props.attachments.filter((a: any) => a && a.type === 'image' && a.dataUrl);
+});
 </script>
 
 <template>
@@ -27,7 +34,11 @@ const safeHtml = computed(() => {
         <summary>思考过程</summary>
         <div class="msg-cot-content">{{ cot }}</div>
       </details>
-      <div class="whitespace-pre-wrap" v-html="safeHtml" />
+      <!-- 图片附件（ComfyUI 生成结果等） -->
+      <div v-for="(att, i) in imageAttachments" :key="i" class="msg-attachment-image my-1">
+        <img :src="att.dataUrl" :alt="att.filename || 'image'" loading="lazy" class="rounded-xl max-w-full max-h-80 object-cover">
+      </div>
+      <div v-if="safeHtml" class="whitespace-pre-wrap" v-html="safeHtml" />
     </div>
   </div>
 </template>
