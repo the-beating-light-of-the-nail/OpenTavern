@@ -13,10 +13,10 @@ if (!character.value) {
 const c = character.value;
 
 useSeoMeta({
-  title: `${c.name} — ${c.archetype} | RoleChat AI`,
-  description: `${c.tagline} ${c.archetype} for private AI roleplay on RoleChat AI. Chat with ${c.name} in seconds with your own AI key.`,
-  ogTitle: `${c.name} — ${c.archetype} | RoleChat AI`,
-  ogDescription: c.tagline,
+  title: c.seoTitle,
+  description: c.seoDescription,
+  ogTitle: c.seoTitle,
+  ogDescription: c.seoDescription,
 });
 
 const related = computed(() =>
@@ -35,7 +35,7 @@ const related = computed(() =>
 
       <!-- Character header -->
       <div class="flex items-center gap-4">
-        <div class="rc-avatar-fill flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl text-2xl font-bold">{{ c.initial }}</div>
+        <CharAvatar :avatar="c.avatar" :initial="c.initial" size="lg" />
         <div class="min-w-0">
           <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">{{ c.name }}</h1>
           <p class="text-sm text-amber-400/80">{{ c.archetype }}</p>
@@ -44,8 +44,10 @@ const related = computed(() =>
 
       <p class="mt-5 text-lg italic text-zinc-300">{{ c.tagline }}</p>
 
-      <!-- Personality tags -->
-      <div class="mt-5 flex flex-wrap gap-1.5">
+      <!-- Meta + safety + tags -->
+      <div class="mt-5 flex flex-wrap items-center gap-1.5">
+        <span class="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[0.68rem] font-bold text-emerald-300 ring-1 ring-emerald-400/30">{{ c.safetyLevel }}</span>
+        <span class="rc-tag">{{ c.category }}</span>
         <span v-for="t in c.tags" :key="t" class="rc-tag">{{ t }}</span>
       </div>
 
@@ -65,12 +67,21 @@ const related = computed(() =>
       <section class="mt-8">
         <h2 class="text-lg font-bold">Personality</h2>
         <p class="mt-3 leading-relaxed text-zinc-400">{{ c.personality }}</p>
+        <div class="mt-3 flex flex-wrap gap-1.5">
+          <span v-for="t in c.personalityTags" :key="t" class="rounded-full bg-white/5 px-2.5 py-0.5 text-[0.68rem] font-medium text-zinc-300">{{ t }}</span>
+        </div>
       </section>
 
       <!-- Relationship setup -->
       <section class="mt-8">
         <h2 class="text-lg font-bold">How you meet</h2>
         <p class="mt-3 leading-relaxed text-zinc-400">{{ c.relationshipSetup }}</p>
+      </section>
+
+      <!-- Scenario -->
+      <section class="mt-8">
+        <h2 class="text-lg font-bold">World &amp; scenario</h2>
+        <p class="mt-3 leading-relaxed text-zinc-400">{{ c.scenario }}</p>
       </section>
 
       <!-- Opening message -->
@@ -86,7 +97,7 @@ const related = computed(() =>
         <h2 class="text-lg font-bold">Related characters</h2>
         <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
           <NuxtLink v-for="r in related" :key="r.slug" :to="`/characters/${r.slug}`" class="rc-card group flex items-center gap-3 p-4">
-            <div class="rc-avatar-fill flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg text-sm font-bold">{{ r.initial }}</div>
+            <CharAvatar :avatar="r.avatar" :initial="r.initial" size="sm" />
             <div class="min-w-0">
               <p class="truncate text-sm font-bold group-hover:text-amber-400">{{ r.name }}</p>
               <p class="truncate text-xs text-zinc-500">{{ r.archetype }}</p>

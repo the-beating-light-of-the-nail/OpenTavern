@@ -90,7 +90,7 @@ const faqs = [
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <NuxtLink v-for="c in featured" :key="c.slug" :to="`/characters/${c.slug}`" class="rc-card group block p-5">
           <div class="flex items-center gap-3">
-            <div class="rc-avatar-fill flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl text-lg font-bold">{{ c.initial }}</div>
+            <CharAvatar :avatar="c.avatar" :initial="c.initial" size="md" />
             <div class="min-w-0">
               <h3 class="truncate text-base font-bold group-hover:text-amber-400">{{ c.name }}</h3>
               <p class="truncate text-xs text-amber-400/80">{{ c.archetype }}</p>
