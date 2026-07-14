@@ -1,4 +1,4 @@
-// Nuxt configuration — OpenTavern (Vercel, SPA)
+// Nuxt configuration — RoleChat AI (Vercel, SPA)
 export default defineNuxtConfig({
   // 本应用为纯客户端 SPA（重度依赖 OPFS / WebGPU / localStorage），关闭 SSR 避免 hydration 与浏览器 API 报错
   ssr: false,
@@ -30,27 +30,32 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      htmlAttrs: { lang: 'zh-CN', class: 'dark' },
-      title: 'OpenTavern — AI Character Chat',
+      htmlAttrs: { lang: 'en', class: 'dark' },
+      title: 'RoleChat AI - Private AI Character Roleplay',
       meta: [
         { charset: 'UTF-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1.0, viewport-fit=cover' },
+        {
+          name: 'description',
+          content:
+            'RoleChat AI is an easy private AI roleplay platform. Chat with original romance and fantasy characters in seconds. No installation. No complicated setup. Bring your own AI key.',
+        },
       ],
     },
   },
 
   i18n: {
     strategy: 'no_prefix',
-    defaultLocale: 'zh-CN',
+    defaultLocale: 'en',
     langDir: 'locales',
     lazy: true,
     detectBrowserLanguage: false,
     bundle: { optimizeTranslationDirective: false },
     compilation: { strictMessage: false, escapeHtml: false },
     locales: [
+      { code: 'en', language: 'en-US', name: 'EN', file: 'en.json' },
       { code: 'zh-CN', language: 'zh-CN', name: '简', file: 'zh-CN.json' },
       { code: 'zh-TW', language: 'zh-TW', name: '繁', file: 'zh-TW.json' },
-      { code: 'en', language: 'en-US', name: 'EN', file: 'en.json' },
     ],
   },
 

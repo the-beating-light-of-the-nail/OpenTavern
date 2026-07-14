@@ -33,11 +33,11 @@ function currentCharName(): string {
   <aside id="sidebar" :class="{ open: store.sidebarOpen }" class="w-[270px] flex-shrink-0 flex flex-col border-r border-white/5 bg-zinc-950/25 backdrop-blur-xl">
     <!-- Header -->
     <div class="px-5 py-4 flex items-center gap-3 border-b border-white/5">
-      <div class="w-9 h-9 rounded-xl ot-avatar-fill flex items-center justify-center text-white text-xs font-bold tracking-tighter">OT</div>
+      <div class="w-9 h-9 rounded-xl ot-avatar-fill flex items-center justify-center text-white text-xs font-bold tracking-tighter">RC</div>
       <div class="flex-1">
         <div class="flex items-center gap-2">
-          <p class="text-sm font-bold text-zinc-100 leading-tight">OpenTavern</p>
-          <div id="storageStatus" class="text-[9px] px-1.5 py-px rounded bg-white/5 text-zinc-400 font-mono cursor-pointer select-none hover:bg-white/10 transition-colors" title="存储后端">OPFS</div>
+          <p class="text-sm font-bold text-zinc-100 leading-tight">RoleChat AI</p>
+          <div id="storageStatus" class="text-[9px] px-1.5 py-px rounded bg-white/5 text-zinc-400 font-mono cursor-pointer select-none hover:bg-white/10 transition-colors" title="Storage backend">OPFS</div>
         </div>
         <p class="text-[10px] text-zinc-500 leading-tight">{{ t('app_subtitle') }}</p>
       </div>

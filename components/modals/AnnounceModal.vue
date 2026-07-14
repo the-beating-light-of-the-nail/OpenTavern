@@ -11,14 +11,14 @@ function close() { ui.close('announce'); }
 
 <template>
   <AppModal modal-id="announceModal" name="announce" max-width="max-w-lg" closable>
-    <div class="text-xs mb-1 uppercase tracking-wider text-zinc-500">OpenTavern</div>
+    <div class="text-xs mb-1 uppercase tracking-wider text-zinc-500">RoleChat AI</div>
     <h2 class="text-xl font-bold text-zinc-100">{{ t('announce_title') }}</h2>
     <p class="text-xs text-zinc-400 mt-0.5">{{ t('announce_subtitle') }}</p>
 
     <div class="flex items-center justify-center gap-2 my-4">
       <span class="text-[10px] text-zinc-500 flex-shrink-0">{{ t('announce_lang_label') }}</span>
       <div class="flex items-center glass rounded-xl p-0.5 border-white/5">
-        <button v-for="l in [{c:'zh-CN',n:'简'},{c:'zh-TW',n:'繁'},{c:'en',n:'EN'}]" :key="l.c" class="announce-lang-btn lang-btn px-2.5 py-1 rounded-lg text-xs font-semibold transition-all" :class="locale===l.c?'active':''" @click="pick(l.c)">{{ l.n }}</button>
+        <button v-for="l in [{c:'en',n:'EN'},{c:'zh-CN',n:'简'},{c:'zh-TW',n:'繁'}]" :key="l.c" class="announce-lang-btn lang-btn px-2.5 py-1 rounded-lg text-xs font-semibold transition-all" :class="locale===l.c?'active':''" @click="pick(l.c)">{{ l.n }}</button>
       </div>
     </div>
 

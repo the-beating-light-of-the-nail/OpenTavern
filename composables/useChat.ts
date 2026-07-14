@@ -5,7 +5,7 @@ import { useWebLLM } from '~/composables/useWebLLM';
 import { useWorldInfo } from '~/composables/useWorldInfo';
 import { useSummarization } from '~/composables/useSummarization';
 import { useGroupMention } from '~/composables/useGroupMention';
-import { BASE_SYSTEM_PROMPT } from '~/utils/prompts';
+import { BASE_SYSTEM_PROMPT, BASE_SYSTEM_PROMPT_EN } from '~/utils/prompts';
 import { DEFAULT_TWO_STAGE_PROMPT } from '~/utils/defaults';
 import { replacePlaceholders, makeId } from '~/utils/chat-helpers';
 import {
@@ -78,7 +78,7 @@ export function useChat() {
     const members = getGroupMembers(c);
     const forcedSpeaker = getCurrentSpeakerCharacter(c);
     const userName = store.settings.userName || 'User';
-    const lang = store.settings.lang || 'zh-CN';
+    const lang = store.settings.lang || 'en';
     const charName = forcedSpeaker?.name || 'Assistant';
     const parts: string[] = [];
 
@@ -132,12 +132,13 @@ export function useChat() {
     const char = getChar() as any;
     const charName = char?.name || 'Assistant';
     const userName = store.settings.userName || 'User';
+    const lang = store.settings.lang || 'en';
     let parts: string[] = [];
 
     let sysPrompt = store.settings.systemPrompt;
     if (!sysPrompt && char?.system_prompt) sysPrompt = char.system_prompt;
     if (sysPrompt) parts.push(replacePlaceholders(sysPrompt, charName, userName));
-    else parts.push(BASE_SYSTEM_PROMPT); // 无自定义时注入基础引擎提示
+    else parts.push(lang === 'en' ? BASE_SYSTEM_PROMPT_EN : BASE_SYSTEM_PROMPT); // 无自定义时注入基础引擎提示
 
     const userDesc = (store.settings.userDescription || '').trim();
     if (userDesc) parts.push("User's Persona: " + replacePlaceholders(userDesc, charName, userName));

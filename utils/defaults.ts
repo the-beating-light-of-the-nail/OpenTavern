@@ -55,7 +55,7 @@ export function defaultSettings(): Settings {
     cotMode: 'auto',
     userDescription: '',
     sillyTavernPreset: defaultSillyTavernPreset(),
-    lang: 'zh-CN',
+    lang: 'en',
     summaryEnabled: true,
     autoSummarizeOnReply: false,
     summaryThreshold: 12,

@@ -2,6 +2,8 @@
 import DOMPurify from 'dompurify';
 import { useChat } from '~/composables/useChat';
 
+const { t } = useI18n();
+
 const props = defineProps<{
   role: 'user' | 'assistant' | string;
   content: string;
@@ -31,7 +33,7 @@ const imageAttachments = computed(() => {
     <div v-if="senderName" class="text-[11px] text-zinc-500 mb-1 px-1">{{ senderName }}</div>
     <div class="msg-bubble max-w-[85%] sm:max-w-[78%]" :class="{ 'typing-cursor': streaming }">
       <details v-if="cot" class="msg-cot" :class="{ streaming }">
-        <summary>思考过程</summary>
+        <summary>{{ t('cot_block_title') }}</summary>
         <div class="msg-cot-content">{{ cot }}</div>
       </details>
       <!-- 图片附件（ComfyUI 生成结果等） -->
