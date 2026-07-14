@@ -99,20 +99,7 @@ function toggleTag(t: string) {
 
       <!-- Grid -->
       <div v-if="filtered.length" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <NuxtLink v-for="c in filtered" :key="c.slug" :to="`/characters/${c.slug}`" class="rc-card group block p-5">
-          <div class="flex items-center gap-3">
-            <CharAvatar :avatar="c.avatar" :initial="c.initial" size="md" />
-            <div class="min-w-0">
-              <h2 class="truncate text-base font-bold group-hover:text-amber-400">{{ c.name }}</h2>
-              <p class="truncate text-xs text-amber-400/80">{{ c.archetype }}</p>
-            </div>
-          </div>
-          <p class="mt-3 line-clamp-3 text-sm leading-relaxed text-zinc-400">{{ c.tagline }}</p>
-          <div class="mt-4 flex flex-wrap gap-1.5">
-            <span class="rc-tag">{{ c.category }}</span>
-            <span v-for="t in c.tags.slice(0, 2)" :key="t" class="rc-tag">{{ t }}</span>
-          </div>
-        </NuxtLink>
+        <PublicCardItem v-for="c in filtered" :key="c.slug" :c="c" />
       </div>
       <div v-else class="py-16 text-center text-zinc-500">
         <p>No characters match your search.</p>

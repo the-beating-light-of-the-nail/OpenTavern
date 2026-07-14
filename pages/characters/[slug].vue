@@ -53,7 +53,7 @@ const related = computed(() =>
 
       <!-- CTA -->
       <div class="mt-8 flex flex-wrap gap-3">
-        <NuxtLink to="/app" class="rc-btn-primary">Start Private Chat</NuxtLink>
+        <NuxtLink :to="`/app?character=${c.slug}`" class="rc-btn-primary">Start Private Chat</NuxtLink>
         <NuxtLink to="/characters" class="rc-btn-ghost">Browse others</NuxtLink>
       </div>
 
@@ -121,7 +121,7 @@ const related = computed(() =>
       <section class="mt-12 rounded-2xl border border-white/8 bg-white/[0.02] p-8 text-center">
         <h2 class="text-xl font-bold">Ready to talk to {{ c.name }}?</h2>
         <p class="mx-auto mt-2 max-w-md text-sm text-zinc-400">Open the app, add your AI key, and the story begins. No installation, no setup wizard.</p>
-        <NuxtLink to="/app" class="rc-btn-primary mt-5 inline-flex">Start Private Chat</NuxtLink>
+        <NuxtLink :to="`/app?character=${c.slug}`" class="rc-btn-primary mt-5 inline-flex">Start Private Chat</NuxtLink>
       </section>
     </main>
   </div>
