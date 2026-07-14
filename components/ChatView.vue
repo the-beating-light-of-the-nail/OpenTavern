@@ -51,6 +51,11 @@ function switchLang(code: string) {
 }
 function openMenu() { store.sidebarOpen = true; }
 function backToLibrary() { store.currentView = 'library'; }
+function confirmClear() {
+  if (window.confirm(t('clear_chat_confirm'))) {
+    store.setActiveConv(null);
+  }
+}
 
 /** 自适应输入框高度 */
 function autoGrow() {
@@ -119,7 +124,8 @@ function onComfyGenerate() {
           <span class="hidden sm:inline">{{ t('summary_btn') }}</span>
           <span class="sm:hidden text-[10px] font-semibold uppercase leading-none">Sum</span>
         </button>
-        <button id="topSettingsBtn" class="w-8 h-8 rounded-xl glass flex items-center justify-center text-zinc-400 hover:text-zinc-200 transition-colors" @click="ui.open('settings')">Set</button>
+        <button id="topConnectBtn" class="w-8 h-8 rounded-xl glass flex items-center justify-center text-zinc-400 hover:text-emerald-300 transition-colors text-[10px] font-bold" title="Connect Your AI" @click="ui.open('settings')">AI</button>
+        <button id="topClearChatBtn" v-if="hasActiveConv" class="w-8 h-8 rounded-xl glass flex items-center justify-center text-zinc-400 hover:text-red-400 transition-colors" title="Clear Chat" @click="confirmClear">Clr</button>
 
       </div>
     </div>
@@ -127,7 +133,7 @@ function onComfyGenerate() {
     <!-- Messages -->
     <div id="messagesContainer" ref="messagesContainer" class="flex-1 overflow-y-auto px-4 py-4 space-y-4">
       <div v-if="!messages.length && !streamingContent" id="emptyState" class="flex flex-col items-center justify-center h-full text-center">
-        <div class="w-20 h-20 rounded-3xl glass flex items-center justify-center text-3xl mb-4">OT</div>
+        <div class="w-20 h-20 rounded-3xl glass flex items-center justify-center text-3xl mb-4">RC</div>
         <p class="text-zinc-400 text-sm font-medium mb-1">{{ t('welcome_title') }}</p>
         <p class="text-zinc-600 text-xs max-w-xs">{{ t('welcome_hint') }}</p>
       </div>

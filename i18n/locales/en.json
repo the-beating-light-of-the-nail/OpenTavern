@@ -398,5 +398,14 @@
   "library_search_placeholder": "Search name, tags, description...",
   "filter_all": "All",
   "filter_male": "Male-oriented",
-  "filter_female": "Female-oriented"
+  "filter_female": "Female-oriented",
+  "connect_your_ai": "Connect Your AI",
+  "connect_ai_explanation": "RoleChat uses your own AI provider to power private character chats. Your key stays in your browser unless you choose a proxy mode. You can start with OpenRouter in a few minutes.",
+  "provider_openrouter": "OpenRouter",
+  "provider_deepseek": "DeepSeek",
+  "provider_openai": "OpenAI",
+  "provider_custom": "Custom",
+  "clear_chat": "Clear Chat",
+  "clear_chat_confirm": "Clear this conversation? All messages will be lost.",
+  "advanced_settings": "Advanced Settings"
 }
