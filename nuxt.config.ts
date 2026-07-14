@@ -1,7 +1,18 @@
-// Nuxt configuration — RoleChat AI (Vercel, SPA)
+// Nuxt configuration — RoleChat AI (Vercel, hybrid SSR/SPA)
 export default defineNuxtConfig({
-  // 本应用为纯客户端 SPA（重度依赖 OPFS / WebGPU / localStorage），关闭 SSR 避免 hydration 与浏览器 API 报错
-  ssr: false,
+  // 混合渲染：营销首页 (/) 与 /characters 预渲染为静态 HTML（SEO）；聊天工具 (/app) 保持 SPA
+  ssr: true,
+
+  // 路由级渲染控制：营销页与 SEO 页预渲染为静态 HTML（含动态 [slug] 页），聊天 App 锁回纯客户端 SPA
+  routeRules: {
+    '/': { prerender: true },
+    '/characters': { prerender: true },
+    '/characters/**': { prerender: true },
+    '/collections/**': { prerender: true },
+    '/guides': { prerender: true },
+    '/guides/**': { prerender: true },
+    '/app': { ssr: false },
+  },
 
   devtools: { enabled: true },
 
@@ -23,9 +34,11 @@ export default defineNuxtConfig({
     },
   },
 
-  // Vercel 部署目标（SPA 模式下自动处理路由 fallback）
+  // Vercel 部署目标（预渲染路由生成静态 HTML，/app SPA 由路由 fallback 处理）
+  // crawlLinks: 从已预渲染页面爬取 <NuxtLink> 自动发现动态 [slug] 路由并一并预渲染
   nitro: {
     preset: 'vercel',
+    prerender: { crawlLinks: true },
   },
 
   app: {
