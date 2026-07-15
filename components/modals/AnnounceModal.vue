@@ -15,12 +15,13 @@ function close() { ui.close('announce'); }
     <h2 class="text-xl font-bold text-zinc-100">{{ t('announce_title') }}</h2>
     <p class="text-xs text-zinc-400 mt-0.5">{{ t('announce_subtitle') }}</p>
 
-    <div class="flex items-center justify-center gap-2 my-4">
+    <div v-if="false" class="flex items-center justify-center gap-2 my-4">
       <span class="text-[10px] text-zinc-500 flex-shrink-0">{{ t('announce_lang_label') }}</span>
       <div class="flex items-center glass rounded-xl p-0.5 border-white/5">
         <button v-for="l in [{c:'en',n:'EN'},{c:'zh-CN',n:'简'},{c:'zh-TW',n:'繁'}]" :key="l.c" class="announce-lang-btn lang-btn px-2.5 py-1 rounded-lg text-xs font-semibold transition-all" :class="locale===l.c?'active':''" @click="pick(l.c)">{{ l.n }}</button>
       </div>
     </div>
+    <div class="mb-5"></div>
 
     <div class="space-y-3 mb-5 text-sm">
       <div v-for="n in [1,2,3]" :key="n" class="flex gap-3 p-3 glass rounded-2xl">

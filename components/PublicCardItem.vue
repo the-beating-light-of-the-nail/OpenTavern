@@ -2,18 +2,39 @@
 import type { CharacterSeo } from '~/types/seo';
 
 /**
- * 公共角色卡（Romance Light 乙女风）：大头像 + 渐变顶条 + tagline + archetype + 标签 + 双按钮。
- * 复用于 /app LibraryView 公共 tab 与 SEO /characters 列表。
+ * 统一角色卡：seo 模式（浅色 Romance Light）与 app 模式（深色 glass）自适配。
+ * mode="seo"  → 白色 rc-card + plum 文字（SEO 页面）
+ * mode="app"  → 深色 glass + zinc 文字（App 公共库）
+ * 标签去重：过滤与 category 重复的 tag，最多展示 3 个，超出显示 +N。
  */
-defineProps<{ c: CharacterSeo }>();
+const props = withDefaults(defineProps<{
+  c: CharacterSeo;
+  mode?: 'seo' | 'app';
+  showProfileButton?: boolean;
+  showStartButton?: boolean;
+}>(), {
+  mode: 'seo',
+  showProfileButton: true,
+  showStartButton: true,
+});
+
+/** 去重 + 截断：过滤 category 重复，取前 3 */
+const displayTags = computed(() => {
+  const deduped = (props.c.tags || []).filter((t) => t.toLowerCase() !== props.c.category.toLowerCase());
+  const limited = deduped.slice(0, 3);
+  const extra = deduped.length > 3 ? `+${deduped.length - 3}` : null;
+  return { limited, extra };
+});
+
+const isSeo = computed(() => props.mode === 'seo');
+const isApp = computed(() => props.mode === 'app');
 </script>
 
 <template>
-  <div class="rc-card flex flex-col overflow-hidden">
-    <!-- 顶部柔玫瑰渐变条 -->
+  <!-- seo 模式 -->
+  <div v-if="isSeo" class="rc-card flex flex-col overflow-hidden">
     <div class="rc-card-accent" />
     <div class="flex flex-col p-5">
-      <!-- 大头像 + 名字 -->
       <div class="flex items-center gap-3.5">
         <CharAvatar :avatar="c.avatar" :initial="c.initial" size="lg" />
         <div class="min-w-0">
@@ -21,19 +42,45 @@ defineProps<{ c: CharacterSeo }>();
           <p class="truncate text-xs text-rose-accent">{{ c.archetype }}</p>
         </div>
       </div>
-      <!-- Tagline -->
       <p class="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-plum-muted">{{ c.tagline }}</p>
-      <!-- 标签 -->
       <div class="mt-3 flex flex-wrap gap-1.5">
         <span class="rc-tag">{{ c.category }}</span>
-        <span v-for="t in c.tags.slice(0, 2)" :key="t" class="rc-tag">{{ t }}</span>
+        <span v-for="t in displayTags.limited" :key="t" class="rc-tag">{{ t }}</span>
+        <span v-if="displayTags.extra" class="rc-tag opacity-70">{{ displayTags.extra }}</span>
       </div>
-      <!-- 两按钮 -->
-      <div class="mt-4 flex gap-2">
-        <NuxtLink :to="`/characters/${c.slug}`" class="flex-1 rounded-lg border border-border-warm px-3 py-2 text-center text-xs font-semibold text-plum-muted transition-all hover:border-rose-accent hover:bg-rose-tint hover:text-plum">
+      <div v-if="showProfileButton || showStartButton" class="mt-4 flex gap-2">
+        <NuxtLink v-if="showProfileButton" :to="`/characters/${c.slug}`" class="flex-1 rounded-lg border border-border-warm px-3 py-2 text-center text-xs font-semibold text-plum-muted transition-all hover:border-rose-accent hover:bg-rose-tint hover:text-plum">
           View Profile
         </NuxtLink>
-        <NuxtLink :to="`/app?character=${c.slug}`" class="flex-1 rounded-lg bg-rose-accent px-3 py-2 text-center text-xs font-bold text-white transition-all hover:bg-rose-deep">
+        <NuxtLink v-if="showStartButton" :to="`/app?character=${c.slug}`" class="flex-1 rounded-lg bg-rose-accent px-3 py-2 text-center text-xs font-bold text-white transition-all hover:bg-rose-deep">
+          Start Chat
+        </NuxtLink>
+      </div>
+    </div>
+  </div>
+
+  <!-- app 模式 -->
+  <div v-else-if="isApp" class="glass rounded-2xl flex flex-col overflow-hidden hover:border-rose-accent/30 transition-all">
+    <div class="rc-card-accent" />
+    <div class="flex flex-col p-5">
+      <div class="flex items-center gap-3.5">
+        <CharAvatar :avatar="c.avatar" :initial="c.initial" size="lg" />
+        <div class="min-w-0">
+          <h3 class="truncate text-base font-bold text-zinc-200">{{ c.name }}</h3>
+          <p class="truncate text-xs text-rose-accent/90">{{ c.archetype }}</p>
+        </div>
+      </div>
+      <p class="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-zinc-400">{{ c.tagline }}</p>
+      <div class="mt-3 flex flex-wrap gap-1.5">
+        <span class="char-tag">{{ c.category }}</span>
+        <span v-for="t in displayTags.limited" :key="t" class="char-tag">{{ t }}</span>
+        <span v-if="displayTags.extra" class="char-tag opacity-70">{{ displayTags.extra }}</span>
+      </div>
+      <div v-if="showProfileButton || showStartButton" class="mt-4 flex gap-2">
+        <NuxtLink v-if="showProfileButton" :to="`/characters/${c.slug}`" class="flex-1 rounded-lg border border-white/10 px-3 py-2 text-center text-xs font-semibold text-zinc-400 transition-all hover:border-rose-accent/40 hover:text-zinc-200">
+          View Profile
+        </NuxtLink>
+        <NuxtLink v-if="showStartButton" :to="`/app?character=${c.slug}`" class="flex-1 rounded-lg bg-rose-accent px-3 py-2 text-center text-xs font-bold text-white transition-all hover:bg-rose-deep">
           Start Chat
         </NuxtLink>
       </div>

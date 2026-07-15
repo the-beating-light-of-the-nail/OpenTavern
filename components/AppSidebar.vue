@@ -45,7 +45,7 @@ function editCurrentChar() {
 <template>
   <aside id="sidebar" :class="{ open: store.sidebarOpen }" class="w-[270px] flex-shrink-0 flex flex-col border-r border-white/5 bg-zinc-950/25 backdrop-blur-xl">
     <!-- Header -->
-    <div class="px-5 py-4 flex items-center gap-3 border-b border-white/5">
+    <NuxtLink to="/" class="px-5 py-4 flex items-center gap-3 border-b border-white/5 hover:bg-white/[0.03] transition-colors">
       <div class="w-9 h-9 rounded-xl ot-avatar-fill flex items-center justify-center text-white text-xs font-bold tracking-tighter">RC</div>
       <div class="flex-1">
         <div class="flex items-center gap-2">
@@ -53,7 +53,13 @@ function editCurrentChar() {
         </div>
         <p class="text-[10px] text-zinc-500 leading-tight">{{ t('app_subtitle') }}</p>
       </div>
-      <button class="hamburger-close-btn w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-white/10 transition-all" aria-label="Close menu" @click="toggleSidebar">&times;</button>
+      <button class="hamburger-close-btn w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-white/10 transition-all" aria-label="Close menu" @click.prevent.stop="toggleSidebar">&times;</button>
+    </NuxtLink>
+
+    <!-- Site nav -->
+    <div class="px-3 py-2 flex items-center gap-1 border-b border-white/5">
+      <NuxtLink to="/characters" class="flex-1 px-2 py-1.5 rounded-lg text-[11px] font-medium text-zinc-400 text-center glass hover:text-zinc-200 hover:bg-white/5 transition-all">Characters</NuxtLink>
+      <NuxtLink to="/guides" class="flex-1 px-2 py-1.5 rounded-lg text-[11px] font-medium text-zinc-400 text-center glass hover:text-zinc-200 hover:bg-white/5 transition-all">Guides</NuxtLink>
     </div>
 
     <!-- New Chat -->

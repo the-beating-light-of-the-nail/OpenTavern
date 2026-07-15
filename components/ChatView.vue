@@ -8,12 +8,11 @@ import { nextTick } from 'vue';
 
 const store = useAppStore();
 const ui = useUiStore();
-const { t, locale, locales, setLocale } = useI18n();
+const { t } = useI18n();
 const { sendMessage, stopGeneration, regenerate, isGenerating, streamingContent, streamingCot } = useChat();
 const groupMention = useGroupMention();
 const comfy = useComfy();
 
-const availableLocales = computed(() => (locales.value as any[]).map((l) => ({ code: l.code, name: l.name })));
 const conv = computed(() => store.activeConversation);
 const messages = computed<any[]>(() => conv.value?.messages || []);
 const inputText = ref('');
@@ -45,10 +44,12 @@ const hasActiveConv = computed(() => !!conv.value);
 // ComfyUI 生成按钮可见性：启用 + 有会话；可用性由 comfy.canGenerate()
 const showComfyBtn = computed(() => !!store.settings.comfyEnabled && hasActiveConv.value);
 
-function switchLang(code: string) {
-  setLocale(code as any);
-  if (store.settings) store.settings.lang = code;
-}
+/** 当前角色是否来自 SEO 静态角色库（characterId 以 'seo-' 开头） */
+const currentSlug = computed(() => {
+  const id = conv.value?.characterId;
+  return id?.startsWith('seo-') ? id.slice(4) : null;
+});
+
 function openMenu() { store.sidebarOpen = true; }
 function backToLibrary() { store.currentView = 'library'; }
 function confirmClear() {
@@ -117,9 +118,10 @@ function onComfyGenerate() {
         </div>
       </div>
       <div class="flex items-center gap-2 flex-shrink-0 topbar-actions">
-        <div class="flex items-center glass rounded-xl p-0.5 border-white/5">
-          <button v-for="l in availableLocales" :key="l.code" class="lang-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200" :class="locale === l.code ? 'active text-zinc-900' : 'text-zinc-400'" @click="switchLang(l.code)">{{ l.name }}</button>
-        </div>
+        <NuxtLink v-if="currentSlug" :to="`/characters/${currentSlug}`" class="px-2 sm:px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-500 glass hover:text-rose-accent hover:bg-white/10 transition-all flex items-center justify-center" title="View Character Profile">
+          <span class="hidden sm:inline">Profile</span>
+          <span class="sm:hidden text-[10px] font-semibold uppercase leading-none">Pr</span>
+        </NuxtLink>
         <button id="summarizeBtn" class="px-2 sm:px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-500 glass hover:text-zinc-300 hover:bg-white/10 transition-all flex items-center justify-center" @click="ui.open('summaryManager')">
           <span class="hidden sm:inline">{{ t('summary_btn') }}</span>
           <span class="sm:hidden text-[10px] font-semibold uppercase leading-none">Sum</span>
