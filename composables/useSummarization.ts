@@ -66,7 +66,7 @@ export function useSummarization() {
     const apiKey = useMain ? s.apiKey : (s.summarizeApiKey || s.apiKey);
     const model = useMain ? s.model : (s.summarizeModel || s.model || 'deepseek-chat');
 
-    if (!apiKey || !endpoint) throw new Error('请先配置 API');
+    if (!apiKey || !endpoint) throw new Error('Please configure your API first.');
 
     const lang = s.lang || 'en';
     const transcript = messages.map((m: any) => `[${m.role === 'user' ? (s.userName || 'User') : (m.speaker || 'Assistant')}]\n${m.content || ''}`).join('\n\n');

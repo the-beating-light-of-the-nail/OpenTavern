@@ -22,12 +22,12 @@ export interface ApiMessage { role: 'system' | 'user' | 'assistant'; content: st
 /** 群组多角色严格指令（按语言，1:1 原版 buildGroupSystemPrompt 内嵌文案） */
 function groupInstructionFor(lang: string): string {
   if (lang === 'zh-TW') {
-    return '你正在進行一個多角色群組對話。以下是本群組中所有角色的**完整、未經刪減**的角色資料。你必須嚴格按照每個角色提供的完整資料進行扮演，絕對不能混淆任何角色的性格、背景、說話方式或知識。\n\n**嚴格規則：**\n- 每個角色都有自己獨立且完整的設定，請嚴格遵守。\n- 當用戶訊息中包含 @角色名（例如 @普拉娜）時，被提及的角色應該是本輪的主要回應者。\n- 沒有 @ 時，你可以根據上下文自然決定由誰發言，但仍必須嚴格保持每個角色的獨立性。\n- 絕對不要將不同角色的特質混在一起。';
+    return '你正在進行一個多角色群組對話。以下是本群組中所有角色的**完整、未經刪減**的角色資料。你必須嚴格按照每個角色提供的完整資料進行扮演，絕對不能混淆任何角色的性格、背景、說話方式或知識。\n\n**嚴格規則：**\n- 每個角色都有自己獨立且完整的設定，請嚴格遵守。\n- 當用戶訊息中包含 @角色名（例如 @CharacterName）時，被提及的角色應該是本輪的主要回應者。\n- 沒有 @ 時，你可以根據上下文自然決定由誰發言，但仍必須嚴格保持每個角色的獨立性。\n- 絕對不要將不同角色的特質混在一起。';
   }
   if (lang === 'en') {
-    return 'You are roleplaying in a multi-character group chat. Below are the **complete, unedited** profiles of all characters currently in this group. You MUST strictly role-play each character according to their full provided information. Do not mix personalities, backgrounds, speech patterns, or knowledge between characters under any circumstances.\n\n**Strict Rules:**\n- Each character has their own independent and complete setting — adhere to them rigorously.\n- When the user\'s message contains @CharacterName (e.g. @普拉娜), the mentioned character should be the primary responder this turn.\n- If there is no @, you may naturally decide who speaks based on context, but you must still maintain each character\'s distinct identity.\n- Never blend traits from different characters.';
+    return 'You are roleplaying in a multi-character group chat. Below are the **complete, unedited** profiles of all characters currently in this group. You MUST strictly role-play each character according to their full provided information. Do not mix personalities, backgrounds, speech patterns, or knowledge between characters under any circumstances.\n\n**Strict Rules:**\n- Each character has their own independent and complete setting — adhere to them rigorously.\n- When the user\'s message contains @CharacterName (e.g. @CharacterName), the mentioned character should be the primary responder this turn.\n- If there is no @, you may naturally decide who speaks based on context, but you must still maintain each character\'s distinct identity.\n- Never blend traits from different characters.';
   }
-  return '你正在进行一个多角色群组对话。以下是本群组中所有角色的**完整、未经删减**的角色资料。你必须严格按照每个角色提供的完整资料进行扮演，绝对不能混淆任何角色的性格、背景、说话方式或知识。\n\n**严格规则：**\n- 每个角色都有自己独立且完整的设定，请严格遵守。\n- 当用户消息中包含 @角色名（例如 @普拉娜）时，被提及的角色应该是本轮的主要回应者。\n- 没有 @ 时，你可以根据上下文自然决定由谁发言，但仍必须严格保持每个角色的独立性。\n- 绝对不要将不同角色的特质混在一起。';
+  return '你正在进行一个多角色群组对话。以下是本群组中所有角色的**完整、未经删减**的角色资料。你必须严格按照每个角色提供的完整资料进行扮演，绝对不能混淆任何角色的性格、背景、说话方式或知识。\n\n**严格规则：**\n- 每个角色都有自己独立且完整的设定，请严格遵守。\n- 当用户消息中包含 @角色名（例如 @CharacterName）时，被提及的角色应该是本轮的主要回应者。\n- 没有 @ 时，你可以根据上下文自然决定由谁发言，但仍必须严格保持每个角色的独立性。\n- 绝对不要将不同角色的特质混在一起。';
 }
 
 /**
@@ -254,7 +254,7 @@ export function useChat() {
       messages = buildMessagesForAPI();
     } catch (e: any) {
       store.isGenerating = false;
-      await ui.showDialog({ message: '构建提示词时出错：' + (e.message || e), showCancel: false });
+      await ui.showDialog({ message: 'Error building prompt: ' + (e.message || e), showCancel: false });
       return;
     }
 

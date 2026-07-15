@@ -35,7 +35,7 @@ export function useRemoteAPI() {
     const { onToken, onComplete, onError } = callbacks;
 
     if (!settings.apiEndpoint || !settings.apiKey) {
-      onError(new Error('请先在设置中配置 API Endpoint 和 API Key'));
+      onError(new Error('Please configure your API endpoint and API key in Connect Your AI first.'));
       return;
     }
 

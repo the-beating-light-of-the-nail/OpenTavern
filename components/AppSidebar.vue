@@ -100,8 +100,6 @@ function editCurrentChar() {
               <span class="text-[10px] text-zinc-500 uppercase tracking-wider">{{ t('char_card_title') }}</span>
               <div id="charCardActions" class="flex items-center gap-0.5">
                 <button v-if="currentCharId()" id="charEditBtn" class="w-6 h-6 rounded-lg flex items-center justify-center text-zinc-500 hover:text-amber-400 hover:bg-amber-500/10 transition-all text-xs" @click="editCurrentChar">&#9998;</button>
-                <button id="charExportBtn" class="hidden w-6 h-6 rounded-lg flex items-center justify-center text-zinc-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all text-xs">&#128230;</button>
-                <button id="charRemoveBtn" class="hidden w-6 h-6 rounded-lg flex items-center justify-center text-zinc-500 hover:text-red-400 hover:bg-red-500/10 transition-all text-xs">&#10005;</button>
               </div>
             </div>
 
