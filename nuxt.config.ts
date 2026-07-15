@@ -43,7 +43,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      htmlAttrs: { lang: 'en', class: 'dark' },
+      htmlAttrs: { lang: 'en', class: 'theme-new-light' },
       title: 'RoleChat AI - Private AI Character Roleplay',
       meta: [
         { charset: 'UTF-8' },
