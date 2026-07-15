@@ -135,6 +135,14 @@ export const useAppStore = defineStore('app', {
       this.persist();
     },
 
+    /** 新增角色到本地角色库，返回生成的角色 id */
+    addCharacter(character: Record<string, any>): string {
+      const id = makeId();
+      this.characters[id] = { id, data: character };
+      this.persist();
+      return id;
+    },
+
     /**
      * 创建新会话（单角色 / 群组）。
      * 逐字移植原版 newConversation（index.html:574585）。
