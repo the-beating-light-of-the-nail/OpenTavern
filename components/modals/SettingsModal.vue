@@ -67,7 +67,7 @@ function fillProvider(p: typeof quickProviders[0]) {
             v-for="p in quickProviders"
             :key="p.label"
             type="button"
-            class="px-3 py-1.5 text-xs rounded-lg bg-white/5 hover:bg-amber-500/20 active:bg-amber-500/30 text-zinc-300 hover:text-amber-300 transition-all border border-white/10 font-medium"
+            class="px-3 py-1.5 text-xs rounded-xl bg-white/5 hover:bg-amber-500/20 active:bg-amber-500/30 text-zinc-300 hover:text-amber-300 transition-all border border-white/10 font-medium"
             @click="fillProvider(p)"
           >{{ p.label }}</button>
         </div>
@@ -101,8 +101,8 @@ function fillProvider(p: typeof quickProviders[0]) {
             <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">{{ t('settings_api_endpoint') }}</label>
             <input v-model="s.apiEndpoint" type="text" class="w-full mt-1.5 px-3 py-2.5 glass rounded-xl text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all" placeholder="https://api.openai.com/v1" @change="persist">
             <div class="mt-1.5 flex flex-wrap gap-1.5">
-              <button type="button" class="px-3 py-1 text-xs rounded-lg bg-white/5 hover:bg-amber-500/20 text-zinc-300 border border-white/10 font-medium" @click="fillProvider(quickProviders[0])">{{ t('provider_openrouter') }}</button>
-              <button type="button" class="px-3 py-1 text-xs rounded-lg bg-white/5 hover:bg-amber-500/20 text-amber-300 border border-white/10 font-medium">{{ t('api_test_button') }}</button>
+              <button type="button" class="px-3 py-1 text-xs rounded-xl bg-white/5 hover:bg-amber-500/20 text-zinc-300 border border-white/10 font-medium" @click="fillProvider(quickProviders[0])">{{ t('provider_openrouter') }}</button>
+              <button type="button" class="px-3 py-1 text-xs rounded-xl bg-white/5 hover:bg-amber-500/20 text-amber-300 border border-white/10 font-medium">{{ t('api_test_button') }}</button>
             </div>
           </div>
 
@@ -227,7 +227,7 @@ function fillProvider(p: typeof quickProviders[0]) {
           </div>
           <div>
             <label class="text-xs font-semibold text-zinc-400">{{ t('settings_summary_max_words') }}</label>
-            <input v-model.number="s.summaryMaxWords" type="number" min="0" max="10000" step="50" class="w-24 mt-1 px-2 py-1.5 glass rounded-lg text-sm text-zinc-200" @change="persist">
+            <input v-model.number="s.summaryMaxWords" type="number" min="0" max="10000" step="50" class="w-24 mt-1 px-2 py-1.5 glass rounded-xl text-sm text-zinc-200" @change="persist">
           </div>
           <div>
             <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">{{ t('settings_summary_prompt') }}</label>
@@ -309,8 +309,8 @@ function fillProvider(p: typeof quickProviders[0]) {
               </div>
               <input ref="comfyWorkflowFile" type="file" accept=".json,application/json" class="hidden" @change="onWorkflowFile">
               <div class="flex flex-wrap gap-2 items-center">
-                <button class="px-3 py-1.5 text-xs rounded-lg bg-white/5 hover:bg-amber-500/20 text-amber-300 border border-white/10 font-medium" @click="triggerImport">{{ t('settings_comfy_import_workflow') }}</button>
-                <button class="px-3 py-1.5 text-xs rounded-lg bg-white/5 hover:bg-amber-500/20 text-zinc-300 border border-white/10 font-medium" @click="onTestComfy">{{ t('settings_comfy_test') }}</button>
+                <button class="px-3 py-1.5 text-xs rounded-xl bg-white/5 hover:bg-amber-500/20 text-amber-300 border border-white/10 font-medium" @click="triggerImport">{{ t('settings_comfy_import_workflow') }}</button>
+                <button class="px-3 py-1.5 text-xs rounded-xl bg-white/5 hover:bg-amber-500/20 text-zinc-300 border border-white/10 font-medium" @click="onTestComfy">{{ t('settings_comfy_test') }}</button>
               </div>
               <div class="text-[11px]" :class="comfy.hasWorkflow.value ? 'text-emerald-300' : 'text-zinc-500'">
                 {{ comfy.workflowStatus.value }}

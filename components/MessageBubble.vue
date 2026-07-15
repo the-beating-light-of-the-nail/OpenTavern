@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import DOMPurify from 'dompurify';
-import { useChat } from '~/composables/useChat';
 
 const { t } = useI18n();
 

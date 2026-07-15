@@ -393,5 +393,18 @@
   "new_chat_cancel_multi": "取消",
   "new_chat_multi_selected_prefix": "已選",
   "new_chat_multi_people": "人",
-  "quick_new_group": "建立新群聊（進入選擇介面）"
+  "quick_new_group": "建立新群聊（進入選擇介面）",
+  "summary_no_conversation": "沒有活躍的會話。",
+  "summary_empty": "暫無摘要。",
+  "summary_range_label": "條訊息",
+  "prompt_viewer_empty": "無可顯示的提示詞資料。",
+  "copy_failed": "複製失敗，請手動複製。",
+  "copied": "已複製！",
+  "world_book_delete_all_confirm": "刪除所有世界書和條目？此操作不可撤銷。",
+  "world_book_import_success": "世界書匯入成功。",
+  "world_book_import_error": "匯入世界書失敗，請檢查檔案格式。",
+  "wi_untitled": "未命名條目",
+  "world_book_search_empty": "沒有匹配的條目。",
+  "webllm_detect_device": "偵測裝置",
+  "add": "新增"
 }

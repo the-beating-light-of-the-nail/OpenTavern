@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// 营销/SEO 站点公共顶栏 —— 复用于 /, /characters, /collections, /guides 页面
+defineProps<{ showExtraLinks?: boolean }>();
 </script>
 
 <template>
@@ -12,6 +12,10 @@
       <nav class="flex items-center gap-1.5">
         <NuxtLink to="/characters" class="rc-nav-link">Characters</NuxtLink>
         <NuxtLink to="/guides" class="rc-nav-link">Guides</NuxtLink>
+        <template v-if="showExtraLinks">
+          <a href="/#how" class="rc-nav-link">How it works</a>
+          <a href="/#faq" class="rc-nav-link">FAQ</a>
+        </template>
         <NuxtLink to="/app" class="rc-nav-link-primary">Open App</NuxtLink>
       </nav>
     </div>

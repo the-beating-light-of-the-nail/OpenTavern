@@ -558,6 +558,11 @@ body.theme-new-dark .text-zinc-400,
 body.theme-new-dark .text-zinc-500,
 body.theme-new-dark .text-zinc-600 { color: var(--ot-ink-muted) !important; }
 
+body.theme-new-light .text-zinc-700,
+body.theme-new-light .text-zinc-800,
+body.theme-new-dark .text-zinc-700,
+body.theme-new-dark .text-zinc-800 { color: var(--ot-ink-faint) !important; }
+
 body.theme-new-light .text-amber-200,
 body.theme-new-light .text-amber-300,
 body.theme-new-light .text-amber-400,
@@ -1198,4 +1203,26 @@ html, body, #__nuxt { height: 100%; }
   height: 4px;
   border-radius: 1rem 1rem 0 0;
   background: linear-gradient(90deg, var(--rc-primary) 0%, var(--rc-lavender) 50%, var(--rc-accent) 100%);
+}
+
+/* ==================== 组件设计 Token（统一按钮/输入/标签） ==================== */
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2.5 rounded-xl text-sm font-semibold bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-white shadow-lg shadow-amber-500/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed;
+  }
+  .btn-secondary {
+    @apply px-4 py-2.5 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/15 text-zinc-300 transition-all;
+  }
+  .btn-ghost {
+    @apply px-4 py-2.5 rounded-xl text-sm font-semibold glass hover:bg-white/10 text-zinc-300 transition-all;
+  }
+  .btn-danger {
+    @apply px-4 py-2.5 rounded-xl text-sm font-semibold bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-all;
+  }
+  .input-base {
+    @apply w-full px-3 py-2.5 glass rounded-xl text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all;
+  }
+  .label-base {
+    @apply text-[11px] font-semibold text-zinc-400 uppercase tracking-wider;
+  }
 }

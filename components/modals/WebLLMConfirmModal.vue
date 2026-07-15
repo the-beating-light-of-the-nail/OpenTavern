@@ -34,8 +34,8 @@ const isFirstEnable = computed(() => !!payload.value?.isFirstEnable);
     </div>
     <!-- 更换模型场景：通用 Continue / Cancel -->
     <div v-show="!isFirstEnable" id="webllmConfirmGenericActions" class="flex gap-3">
-      <button id="webllmConfirmCancelBtn" class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/15 text-zinc-300 transition-all" @click="webllm.confirmCancel()">{{ t('webllm_confirm_cancel') }}</button>
-      <button id="webllmConfirmContinueBtn" class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-white shadow-lg shadow-amber-500/20 transition-all" @click="webllm.confirmContinueGeneric()">{{ t('webllm_confirm_continue') }}</button>
+      <button id="webllmConfirmCancelBtn" class="flex-1 btn-secondary" @click="webllm.confirmCancel()">{{ t('webllm_confirm_cancel') }}</button>
+      <button id="webllmConfirmContinueBtn" class="flex-1 btn-primary" @click="webllm.confirmContinueGeneric()">{{ t('webllm_confirm_continue') }}</button>
     </div>
     <p class="mt-3 text-[10px] text-center text-zinc-500">{{ t('webllm_confirm_note') }}</p>
   </AppModal>

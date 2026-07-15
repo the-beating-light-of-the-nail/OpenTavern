@@ -126,7 +126,7 @@ function onComfyGenerate() {
           <span class="hidden sm:inline">{{ t('summary_btn') }}</span>
           <span class="sm:hidden text-[10px] font-semibold uppercase leading-none">Sum</span>
         </button>
-        <button id="topConnectBtn" class="w-8 h-8 rounded-xl glass flex items-center justify-center text-zinc-400 hover:text-emerald-300 transition-colors text-[10px] font-bold" title="Connect Your AI" @click="ui.open('settings')">AI</button>
+        <button id="topConnectBtn" class="w-8 h-8 rounded-xl glass flex items-center justify-center text-zinc-400 hover:text-amber-300 transition-colors text-[10px] font-bold" title="Connect Your AI" @click="ui.open('settings')">AI</button>
         <button id="topClearChatBtn" v-if="hasActiveConv" class="w-8 h-8 rounded-xl glass flex items-center justify-center text-zinc-400 hover:text-red-400 transition-colors" title="Clear Chat" @click="confirmClear">Clr</button>
 
       </div>
@@ -173,7 +173,7 @@ function onComfyGenerate() {
           id="messageInput"
           v-model="inputText"
           rows="1"
-          class="flex-1 px-4 py-3 glass rounded-2xl text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none transition-all min-h-[44px]"
+          class="flex-1 px-4 py-3 glass rounded-xl text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none transition-all min-h-[44px]"
           :placeholder="t('input_placeholder')"
           :disabled="!hasActiveConv"
           @keydown="onKeydown"
@@ -183,7 +183,7 @@ function onComfyGenerate() {
         <button
           v-if="showComfyBtn"
           id="comfyGenerateBtn"
-          class="flex-shrink-0 w-11 h-11 rounded-2xl glass text-amber-300 hover:text-amber-200 hover:bg-amber-500/10 transition-all duration-200 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed"
+          class="flex-shrink-0 w-11 h-11 rounded-xl glass text-amber-300 hover:text-amber-200 hover:bg-amber-500/10 transition-all duration-200 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed"
           :class="{ 'animate-pulse': comfy.isGenerating.value }"
           :disabled="!comfy.canGenerate()"
           :title="t('comfy_generate_title')"
@@ -192,18 +192,18 @@ function onComfyGenerate() {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
         </button>
         <!-- 停止按钮（生成中显示） -->
-        <button v-if="isGenerating" id="stopBtn" class="flex-shrink-0 w-11 h-11 rounded-2xl glass text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 flex items-center justify-center" @click="stopGeneration">
+        <button v-if="isGenerating" id="stopBtn" class="flex-shrink-0 w-11 h-11 rounded-xl glass text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 flex items-center justify-center" @click="stopGeneration">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2" /></svg>
         </button>
         <!-- 重新生成按钮（最后一条是助手消息且非生成中） -->
-        <button v-else-if="messages.length && messages[messages.length - 1].role === 'assistant'" class="flex-shrink-0 w-11 h-11 rounded-2xl glass text-amber-300 hover:text-amber-200 hover:bg-amber-500/10 transition-all duration-200 flex items-center justify-center" @click="regenerate">
+        <button v-else-if="messages.length && messages[messages.length - 1].role === 'assistant'" class="flex-shrink-0 w-11 h-11 rounded-xl glass text-amber-300 hover:text-amber-200 hover:bg-amber-500/10 transition-all duration-200 flex items-center justify-center" @click="regenerate">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></svg>
         </button>
         <!-- 发送按钮 -->
         <button
           v-else
           id="sendBtn"
-          class="flex-shrink-0 w-11 h-11 rounded-2xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-white font-semibold shadow-lg shadow-amber-500/20 hover:shadow-amber-500/35 transition-all duration-200 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed"
+          class="flex-shrink-0 w-11 h-11 rounded-xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-white font-semibold shadow-lg shadow-amber-500/20 hover:shadow-amber-500/35 transition-all duration-200 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed"
           :disabled="!inputText.trim() || !hasActiveConv"
           @click="handleSend"
         >

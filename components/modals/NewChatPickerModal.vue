@@ -61,7 +61,7 @@ function startNoCharacter() {
       <h2 class="text-lg font-bold">{{ t('new_chat_picker_title') }}</h2>
       <button
         class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border"
-        :class="multiMode ? 'bg-amber-500 text-zinc-900 border-amber-400' : 'bg-white/5 text-zinc-300 hover:bg-white/10 border-white/10'"
+        :class="multiMode ? 'bg-amber-500 text-white border-amber-400' : 'bg-white/5 text-zinc-300 hover:bg-white/10 border-white/10'"
         @click="toggleMulti"
       >
         {{ multiMode ? t('new_chat_multi_exit') : t('new_chat_multi_select') }}
@@ -99,8 +99,8 @@ function startNoCharacter() {
     </div>
 
     <div class="mt-4 pt-4 border-t border-white/10 flex flex-col gap-2">
-      <button id="newChatNoCharacterBtn" class="w-full px-4 py-2.5 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/15 transition-all" @click="startNoCharacter">{{ t('new_chat_no_character') }}</button>
-      <button id="newChatImportCharacterBtn" class="w-full px-4 py-2.5 rounded-xl text-sm font-semibold bg-white/5 hover:bg-white/10 border border-white/10 transition-all" @click="ui.close('newChatPicker'); ui.open('charImport')">{{ t('new_chat_import_character') }}</button>
+      <button id="newChatNoCharacterBtn" class="w-full btn-secondary" @click="startNoCharacter">{{ t('new_chat_no_character') }}</button>
+      <button id="newChatImportCharacterBtn" class="w-full btn-ghost border border-white/10" @click="ui.close('newChatPicker'); ui.open('charImport')">{{ t('new_chat_import_character') }}</button>
     </div>
   </AppModal>
 </template>

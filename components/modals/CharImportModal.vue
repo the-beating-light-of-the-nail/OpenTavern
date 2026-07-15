@@ -163,8 +163,8 @@ function onDrop(e: DragEvent) {
       <div v-if="error" class="mt-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-xs text-red-300">{{ error }}</div>
 
       <div class="flex gap-3 mt-5">
-        <button class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/15 text-zinc-300 transition-all" @click="cancel">Cancel</button>
-        <button class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-white shadow-lg shadow-amber-500/20 transition-all" @click="confirmImport">Confirm Import</button>
+        <button class="flex-1 btn-secondary" @click="cancel">Cancel</button>
+        <button class="flex-1 btn-primary" @click="confirmImport">Confirm Import</button>
       </div>
     </div>
 
@@ -176,8 +176,8 @@ function onDrop(e: DragEvent) {
       <h3 class="text-base font-bold text-zinc-100">Imported successfully!</h3>
       <p class="text-xs text-zinc-500 mt-1">{{ parsedChar?.name }} is now in your character library.</p>
       <div class="flex gap-3 mt-6">
-        <button class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/15 text-zinc-300 transition-all" @click="viewCharacter">View Character</button>
-        <button class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-white shadow-lg shadow-amber-500/20 transition-all" @click="startChat">Start Chat</button>
+        <button class="flex-1 btn-secondary" @click="viewCharacter">View Character</button>
+        <button class="flex-1 btn-primary" @click="startChat">Start Chat</button>
       </div>
     </div>
   </AppModal>

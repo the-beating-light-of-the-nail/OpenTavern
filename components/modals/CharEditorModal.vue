@@ -112,60 +112,60 @@ function onCancel() {
       <!-- Name + Role Type -->
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Name <span class="text-red-400">*</span></label>
+          <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Name <span class="text-red-400">*</span></label>
           <input v-model="form.name" type="text" class="w-full mt-1 px-3 py-2 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all" placeholder="e.g. Adrian Vale">
-          <p v-if="errors.name" class="text-[10px] text-red-400 mt-1">{{ errors.name }}</p>
+          <p v-if="errors.name" class="text-[11px] text-red-400 mt-1">{{ errors.name }}</p>
         </div>
         <div>
-          <label class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Role Type</label>
+          <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Role Type</label>
           <input v-model="form.roleType" type="text" class="w-full mt-1 px-3 py-2 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all" placeholder="e.g. Cold Doctor, Vampire Prince">
         </div>
       </div>
 
       <!-- Description -->
       <div>
-        <label class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Description <span class="text-red-400">*</span></label>
+        <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Description <span class="text-red-400">*</span></label>
         <textarea v-model="form.description" rows="5" class="w-full mt-1 px-3 py-2 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all resize-none" placeholder="Who is this character? Their backstory, appearance, what makes them unique..." />
-        <p v-if="errors.description" class="text-[10px] text-red-400 mt-1">{{ errors.description }}</p>
+        <p v-if="errors.description" class="text-[11px] text-red-400 mt-1">{{ errors.description }}</p>
       </div>
 
       <!-- Personality -->
       <div>
-        <label class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Personality <span class="text-red-400">*</span></label>
+        <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Personality <span class="text-red-400">*</span></label>
         <textarea v-model="form.personality" rows="3" class="w-full mt-1 px-3 py-2 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all resize-none" placeholder="How do they behave? Cold but caring, sarcastic, gentle..." />
-        <p v-if="errors.personality" class="text-[10px] text-red-400 mt-1">{{ errors.personality }}</p>
+        <p v-if="errors.personality" class="text-[11px] text-red-400 mt-1">{{ errors.personality }}</p>
       </div>
 
       <!-- Relationship / How you meet -->
       <div>
-        <label class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Relationship / How you meet</label>
+        <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Relationship / How you meet</label>
         <textarea v-model="form.relationship" rows="3" class="w-full mt-1 px-3 py-2 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all resize-none" placeholder="How does the user meet this character? What's the initial dynamic?" />
       </div>
 
       <!-- Opening Message -->
       <div>
-        <label class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Opening Message <span class="text-red-400">*</span></label>
+        <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Opening Message <span class="text-red-400">*</span></label>
         <textarea v-model="form.first_mes" rows="4" class="w-full mt-1 px-3 py-2 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all resize-none" placeholder="The first message the character sends to start the conversation..." />
-        <p v-if="errors.first_mes" class="text-[10px] text-red-400 mt-1">{{ errors.first_mes }}</p>
+        <p v-if="errors.first_mes" class="text-[11px] text-red-400 mt-1">{{ errors.first_mes }}</p>
       </div>
 
       <!-- Advanced Prompt (折叠) -->
       <details class="group mt-2 border-t border-white/5 pt-3">
-        <summary class="cursor-pointer text-[10px] font-semibold uppercase tracking-wider text-zinc-500 hover:text-zinc-300 transition-colors select-none list-none flex items-center gap-1">
+        <summary class="cursor-pointer text-[11px] font-semibold uppercase tracking-wider text-zinc-500 hover:text-zinc-300 transition-colors select-none list-none flex items-center gap-1">
           Advanced Prompt
           <span class="ml-auto transition-transform group-open:rotate-90">→</span>
         </summary>
         <div class="mt-3 space-y-3">
           <div>
-            <label class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">System Prompt</label>
+            <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">System Prompt</label>
             <textarea v-model="form.system_prompt" rows="2" class="w-full mt-1 px-3 py-2 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all resize-none" placeholder="Optional custom system-level instructions..." />
           </div>
           <div>
-            <label class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Post-History Instructions</label>
+            <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Post-History Instructions</label>
             <textarea v-model="form.post_history_instructions" rows="2" class="w-full mt-1 px-3 py-2 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all resize-none" placeholder="Optional instructions injected after chat history..." />
           </div>
           <div>
-            <label class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Example Messages</label>
+            <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Example Messages</label>
             <textarea v-model="form.mes_example" rows="3" class="w-full mt-1 px-3 py-2 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all resize-none" placeholder="Example dialogue to guide the AI's style..." />
           </div>
         </div>
@@ -173,8 +173,8 @@ function onCancel() {
     </div>
 
     <div class="flex gap-3 mt-5">
-      <button class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/15 text-zinc-300 transition-all" @click="onCancel">{{ t('char_editor_cancel') }}</button>
-      <button class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-white shadow-lg shadow-amber-500/20 transition-all" @click="onSave">{{ isEditMode ? 'Update' : 'Create' }}</button>
+      <button class="flex-1 btn-secondary" @click="onCancel">{{ t('char_editor_cancel') }}</button>
+      <button class="flex-1 btn-primary" @click="onSave">{{ isEditMode ? 'Update' : 'Create' }}</button>
     </div>
   </AppModal>
 </template>

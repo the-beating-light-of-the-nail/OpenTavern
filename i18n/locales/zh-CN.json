@@ -399,5 +399,18 @@
   "group_mention_title": "选择要提及的角色",
   "group_mention_hint": "选择后将在输入栏左侧显示指定角色（气泡），本轮回复将由该角色驱动",
   "group_mention_no_group": "当前不是群组聊天",
-  "group_mention_insert": "指定 {'@'}"
+  "group_mention_insert": "指定 {'@'}",
+  "summary_no_conversation": "没有活跃的会话。",
+  "summary_empty": "暂无总结。",
+  "summary_range_label": "条消息",
+  "prompt_viewer_empty": "无可显示的提示词数据。",
+  "copy_failed": "复制失败，请手动复制。",
+  "copied": "已复制！",
+  "world_book_delete_all_confirm": "删除所有世界书和条目？此操作不可撤销。",
+  "world_book_import_success": "世界书导入成功。",
+  "world_book_import_error": "导入世界书失败，请检查文件格式。",
+  "wi_untitled": "未命名条目",
+  "world_book_search_empty": "没有匹配的条目。",
+  "webllm_detect_device": "检测设备",
+  "add": "添加"
 }

@@ -43,6 +43,8 @@ export function useChat() {
   const { autoSummarizeIfNeeded } = useSummarization();
   const groupMention = useGroupMention();
 
+  let stopRequested = false;
+
   /** 按 inferenceBackend 选择推理后端（remote-api / webllm），两者签名与回调契约一致 */
   function pickStreamChat() {
     return store.settings.inferenceBackend === 'webllm' ? webllm.streamChat : remoteStreamChat;
@@ -215,6 +217,8 @@ export function useChat() {
     if (!text) return;
     if (!conv.value) return;
 
+    stopRequested = false;
+
     // 推入用户消息
     (conv.value as any).messages.push({ role: 'user', content: text });
     (conv.value as any).updated = Date.now();
@@ -276,7 +280,7 @@ export function useChat() {
           if (content && content.trim()) {
             const msg: any = { role: 'assistant', content, id: makeId(), stage: 'main' };
             if (cot) msg.cot = cot;
-            // 群聊：记录本轮发言者（原版 finishAssistantMessage speaker 逻辑）
+            // 群聊：记录本轮发言者
             if (isGroupChat(conv.value)) {
               const sp = (conv.value as any)._nextGroupSpeaker;
               if (sp?.name) msg.speaker = sp.name;
@@ -285,13 +289,13 @@ export function useChat() {
             (conv.value as any).updated = Date.now();
             store.persist();
 
-            // 群聊：为下一轮预装发言者（原版 completeGenerationTurn byte 536756）
+            // 群聊：为下一轮预装发言者
             if (isGroupChat(conv.value)) {
               (conv.value as any)._nextGroupSpeaker = getNextGroupSpeaker(conv.value);
             }
 
-            // 两阶段生成（第二阶段：选项/小提示）
-            if (store.settings.twoStageEnabled) {
+            // 两阶段生成（第二阶段）—— stopRequested 时跳过
+            if (store.settings.twoStageEnabled && !stopRequested) {
               await runSecondStage(msg);
             }
 
@@ -362,6 +366,7 @@ export function useChat() {
 
   /** 停止生成 */
   function stopGeneration(): void {
+    stopRequested = true;
     if (store.abortController) {
       store.abortController.abort();
       store.abortController = null;
@@ -382,6 +387,7 @@ export function useChat() {
   /** 重新生成最后一条助手消息 */
   async function regenerate(): Promise<void> {
     if (store.isGenerating || !conv.value) return;
+    stopRequested = false;
     const msgs = (conv.value as any).messages;
     // 找到最后一条 assistant 消息
     let lastAssistantIdx = -1;
@@ -404,6 +410,21 @@ export function useChat() {
     }
   }
 
+  /** 构建第二阶段消息（供 PromptViewer 查看） */
+  function buildSecondStageMessages(): ApiMessage[] {
+    if (!conv.value) return [];
+    const messages = (conv.value as any).messages;
+    const lastAssistant = [...messages].reverse().find((m: any) => m.role === 'assistant');
+    if (!lastAssistant) return [];
+    const charName = getCharName();
+    const userName = store.settings.userName || 'User';
+    const secondSysPrompt = store.settings.twoStageSystemPrompt || DEFAULT_TWO_STAGE_PROMPT;
+    return [
+      { role: 'system', content: replacePlaceholders(secondSysPrompt, charName, userName) },
+      { role: 'user', content: replacePlaceholders(lastAssistant.content || '', charName, userName) },
+    ];
+  }
+
   return {
     conv,
     isGenerating,
@@ -414,5 +435,6 @@ export function useChat() {
     regenerate,
     deleteMessage,
     buildMessagesForAPI,
+    buildSecondStageMessages,
   };
 }

@@ -68,6 +68,13 @@ const myCards = computed<CardVM[]>(() => {
 function openMenu() {
   store.sidebarOpen = true;
 }
+
+function onSelectMyCard(cardVm: CardVM) {
+  const entry = store.characters[cardVm.id];
+  if (entry) {
+    store.createConversation(entry);
+  }
+}
 </script>
 
 <template>
@@ -117,7 +124,7 @@ function openMenu() {
       </div>
       <!-- My Cards -->
       <div v-show="activeTab === 'my'" id="myCardsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-        <CardItem v-for="c in myCards" :key="c.id" :name="c.name" :tags="c.tags" :description="c.description" :image="c.image" />
+        <CardItem v-for="c in myCards" :key="c.id" :name="c.name" :tags="c.tags" :description="c.description" :image="c.image" @select="onSelectMyCard(c)" />
         <div v-if="!myCards.length" class="col-span-full text-center text-zinc-500 text-sm py-12">{{ t('char_card_empty') }}</div>
       </div>
     </div>

@@ -23,14 +23,14 @@ function toggleSidebar() {
 
 function currentCharName(): string {
   const conv = store.activeConversation;
-  const charId = conv?.characterId || conv?.characterRef;
+  const charId = conv?.characterId;
   const ch = charId ? store.characters[charId] : null;
   return ch?.data?.name || ch?.name || conv?.characterName || '';
 }
 
 function currentCharId(): string | null {
   const conv = store.activeConversation;
-  return conv?.characterId || conv?.characterRef || null;
+  return conv?.characterId || null;
 }
 
 function editCurrentChar() {
@@ -39,6 +39,50 @@ function editCurrentChar() {
   const ch = store.characters[id];
   if (!ch) return;
   ui.open('charEditor', { id, data: ch.data });
+}
+
+const exportImportInput = ref<HTMLInputElement | null>(null);
+
+function exportAll() {
+  const data = {
+    settings: store.settings,
+    conversations: store.conversations,
+    conversationOrder: store.conversationOrder,
+    characters: store.characters,
+    worldBooks: store.worldBooks,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'rolechat-export-' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function triggerImport() { exportImportInput.value?.click(); }
+
+async function onImportFile(e: Event) {
+  const target = e.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+    if (data.conversations) Object.assign(store.conversations, data.conversations);
+    if (data.conversationOrder) {
+      for (const id of data.conversationOrder) {
+        if (!store.conversationOrder.includes(id)) store.conversationOrder.unshift(id);
+      }
+    }
+    if (data.characters) Object.assign(store.characters, data.characters);
+    if (data.worldBooks) Object.assign(store.worldBooks, data.worldBooks);
+    store.persist(true);
+    ui.showDialog({ message: t('import_success'), showCancel: false });
+  } catch {
+    ui.showDialog({ message: t('import_error'), showCancel: false, danger: true });
+  }
+  if (target) target.value = '';
 }
 </script>
 
@@ -110,7 +154,7 @@ function editCurrentChar() {
             </div>
 
             <div v-if="currentCharName()" id="charCardPreview" class="flex items-center gap-2 mb-1">
-              <div id="charCardAvatar" class="w-7 h-7 rounded-lg ot-avatar-fill flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">?</div>
+              <CharAvatar :initial="(currentCharName()||'?').charAt(0)" size="sm" />
               <div class="min-w-0 flex-1">
                 <p id="charCardName" class="text-xs font-medium text-zinc-200 truncate">{{ currentCharName() }}</p>
               </div>
@@ -137,8 +181,9 @@ function editCurrentChar() {
 
           <!-- Export / Import / Prompt -->
           <div class="flex items-center gap-1.5">
-            <button id="exportAllBtn" class="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-[10px] text-zinc-500 glass hover:text-zinc-300 hover:bg-white/5 transition-all">{{ t('conv_export_all_btn') }}</button>
-            <button id="importConvBtn" class="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-[10px] text-zinc-500 glass hover:text-zinc-300 hover:bg-white/5 transition-all">{{ t('conv_import_btn') }}</button>
+            <input ref="exportImportInput" type="file" accept=".json" class="hidden" @change="onImportFile">
+            <button id="exportAllBtn" class="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-[10px] text-zinc-500 glass hover:text-zinc-300 hover:bg-white/5 transition-all" @click="exportAll">{{ t('conv_export_all_btn') }}</button>
+            <button id="importConvBtn" class="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-[10px] text-zinc-500 glass hover:text-zinc-300 hover:bg-white/5 transition-all" @click="triggerImport">{{ t('conv_import_btn') }}</button>
           </div>
           <button id="viewPromptBtn" class="w-full flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-[10px] text-zinc-500 glass hover:text-zinc-300 hover:bg-white/5 transition-all" @click="ui.open('promptViewer')">
             <span class="text-[10px] font-semibold uppercase tracking-wider">Prompt</span>

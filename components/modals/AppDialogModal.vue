@@ -21,8 +21,13 @@ function onBackdrop() { if (ui.dialog.showCancel) cancel(); else ok(); }
         </div>
       </div>
       <div class="flex gap-3 justify-end">
-        <button v-if="ui.dialog.showCancel" class="px-4 py-2.5 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/15 text-zinc-300 transition-all" @click="cancel">{{ ui.dialog.cancelText || t('webllm_confirm_cancel') }}</button>
-        <button class="px-4 py-2.5 rounded-xl text-sm font-semibold shadow-lg transition-all" :class="ui.dialog.danger ? 'bg-red-500 hover:bg-red-400 text-white shadow-red-500/20' : 'bg-amber-500 hover:bg-amber-400 text-white shadow-amber-500/20'" @click="ok">{{ ui.dialog.okText || t('webllm_confirm_continue') }}</button>
+        <button v-if="ui.dialog.showCancel" class="btn-secondary" @click="cancel">{{ ui.dialog.cancelText || t('webllm_confirm_cancel') }}</button>
+        <button
+          :class="ui.dialog.danger
+            ? 'px-4 py-2.5 rounded-xl text-sm font-semibold bg-red-500 hover:bg-red-400 text-white shadow-lg shadow-red-500/20 transition-all'
+            : 'btn-primary'"
+          @click="ok"
+        >{{ ui.dialog.okText || t('webllm_confirm_continue') }}</button>
       </div>
     </div>
   </div>

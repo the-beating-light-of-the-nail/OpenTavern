@@ -407,5 +407,18 @@
   "provider_custom": "Custom",
   "clear_chat": "Clear Chat",
   "clear_chat_confirm": "Clear this conversation? All messages will be lost.",
-  "advanced_settings": "Advanced Settings"
+  "advanced_settings": "Advanced Settings",
+  "summary_no_conversation": "No active conversation.",
+  "summary_empty": "No summaries yet.",
+  "summary_range_label": "Messages",
+  "prompt_viewer_empty": "No prompt data available.",
+  "copy_failed": "Copy failed. Please copy manually.",
+  "copied": "Copied!",
+  "world_book_delete_all_confirm": "Delete ALL world books and entries? This cannot be undone.",
+  "world_book_import_success": "Lorebook imported successfully.",
+  "world_book_import_error": "Failed to import lorebook. Please check the file format.",
+  "wi_untitled": "Untitled Entry",
+  "world_book_search_empty": "No matching entries.",
+  "webllm_detect_device": "Detect Device",
+  "add": "Add"
 }

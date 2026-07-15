@@ -3,11 +3,11 @@ const props = defineProps<{
   name: string;
   tags?: string[];
   description?: string;
-  /** 用户导入卡片的 base64 data URL（优先） */
   image?: string;
-  /** 公网卡库文件名主部（如 Arona），用于构造优化变体路径 /cards/<slug>-<w>.webp */
   cardSlug?: string;
 }>();
+
+const emit = defineEmits<{ select: [] }>();
 
 /** 卡片预览渲染宽度（CSS 最宽 ~300px × retina） */
 const WIDE = 600;
@@ -24,7 +24,7 @@ const fallbackSrc = computed(() => (props.cardSlug ? `/cards/${props.cardSlug}-$
 </script>
 
 <template>
-  <div class="group glass rounded-2xl cursor-pointer overflow-hidden transition-all hover:border-amber-500/30 hover:bg-white/[0.06] relative">
+  <div class="group glass rounded-2xl cursor-pointer overflow-hidden transition-all hover:border-amber-500/30 hover:bg-white/[0.06] relative" @click="emit('select')">
     <!-- 3:4 preview -->
     <div class="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-amber-500/20 to-pink-500/10 ot-avatar-fill">
       <!-- 优先 base64 data URL（用户导入） -->
