@@ -27,14 +27,14 @@ const members = computed(() =>
 </script>
 
 <template>
-  <div class="min-h-[100dvh] bg-zinc-950 text-zinc-100">
+  <div class="min-h-[100dvh] bg-ivory text-plum">
     <SiteHeader />
 
     <main class="mx-auto max-w-3xl px-5 py-12">
       <NuxtLink to="/characters" class="rc-nav-link mb-6 inline-flex">← All characters</NuxtLink>
 
       <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{{ col.title }}</h1>
-      <p class="mt-4 leading-relaxed text-zinc-400">{{ col.intro }}</p>
+      <p class="mt-4 leading-relaxed text-plum-muted">{{ col.intro }}</p>
 
       <div class="mt-8 flex flex-wrap gap-3">
         <NuxtLink to="/app" class="rc-btn-primary">Start Chatting</NuxtLink>
@@ -49,11 +49,11 @@ const members = computed(() =>
             <div class="flex items-center gap-3">
               <div class="rc-avatar-fill flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl text-lg font-bold">{{ m.initial }}</div>
               <div class="min-w-0">
-                <h3 class="truncate text-base font-bold group-hover:text-amber-400">{{ m.name }}</h3>
-                <p class="truncate text-xs text-amber-400/80">{{ m.archetype }}</p>
+                <h3 class="truncate text-base font-bold group-hover:text-rose-accent">{{ m.name }}</h3>
+                <p class="truncate text-xs text-rose-accent">{{ m.archetype }}</p>
               </div>
             </div>
-            <p class="mt-3 line-clamp-2 text-sm leading-relaxed text-zinc-400">{{ m.tagline }}</p>
+            <p class="mt-3 line-clamp-2 text-sm leading-relaxed text-plum-muted">{{ m.tagline }}</p>
             <div class="mt-4 flex flex-wrap gap-1.5">
               <span v-for="t in m.tags.slice(0, 3)" :key="t" class="rc-tag">{{ t }}</span>
             </div>

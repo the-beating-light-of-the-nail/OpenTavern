@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <header class="sticky top-0 z-20 border-b border-white/5 bg-zinc-950/80 backdrop-blur-xl">
+  <header class="sticky top-0 z-20 border-b border-border-warm bg-ivory/80 backdrop-blur-xl">
     <div class="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
       <NuxtLink to="/" class="flex items-center gap-2">
         <div class="rc-avatar-fill flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold tracking-tighter">RC</div>

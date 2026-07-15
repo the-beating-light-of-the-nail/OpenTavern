@@ -27,7 +27,7 @@ const related = computed(() =>
 </script>
 
 <template>
-  <div class="min-h-[100dvh] bg-zinc-950 text-zinc-100">
+  <div class="min-h-[100dvh] bg-ivory text-plum">
     <SiteHeader />
 
     <main class="mx-auto max-w-3xl px-5 py-12">
@@ -38,11 +38,11 @@ const related = computed(() =>
         <CharAvatar :avatar="c.avatar" :initial="c.initial" size="lg" />
         <div class="min-w-0">
           <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">{{ c.name }}</h1>
-          <p class="text-sm text-amber-400/80">{{ c.archetype }}</p>
+          <p class="text-sm text-rose-accent">{{ c.archetype }}</p>
         </div>
       </div>
 
-      <p class="mt-5 text-lg italic text-zinc-300">{{ c.tagline }}</p>
+      <p class="mt-5 text-lg italic text-plum-light">{{ c.tagline }}</p>
 
       <!-- Meta + safety + tags -->
       <div class="mt-5 flex flex-wrap items-center gap-1.5">
@@ -60,35 +60,35 @@ const related = computed(() =>
       <!-- Description -->
       <section class="mt-10">
         <h2 class="text-lg font-bold">About {{ c.name }}</h2>
-        <p class="mt-3 leading-relaxed text-zinc-400">{{ c.description }}</p>
+        <p class="mt-3 leading-relaxed text-plum-muted">{{ c.description }}</p>
       </section>
 
       <!-- Personality -->
       <section class="mt-8">
         <h2 class="text-lg font-bold">Personality</h2>
-        <p class="mt-3 leading-relaxed text-zinc-400">{{ c.personality }}</p>
+        <p class="mt-3 leading-relaxed text-plum-muted">{{ c.personality }}</p>
         <div class="mt-3 flex flex-wrap gap-1.5">
-          <span v-for="t in c.personalityTags" :key="t" class="rounded-full bg-white/5 px-2.5 py-0.5 text-[0.68rem] font-medium text-zinc-300">{{ t }}</span>
+          <span v-for="t in c.personalityTags" :key="t" class="rounded-full bg-rose-tint px-2.5 py-0.5 text-[0.68rem] font-medium text-plum-light">{{ t }}</span>
         </div>
       </section>
 
       <!-- Relationship setup -->
       <section class="mt-8">
         <h2 class="text-lg font-bold">How you meet</h2>
-        <p class="mt-3 leading-relaxed text-zinc-400">{{ c.relationshipSetup }}</p>
+        <p class="mt-3 leading-relaxed text-plum-muted">{{ c.relationshipSetup }}</p>
       </section>
 
       <!-- Scenario -->
       <section class="mt-8">
         <h2 class="text-lg font-bold">World &amp; scenario</h2>
-        <p class="mt-3 leading-relaxed text-zinc-400">{{ c.scenario }}</p>
+        <p class="mt-3 leading-relaxed text-plum-muted">{{ c.scenario }}</p>
       </section>
 
       <!-- Opening message -->
       <section class="mt-8">
         <h2 class="text-lg font-bold">Opening message</h2>
-        <div class="mt-3 rounded-xl border border-white/8 bg-white/[0.03] p-5">
-          <p class="whitespace-pre-wrap leading-relaxed text-zinc-300">{{ c.openingMessage }}</p>
+        <div class="mt-3 rounded-xl border border-border-warm bg-rose-tint p-5">
+          <p class="whitespace-pre-wrap leading-relaxed text-plum-light">{{ c.openingMessage }}</p>
         </div>
       </section>
 
@@ -99,8 +99,8 @@ const related = computed(() =>
           <NuxtLink v-for="r in related" :key="r.slug" :to="`/characters/${r.slug}`" class="rc-card group flex items-center gap-3 p-4">
             <CharAvatar :avatar="r.avatar" :initial="r.initial" size="sm" />
             <div class="min-w-0">
-              <p class="truncate text-sm font-bold group-hover:text-amber-400">{{ r.name }}</p>
-              <p class="truncate text-xs text-zinc-500">{{ r.archetype }}</p>
+              <p class="truncate text-sm font-bold group-hover:text-rose-accent">{{ r.name }}</p>
+              <p class="truncate text-xs text-plum-faint">{{ r.archetype }}</p>
             </div>
           </NuxtLink>
         </div>
@@ -118,9 +118,9 @@ const related = computed(() =>
       </section>
 
       <!-- Footer CTA -->
-      <section class="mt-12 rounded-2xl border border-white/8 bg-white/[0.02] p-8 text-center">
+      <section class="mt-12 rounded-2xl border border-border-warm bg-rose-tint p-8 text-center">
         <h2 class="text-xl font-bold">Ready to talk to {{ c.name }}?</h2>
-        <p class="mx-auto mt-2 max-w-md text-sm text-zinc-400">Open the app, add your AI key, and the story begins. No installation, no setup wizard.</p>
+        <p class="mx-auto mt-2 max-w-md text-sm text-plum-muted">Open the app, add your AI key, and the story begins. No installation, no setup wizard.</p>
         <NuxtLink :to="`/app?character=${c.slug}`" class="rc-btn-primary mt-5 inline-flex">Start Private Chat</NuxtLink>
       </section>
     </main>

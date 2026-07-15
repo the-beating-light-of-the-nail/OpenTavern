@@ -48,13 +48,13 @@ function toggleTag(t: string) {
 </script>
 
 <template>
-  <div class="min-h-[100dvh] bg-zinc-950 text-zinc-100">
+  <div class="min-h-[100dvh] bg-ivory text-plum">
     <SiteHeader />
 
     <main class="mx-auto max-w-5xl px-5 py-14">
       <div class="mb-10 text-center">
         <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Characters</h1>
-        <p class="mx-auto mt-3 max-w-xl text-zinc-400">
+        <p class="mx-auto mt-3 max-w-xl text-plum-muted">
           20 original romance and fantasy characters for private AI roleplay. Each one has his own voice, his own story,
           and his own way of falling for you. Pick one and start chatting in seconds.
         </p>
@@ -66,7 +66,7 @@ function toggleTag(t: string) {
           v-model="search"
           type="text"
           placeholder="Search by name, archetype, or tag..."
-          class="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-amber-500/40 focus:outline-none focus:ring-1 focus:ring-amber-500/40"
+          class="flex-1 rounded-xl border border-champagne/40 bg-rose-tint px-4 py-2.5 text-sm text-plum placeholder-zinc-500 focus:border-amber-500/40 focus:outline-none focus:ring-1 focus:ring-amber-500/40"
         >
       </div>
 
@@ -76,7 +76,7 @@ function toggleTag(t: string) {
           v-for="cat in categories"
           :key="cat"
           class="rounded-lg px-3 py-1 text-xs font-semibold transition-all"
-          :class="activeCategory === cat ? 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-400/50' : 'bg-white/5 text-zinc-400 hover:bg-white/10'"
+          :class="activeCategory === cat ? 'bg-rose-accent/15 text-rose-accent ring-1 ring-amber-400/50' : 'bg-rose-tint text-plum-muted hover:bg-rose-tint'"
           @click="activeCategory = cat"
         >{{ cat }}</button>
       </div>
@@ -101,7 +101,7 @@ function toggleTag(t: string) {
       <div v-if="filtered.length" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <PublicCardItem v-for="c in filtered" :key="c.slug" :c="c" />
       </div>
-      <div v-else class="py-16 text-center text-zinc-500">
+      <div v-else class="py-16 text-center text-plum-faint">
         <p>No characters match your search.</p>
       </div>
 
@@ -110,9 +110,9 @@ function toggleTag(t: string) {
         <h2 class="text-lg font-bold">Browse by collection</h2>
         <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <NuxtLink v-for="col in collections" :key="col.slug" :to="`/collections/${col.slug}`" class="rc-card group block p-5">
-            <h3 class="text-base font-bold group-hover:text-amber-400">{{ col.title }}</h3>
-            <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-zinc-400">{{ col.intro }}</p>
-            <p class="mt-3 text-xs font-semibold text-amber-400/70">{{ col.characterSlugs.length }} characters →</p>
+            <h3 class="text-base font-bold group-hover:text-rose-accent">{{ col.title }}</h3>
+            <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-plum-muted">{{ col.intro }}</p>
+            <p class="mt-3 text-xs font-semibold text-rose-accent/70">{{ col.characterSlugs.length }} characters →</p>
           </NuxtLink>
         </div>
       </section>

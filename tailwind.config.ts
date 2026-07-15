@@ -10,6 +10,23 @@ export default <Partial<Config>>{
   ],
   theme: {
     extend: {
+      colors: {
+        ivory: '#faf5f0',
+        plum: {
+          DEFAULT: '#3d2b3d',
+          light: '#6a5a6a',
+          muted: '#7a6a7a',
+          faint: '#9a8a9a',
+        },
+        rose: {
+          tint: '#fff5f3',
+          accent: '#c8837a',
+          deep: '#b06f66',
+        },
+        champagne: '#c89b6c',
+        lavender: '#d4c5e0',
+        'border-warm': '#ece3de',
+      },
       fontFamily: {
         sans: ['"SF Pro Display"', '"SF Pro"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
       },

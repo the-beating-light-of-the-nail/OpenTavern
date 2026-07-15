@@ -44,9 +44,9 @@ const faqs = [
 </script>
 
 <template>
-  <div class="min-h-[100dvh] bg-zinc-950 text-zinc-100">
+  <div class="min-h-[100dvh] bg-ivory text-plum">
     <!-- Top Nav -->
-    <header class="sticky top-0 z-20 border-b border-white/5 bg-zinc-950/80 backdrop-blur-xl">
+    <header class="sticky top-0 z-20 border-b border-border-warm bg-ivory/80 backdrop-blur-xl">
       <div class="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
         <NuxtLink to="/" class="flex items-center gap-2">
           <div class="rc-avatar-fill flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold tracking-tighter">RC</div>
@@ -65,13 +65,13 @@ const faqs = [
     <!-- Hero -->
     <section class="rc-hero-bg relative overflow-hidden">
       <div class="mx-auto max-w-3xl px-5 py-24 text-center sm:py-32">
-        <div class="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-zinc-300">
-          <span class="h-1.5 w-1.5 rounded-full bg-amber-400" /> The easiest private AI roleplay
+        <div class="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-champagne/40 bg-rose-tint px-3 py-1 text-xs font-medium text-plum-light">
+          <span class="h-1.5 w-1.5 rounded-full bg-rose-deep" /> The easiest private AI roleplay
         </div>
         <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">
           The easiest private<br class="hidden sm:block" /> AI roleplay.
         </h1>
-        <p class="mx-auto mt-5 max-w-xl text-base text-zinc-400 sm:text-lg">
+        <p class="mx-auto mt-5 max-w-xl text-base text-plum-muted sm:text-lg">
           Chat with original romance and fantasy characters in seconds. No installation. No complicated setup. Bring your own AI key.
         </p>
         <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -85,18 +85,18 @@ const faqs = [
     <section class="mx-auto max-w-5xl px-5 py-20">
       <div class="mb-10 text-center">
         <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Popular Romance Characters</h2>
-        <p class="mx-auto mt-3 max-w-xl text-zinc-400">Original male leads, each with their own voice, story, and secrets. Pick one and start a private chat in seconds.</p>
+        <p class="mx-auto mt-3 max-w-xl text-plum-muted">Original male leads, each with their own voice, story, and secrets. Pick one and start a private chat in seconds.</p>
       </div>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <NuxtLink v-for="c in featured" :key="c.slug" :to="`/characters/${c.slug}`" class="rc-card group block p-5">
           <div class="flex items-center gap-3">
             <CharAvatar :avatar="c.avatar" :initial="c.initial" size="md" />
             <div class="min-w-0">
-              <h3 class="truncate text-base font-bold group-hover:text-amber-400">{{ c.name }}</h3>
-              <p class="truncate text-xs text-amber-400/80">{{ c.archetype }}</p>
+              <h3 class="truncate text-base font-bold group-hover:text-rose-accent">{{ c.name }}</h3>
+              <p class="truncate text-xs text-rose-accent">{{ c.archetype }}</p>
             </div>
           </div>
-          <p class="mt-3 line-clamp-3 text-sm leading-relaxed text-zinc-400">{{ c.tagline }}</p>
+          <p class="mt-3 line-clamp-3 text-sm leading-relaxed text-plum-muted">{{ c.tagline }}</p>
           <div class="mt-4 flex flex-wrap gap-1.5">
             <span v-for="t in c.tags.slice(0, 3)" :key="t" class="rc-tag">{{ t }}</span>
           </div>
@@ -108,17 +108,17 @@ const faqs = [
     </section>
 
     <!-- How It Works -->
-    <section id="how" class="border-y border-white/5 bg-white/[0.015]">
+    <section id="how" class="border-y border-border-warm bg-rose-tint">
       <div class="mx-auto max-w-5xl px-5 py-20">
         <div class="mb-12 text-center">
           <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">How it works</h2>
-          <p class="mx-auto mt-3 max-w-xl text-zinc-400">Three steps from zero to your first reply.</p>
+          <p class="mx-auto mt-3 max-w-xl text-plum-muted">Three steps from zero to your first reply.</p>
         </div>
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
           <div v-for="s in howSteps" :key="s.n" class="rc-card p-6">
             <div class="rc-avatar-fill mb-4 flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold">{{ s.n }}</div>
             <h3 class="text-base font-bold">{{ s.title }}</h3>
-            <p class="mt-2 text-sm leading-relaxed text-zinc-400">{{ s.desc }}</p>
+            <p class="mt-2 text-sm leading-relaxed text-plum-muted">{{ s.desc }}</p>
           </div>
         </div>
       </div>
@@ -128,29 +128,29 @@ const faqs = [
     <section class="mx-auto max-w-5xl px-5 py-20">
       <div class="mb-12 text-center">
         <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Private by design</h2>
-        <p class="mx-auto mt-3 max-w-xl text-zinc-400">Your conversations are yours. We built it that way from the start.</p>
+        <p class="mx-auto mt-3 max-w-xl text-plum-muted">Your conversations are yours. We built it that way from the start.</p>
       </div>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div v-for="p in privatePoints" :key="p.title" class="rc-card p-6">
           <h3 class="flex items-center gap-2 text-base font-bold">
             <span class="h-2 w-2 flex-shrink-0 rounded-full bg-emerald-400" /> {{ p.title }}
           </h3>
-          <p class="mt-2 text-sm leading-relaxed text-zinc-400">{{ p.desc }}</p>
+          <p class="mt-2 text-sm leading-relaxed text-plum-muted">{{ p.desc }}</p>
         </div>
       </div>
     </section>
 
     <!-- Beginner Guides -->
-    <section class="border-y border-white/5 bg-white/[0.015]">
+    <section class="border-y border-border-warm bg-rose-tint">
       <div class="mx-auto max-w-5xl px-5 py-20">
         <div class="mb-12 text-center">
           <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Beginner guides</h2>
-          <p class="mx-auto mt-3 max-w-xl text-zinc-400">New to AI roleplay? Start here.</p>
+          <p class="mx-auto mt-3 max-w-xl text-plum-muted">New to AI roleplay? Start here.</p>
         </div>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div v-for="g in guides" :key="g.title" class="rc-card p-6">
             <h3 class="text-base font-bold">{{ g.title }}</h3>
-            <p class="mt-2 text-sm leading-relaxed text-zinc-400">{{ g.desc }}</p>
+            <p class="mt-2 text-sm leading-relaxed text-plum-muted">{{ g.desc }}</p>
           </div>
         </div>
       </div>
@@ -160,7 +160,7 @@ const faqs = [
     <section id="faq" class="mx-auto max-w-3xl px-5 py-20">
       <div class="mb-10 text-center">
         <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">FAQ</h2>
-        <p class="mx-auto mt-3 max-w-xl text-zinc-400">Everything you might want to know before you start.</p>
+        <p class="mx-auto mt-3 max-w-xl text-plum-muted">Everything you might want to know before you start.</p>
       </div>
       <div class="rc-faq">
         <details v-for="f in faqs" :key="f.q">
@@ -171,10 +171,10 @@ const faqs = [
     </section>
 
     <!-- Footer CTA -->
-    <section class="rc-hero-bg border-t border-white/5">
+    <section class="rc-hero-bg border-t border-border-warm">
       <div class="mx-auto max-w-3xl px-5 py-20 text-center">
         <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Ready to start your story?</h2>
-        <p class="mx-auto mt-3 max-w-xl text-zinc-400">Open the app, pick a character, and say hello. It really is that easy.</p>
+        <p class="mx-auto mt-3 max-w-xl text-plum-muted">Open the app, pick a character, and say hello. It really is that easy.</p>
         <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
           <NuxtLink to="/app" class="rc-btn-primary">Start Chatting</NuxtLink>
           <NuxtLink to="/characters" class="rc-btn-ghost">Explore Characters</NuxtLink>
@@ -183,20 +183,20 @@ const faqs = [
     </section>
 
     <!-- Footer -->
-    <footer class="border-t border-white/5">
+    <footer class="border-t border-border-warm">
       <div class="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 px-5 py-8 sm:flex-row">
         <div class="flex items-center gap-2">
           <div class="rc-avatar-fill flex h-7 w-7 items-center justify-center rounded-lg text-[10px] font-bold tracking-tighter">RC</div>
           <span class="text-sm font-bold">RoleChat AI</span>
         </div>
-        <nav class="flex items-center gap-4 text-xs text-zinc-500">
-          <NuxtLink to="/characters" class="hover:text-zinc-300">Characters</NuxtLink>
-          <NuxtLink to="/guides" class="hover:text-zinc-300">Guides</NuxtLink>
-          <NuxtLink to="/app" class="hover:text-zinc-300">Open App</NuxtLink>
-          <a href="#how" class="hover:text-zinc-300">How it works</a>
-          <a href="#faq" class="hover:text-zinc-300">FAQ</a>
+        <nav class="flex items-center gap-4 text-xs text-plum-faint">
+          <NuxtLink to="/characters" class="hover:text-plum-light">Characters</NuxtLink>
+          <NuxtLink to="/guides" class="hover:text-plum-light">Guides</NuxtLink>
+          <NuxtLink to="/app" class="hover:text-plum-light">Open App</NuxtLink>
+          <a href="#how" class="hover:text-plum-light">How it works</a>
+          <a href="#faq" class="hover:text-plum-light">FAQ</a>
         </nav>
-        <p class="text-xs text-zinc-600">The easiest private AI roleplay.</p>
+        <p class="text-xs text-plum-faint">The easiest private AI roleplay.</p>
       </div>
     </footer>
   </div>
