@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { characters } from '~/data/characters';
+const { t } = useI18n();
 
 useSeoMeta({
   title: 'RoleChat AI - Private AI Character Roleplay',
@@ -14,33 +15,33 @@ useSeoMeta({
 const featured = characters.slice(0, 6);
 
 
-const howSteps = [
-  { n: 1, title: 'Pick a character', desc: 'Choose an original romance or fantasy character with their own voice, backstory, and secrets.' },
-  { n: 2, title: 'Add your AI key', desc: 'Paste your own OpenAI-compatible API key. It stays in your browser — we never see or store it on a server.' },
-  { n: 3, title: 'Start chatting', desc: 'Type your first message and the story begins. No installs, no setup wizard, no jargon.' },
-];
+const howSteps = computed(() => [
+  { n: 1, title: t('home_how_step1_title'), desc: t('home_how_step1_desc') },
+  { n: 2, title: t('home_how_step2_title'), desc: t('home_how_step2_desc') },
+  { n: 3, title: t('home_how_step3_title'), desc: t('home_how_step3_desc') },
+]);
 
-const privatePoints = [
-  { title: 'Your key never leaves your browser', desc: 'Your API key is stored locally on your device. There is no server in the middle reading your conversations.' },
-  { title: 'No account required', desc: 'Nothing to sign up for. Nothing to log into. Open the app and start.' },
-  { title: 'Your chats stay on your device', desc: 'Conversations are saved to your browser\'s storage — not uploaded to a cloud we control.' },
-  { title: 'Bring your own key', desc: 'Use any OpenAI-compatible provider you trust. You pick the model, you pay only for what you use.' },
-];
+const privatePoints = computed(() => [
+  { title: t('home_private_point1_title'), desc: t('home_private_point1_desc') },
+  { title: t('home_private_point2_title'), desc: t('home_private_point2_desc') },
+  { title: t('home_private_point3_title'), desc: t('home_private_point3_desc') },
+  { title: t('home_private_point4_title'), desc: t('home_private_point4_desc') },
+]);
 
-const guides = [
-  { title: 'How to get an AI key', desc: 'A 2-minute walkthrough of grabbing a key from a popular provider and pasting it into Settings.' },
-  { title: 'Start your first chat', desc: 'From picking a character to your first reply — everything you need to begin in under 60 seconds.' },
-  { title: 'Tips for better roleplay', desc: 'Small habits that make characters feel more alive: tone, pacing, and how to steer the story.' },
-];
+const guides = computed(() => [
+  { title: t('home_guide1_title'), desc: t('home_guide1_desc') },
+  { title: t('home_guide2_title'), desc: t('home_guide2_desc') },
+  { title: t('home_guide3_title'), desc: t('home_guide3_desc') },
+]);
 
-const faqs = [
-  { q: 'Do I need to install anything?', a: 'No. RoleChat AI runs entirely in your browser. There is nothing to download or install — just open the page and start chatting.' },
-  { q: 'Is my data private?', a: 'Yes. Your API key and your conversations are stored locally in your browser. We do not run a server that reads your chats. You bring your own AI key, so your messages go directly between your browser and the AI provider you choose.' },
-  { q: 'What is an API key and where do I get one?', a: 'An API key is a secret string that lets the app talk to an AI provider. You can get one from any OpenAI-compatible service. Paste it into Settings inside the app and you\'re ready.' },
-  { q: 'Can I use my own character cards?', a: 'Yes. If you already have a character card (SillyTavern format), you can import it into the app. We\'re also building a library of original characters you can start with right away.' },
-  { q: 'Is RoleChat AI free?', a: 'The app itself is free. You pay the AI provider you choose for the messages you generate, using your own key. There is no subscription and no middleman markup.' },
-  { q: 'Do I need to understand model settings?', a: 'No. Sensible defaults are set for you. If you like, you can open the advanced options later — but you never have to in order to enjoy a great chat.' },
-];
+const faqs = computed(() => [
+  { q: t('home_faq_q1'), a: t('home_faq_a1') },
+  { q: t('home_faq_q2'), a: t('home_faq_a2') },
+  { q: t('home_faq_q3'), a: t('home_faq_a3') },
+  { q: t('home_faq_q4'), a: t('home_faq_a4') },
+  { q: t('home_faq_q5'), a: t('home_faq_a5') },
+  { q: t('home_faq_q6'), a: t('home_faq_a6') },
+]);
 </script>
 
 <template>
@@ -52,17 +53,17 @@ const faqs = [
     <section class="rc-hero-bg relative overflow-hidden">
       <div class="mx-auto max-w-3xl px-5 py-24 text-center sm:py-32">
         <div class="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-champagne/40 bg-rose-tint px-3 py-1 text-xs font-medium text-plum-light">
-          <span class="h-1.5 w-1.5 rounded-full bg-rose-deep" /> The easiest private AI roleplay
+          <span class="h-1.5 w-1.5 rounded-full bg-rose-deep" /> {{ t('home_badge') }}
         </div>
         <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">
-          The easiest private<br class="hidden sm:block" /> AI roleplay.
+          {{ t('home_hero_title_1') }}<br class="hidden sm:block" /> {{ t('home_hero_title_2') }}
         </h1>
         <p class="mx-auto mt-5 max-w-xl text-base text-plum-muted sm:text-lg">
-          Chat with original romance and fantasy characters in seconds. No installation. No complicated setup. Bring your own AI key.
+          {{ t('home_hero_desc') }}
         </p>
         <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <NuxtLink to="/app" class="rc-btn-primary">Start Chatting</NuxtLink>
-          <NuxtLink to="/characters" class="rc-btn-ghost">Explore Characters</NuxtLink>
+          <NuxtLink to="/app" class="rc-btn-primary">{{ t('home_cta_start') }}</NuxtLink>
+          <NuxtLink to="/characters" class="rc-btn-ghost">{{ t('home_cta_explore') }}</NuxtLink>
         </div>
       </div>
     </section>
@@ -70,8 +71,8 @@ const faqs = [
     <!-- Popular Romance Characters (原创非 IP，链接到真实角色页) -->
     <section class="mx-auto max-w-5xl px-5 py-20">
       <div class="mb-10 text-center">
-        <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Popular Romance Characters</h2>
-        <p class="mx-auto mt-3 max-w-xl text-plum-muted">Original male leads, each with their own voice, story, and secrets. Pick one and start a private chat in seconds.</p>
+        <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">{{ t('home_popular_title') }}</h2>
+        <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_popular_desc') }}</p>
       </div>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <NuxtLink v-for="c in featured" :key="c.slug" :to="`/characters/${c.slug}`" class="rc-card group block p-5">
@@ -84,12 +85,12 @@ const faqs = [
           </div>
           <p class="mt-3 line-clamp-3 text-sm leading-relaxed text-plum-muted">{{ c.tagline }}</p>
           <div class="mt-4 flex flex-wrap gap-1.5">
-            <span v-for="t in c.tags.slice(0, 3)" :key="t" class="rc-tag">{{ t }}</span>
+            <span v-for="tg in c.tags.slice(0, 3)" :key="tg" class="rc-tag">{{ tg }}</span>
           </div>
         </NuxtLink>
       </div>
       <div class="mt-10 text-center">
-        <NuxtLink to="/characters" class="rc-btn-ghost">See all characters</NuxtLink>
+        <NuxtLink to="/characters" class="rc-btn-ghost">{{ t('home_see_all') }}</NuxtLink>
       </div>
     </section>
 
@@ -97,8 +98,8 @@ const faqs = [
     <section id="how" class="border-y border-border-warm bg-rose-tint">
       <div class="mx-auto max-w-5xl px-5 py-20">
         <div class="mb-12 text-center">
-          <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">How it works</h2>
-          <p class="mx-auto mt-3 max-w-xl text-plum-muted">Three steps from zero to your first reply.</p>
+          <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">{{ t('home_how_title') }}</h2>
+          <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_how_desc') }}</p>
         </div>
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
           <div v-for="s in howSteps" :key="s.n" class="rc-card p-6">
@@ -113,8 +114,8 @@ const faqs = [
     <!-- Private by Design -->
     <section class="mx-auto max-w-5xl px-5 py-20">
       <div class="mb-12 text-center">
-        <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Private by design</h2>
-        <p class="mx-auto mt-3 max-w-xl text-plum-muted">Your conversations are yours. We built it that way from the start.</p>
+        <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">{{ t('home_private_title') }}</h2>
+        <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_private_desc') }}</p>
       </div>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div v-for="p in privatePoints" :key="p.title" class="rc-card p-6">
@@ -130,8 +131,8 @@ const faqs = [
     <section class="border-y border-border-warm bg-rose-tint">
       <div class="mx-auto max-w-5xl px-5 py-20">
         <div class="mb-12 text-center">
-          <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Beginner guides</h2>
-          <p class="mx-auto mt-3 max-w-xl text-plum-muted">New to AI roleplay? Start here.</p>
+          <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">{{ t('home_guides_title') }}</h2>
+          <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_guides_desc') }}</p>
         </div>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div v-for="g in guides" :key="g.title" class="rc-card p-6">
@@ -145,8 +146,8 @@ const faqs = [
     <!-- FAQ -->
     <section id="faq" class="mx-auto max-w-3xl px-5 py-20">
       <div class="mb-10 text-center">
-        <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">FAQ</h2>
-        <p class="mx-auto mt-3 max-w-xl text-plum-muted">Everything you might want to know before you start.</p>
+        <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">{{ t('home_faq_title') }}</h2>
+        <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_faq_desc') }}</p>
       </div>
       <div class="rc-faq">
         <details v-for="f in faqs" :key="f.q">
@@ -159,11 +160,11 @@ const faqs = [
     <!-- Footer CTA -->
     <section class="rc-hero-bg border-t border-border-warm">
       <div class="mx-auto max-w-3xl px-5 py-20 text-center">
-        <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Ready to start your story?</h2>
-        <p class="mx-auto mt-3 max-w-xl text-plum-muted">Open the app, pick a character, and say hello. It really is that easy.</p>
+        <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">{{ t('home_footer_ready_title') }}</h2>
+        <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_footer_ready_desc') }}</p>
         <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <NuxtLink to="/app" class="rc-btn-primary">Start Chatting</NuxtLink>
-          <NuxtLink to="/characters" class="rc-btn-ghost">Explore Characters</NuxtLink>
+          <NuxtLink to="/app" class="rc-btn-primary">{{ t('home_cta_start') }}</NuxtLink>
+          <NuxtLink to="/characters" class="rc-btn-ghost">{{ t('home_cta_explore') }}</NuxtLink>
         </div>
       </div>
     </section>
@@ -176,13 +177,13 @@ const faqs = [
           <span class="text-sm font-bold">RoleChat AI</span>
         </div>
         <nav class="flex items-center gap-4 text-xs text-plum-faint">
-          <NuxtLink to="/characters" class="hover:text-plum-light">Characters</NuxtLink>
-          <NuxtLink to="/guides" class="hover:text-plum-light">Guides</NuxtLink>
-          <NuxtLink to="/app" class="hover:text-plum-light">Open App</NuxtLink>
-          <a href="#how" class="hover:text-plum-light">How it works</a>
-          <a href="#faq" class="hover:text-plum-light">FAQ</a>
+          <NuxtLink to="/characters" class="hover:text-plum-light">{{ t('nav_characters') }}</NuxtLink>
+          <NuxtLink to="/guides" class="hover:text-plum-light">{{ t('nav_guides') }}</NuxtLink>
+          <NuxtLink to="/app" class="hover:text-plum-light">{{ t('nav_open_app') }}</NuxtLink>
+          <a href="#how" class="hover:text-plum-light">{{ t('nav_how_it_works') }}</a>
+          <a href="#faq" class="hover:text-plum-light">{{ t('nav_faq') }}</a>
         </nav>
-        <p class="text-xs text-plum-faint">The easiest private AI roleplay.</p>
+        <p class="text-xs text-plum-faint">{{ t('home_footer_tagline') }}</p>
       </div>
     </footer>
   </div>

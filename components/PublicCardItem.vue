@@ -18,6 +18,8 @@ const props = withDefaults(defineProps<{
   showStartButton: true,
 });
 
+const { t } = useI18n();
+
 /** 去重 + 截断：过滤 category 重复，取前 3 */
 const displayTags = computed(() => {
   const deduped = (props.c.tags || []).filter((t) => t.toLowerCase() !== props.c.category.toLowerCase());
@@ -50,38 +52,38 @@ const isApp = computed(() => props.mode === 'app');
       </div>
       <div v-if="showProfileButton || showStartButton" class="mt-4 flex gap-2">
         <NuxtLink v-if="showProfileButton" :to="`/characters/${c.slug}`" class="flex-1 rounded-lg border border-border-warm px-3 py-2 text-center text-xs font-semibold text-plum-muted transition-all hover:border-rose-accent hover:bg-rose-tint hover:text-plum">
-          View Profile
+          {{ t('view_profile') }}
         </NuxtLink>
         <NuxtLink v-if="showStartButton" :to="`/app?character=${c.slug}`" class="flex-1 rounded-lg bg-rose-accent px-3 py-2 text-center text-xs font-bold text-white transition-all hover:bg-rose-deep">
-          Start Chat
+          {{ t('start_chat') }}
         </NuxtLink>
       </div>
     </div>
   </div>
 
   <!-- app 模式 -->
-  <div v-else-if="isApp" class="glass rounded-2xl flex flex-col overflow-hidden hover:border-rose-accent/30 transition-all">
+  <div v-else-if="isApp" class="ui-panel rounded-2xl flex flex-col overflow-hidden transition-all hover:border-[var(--color-primary)]">
     <div class="rc-card-accent" />
     <div class="flex flex-col p-5">
       <div class="flex items-center gap-3.5">
         <CharAvatar :avatar="c.avatar" :initial="c.initial" size="lg" />
         <div class="min-w-0">
-          <h3 class="truncate text-base font-bold text-zinc-200">{{ c.name }}</h3>
-          <p class="truncate text-xs text-rose-accent/90">{{ c.archetype }}</p>
+          <h3 class="truncate text-base font-bold" style="color:var(--color-text)">{{ c.name }}</h3>
+          <p class="truncate text-xs" style="color:var(--color-primary)">{{ c.archetype }}</p>
         </div>
       </div>
-      <p class="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-zinc-400">{{ c.tagline }}</p>
+      <p class="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed" style="color:var(--color-text-muted)">{{ c.tagline }}</p>
       <div class="mt-3 flex flex-wrap gap-1.5">
         <span class="char-tag">{{ c.category }}</span>
         <span v-for="t in displayTags.limited" :key="t" class="char-tag">{{ t }}</span>
         <span v-if="displayTags.extra" class="char-tag opacity-70">{{ displayTags.extra }}</span>
       </div>
       <div v-if="showProfileButton || showStartButton" class="mt-4 flex gap-2">
-        <NuxtLink v-if="showProfileButton" :to="`/characters/${c.slug}`" class="flex-1 rounded-lg border border-white/10 px-3 py-2 text-center text-xs font-semibold text-zinc-400 transition-all hover:border-rose-accent/40 hover:text-zinc-200">
-          View Profile
+        <NuxtLink v-if="showProfileButton" :to="`/characters/${c.slug}`" class="ui-button-ghost flex-1 !text-xs !px-3 !py-2">
+          {{ t('view_profile') }}
         </NuxtLink>
-        <NuxtLink v-if="showStartButton" :to="`/app?character=${c.slug}`" class="flex-1 rounded-lg bg-rose-accent px-3 py-2 text-center text-xs font-bold text-white transition-all hover:bg-rose-deep">
-          Start Chat
+        <NuxtLink v-if="showStartButton" :to="`/app?character=${c.slug}`" class="ui-button-primary flex-1 !text-xs !px-3 !py-2">
+          {{ t('start_chat') }}
         </NuxtLink>
       </div>
     </div>

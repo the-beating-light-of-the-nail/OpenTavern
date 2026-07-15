@@ -60,8 +60,7 @@ function startNoCharacter() {
     <div class="flex items-center justify-between mb-4 gap-2">
       <h2 class="text-lg font-bold">{{ t('new_chat_picker_title') }}</h2>
       <button
-        class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border"
-        :class="multiMode ? 'bg-amber-500 text-white border-amber-400' : 'bg-white/5 text-zinc-300 hover:bg-white/10 border-white/10'"
+        :class="multiMode ? 'ui-button-primary text-xs font-semibold' : 'ui-button text-xs font-semibold'"
         @click="toggleMulti"
       >
         {{ multiMode ? t('new_chat_multi_exit') : t('new_chat_multi_select') }}
@@ -72,35 +71,35 @@ function startNoCharacter() {
       <div
         v-for="c in cards"
         :key="c.id"
-        class="glass rounded-xl p-3 cursor-pointer hover:border-amber-500/30 transition-all relative"
-        :class="{ 'ring-2 ring-amber-500': isSelected(c) }"
+        class="ui-panel rounded-xl !shadow-none p-3 cursor-pointer transition-all relative"
+        style="border-color:var(--color-primary)"
+        :style="isSelected(c) ? 'box-shadow:0 0 0 2px var(--color-primary)' : ''"
         @click="onCardClick(c)"
       >
-        <div v-if="isSelected(c)" class="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-amber-500 text-zinc-900 text-[10px] font-bold flex items-center justify-center">&#10003;</div>
+        <div v-if="isSelected(c)" class="absolute top-1.5 right-1.5 w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center" style="background:var(--color-primary);color:#1a1a1a">&#10003;</div>
         <div class="w-full aspect-square rounded-lg ot-avatar-fill flex items-center justify-center text-white font-bold mb-1.5">{{ (c.data?.name || '?').charAt(0) }}</div>
-        <p class="text-xs font-medium text-zinc-200 truncate">{{ c.data?.name || 'Untitled' }}</p>
+        <p class="text-xs font-medium truncate" style="color:var(--color-text)">{{ c.data?.name || 'Untitled' }}</p>
       </div>
     </div>
 
     <!-- 多选模式：确认条 -->
     <div v-if="multiMode" id="newChatGroupConfirmBar" class="mt-3 flex items-center justify-between gap-2">
-      <span class="text-xs text-amber-300">{{ t('new_chat_multi_selected_prefix') }} {{ selectedIds.length }} {{ t('new_chat_multi_people') }}</span>
+      <span class="text-xs" style="color:var(--color-primary)">{{ t('new_chat_multi_selected_prefix') }} {{ selectedIds.length }} {{ t('new_chat_multi_people') }}</span>
       <button
-        class="px-4 py-2 rounded-xl text-sm font-semibold transition-all"
-        :class="selectedIds.length >= 2 ? 'bg-amber-500 hover:bg-amber-400 text-white' : 'bg-white/10 text-zinc-500 cursor-not-allowed'"
+        :class="selectedIds.length >= 2 ? 'ui-button-primary text-sm font-semibold' : 'ui-button text-sm font-semibold cursor-not-allowed'"
         :disabled="selectedIds.length < 2"
         @click="confirmCreateGroup"
       >
         {{ t('new_chat_create_group') }}
       </button>
     </div>
-    <div v-else id="newChatPickerMultiBar" class="mt-3 px-1 text-xs text-amber-300/80">
+    <div v-else id="newChatPickerMultiBar" class="mt-3 px-1 text-xs" style="color:var(--color-primary)">
       <span id="newChatPickerMultiHint">{{ t('new_chat_multi_hint') }}</span>
     </div>
 
-    <div class="mt-4 pt-4 border-t border-white/10 flex flex-col gap-2">
+    <div class="mt-4 pt-4 border-t flex flex-col gap-2" style="border-color:var(--color-border)">
       <button id="newChatNoCharacterBtn" class="w-full btn-secondary" @click="startNoCharacter">{{ t('new_chat_no_character') }}</button>
-      <button id="newChatImportCharacterBtn" class="w-full btn-ghost border border-white/10" @click="ui.close('newChatPicker'); ui.open('charImport')">{{ t('new_chat_import_character') }}</button>
+      <button id="newChatImportCharacterBtn" class="w-full btn-ghost border" style="border-color:var(--color-border)" @click="ui.close('newChatPicker'); ui.open('charImport')">{{ t('new_chat_import_character') }}</button>
     </div>
   </AppModal>
 </template>

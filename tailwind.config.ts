@@ -19,12 +19,12 @@ export default <Partial<Config>>{
           faint: '#9a8a9a',
         },
         rose: {
-          tint: '#fff5f3',
+          tint: '#fff1ec',
           accent: '#c8837a',
           deep: '#b06f66',
         },
         champagne: '#c89b6c',
-        lavender: '#d4c5e0',
+        lavender: '#d9c7e8',
         'border-warm': '#ece3de',
       },
       fontFamily: {

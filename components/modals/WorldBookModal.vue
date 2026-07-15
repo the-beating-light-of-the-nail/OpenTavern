@@ -217,52 +217,53 @@ function removeSecKey(idx: number) {
 
 <template>
   <AppModal modal-id="worldBookModal" name="worldBook" max-width="max-w-[1080px]" :flush="false" closable>
-    <div class="px-5 py-3 border-b border-white/10 flex items-center gap-3 bg-black/20 -mx-7 -mt-7 mb-4">
+    <div class="px-5 py-3 border-b flex items-center gap-3 -mx-7 -mt-7 mb-4" style="border-color:var(--color-border);background:var(--color-surface-soft)">
       <div class="flex items-center gap-2 flex-1 min-w-0">
-        <span class="text-xs font-semibold uppercase tracking-wider text-zinc-500">WI</span>
-        <span class="font-bold text-lg text-zinc-100">{{ t('world_book_title') }}</span>
+        <span class="text-xs font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">WI</span>
+        <span class="font-bold text-lg" style="color:var(--color-text)">{{ t('world_book_title') }}</span>
         <input
           id="wiBookName"
           v-model="currentBook.name"
-          class="ml-2 flex-1 max-w-[260px] px-3 py-1.5 text-sm glass rounded-xl text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-amber-500/40"
+          class="ml-2 flex-1 max-w-[260px] ui-input"
           placeholder="Lorebook name"
           @change="onBookNameChange"
         >
       </div>
       <div class="flex items-center gap-2 flex-shrink-0">
-        <button class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10 transition-all" @click="onNewBook">{{ t('world_book_new') }}</button>
-        <button class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10 transition-all" @click="onImport">{{ t('world_book_import') }}</button>
-        <button class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10 transition-all" @click="onExport">{{ t('world_book_export') }}</button>
-        <button class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-all" @click="onDeleteAllConfirm">{{ t('world_book_delete_all') }}</button>
-        <button class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-white shadow shadow-amber-500/20 transition-all" @click="onAddEntry">{{ t('world_book_add_entry') }}</button>
+        <button class="ui-button" @click="onNewBook">{{ t('world_book_new') }}</button>
+        <button class="ui-button" @click="onImport">{{ t('world_book_import') }}</button>
+        <button class="ui-button" @click="onExport">{{ t('world_book_export') }}</button>
+        <button class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 transition-all" style="color:var(--color-danger)" @click="onDeleteAllConfirm">{{ t('world_book_delete_all') }}</button>
+        <button class="ui-button-primary" @click="onAddEntry">{{ t('world_book_add_entry') }}</button>
       </div>
       <input ref="fileInput" type="file" accept=".json" class="hidden" @change="onImportFile">
     </div>
 
     <div class="flex flex-col md:flex-row gap-4 min-h-[50vh]">
-      <div class="w-full md:w-72 border-b md:border-b-0 md:border-r border-white/10 flex flex-col bg-black/10">
-        <div class="p-2.5 border-b border-white/5">
-          <input v-model="search" type="text" class="w-full px-3 py-2 text-sm glass rounded-xl placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-amber-500/30" :placeholder="t('world_book_search')">
+      <div class="w-full md:w-72 border-b md:border-b-0 md:border-r flex flex-col" style="border-color:var(--color-border);background:var(--color-surface-soft)">
+        <div class="p-2.5 border-b" style="border-color:var(--color-border)">
+          <input v-model="search" type="text" class="ui-input" :placeholder="t('world_book_search')">
         </div>
         <div id="wiEntryList" class="flex-1 overflow-y-auto p-2 space-y-1.5 text-sm max-h-40 md:max-h-none">
           <div
             v-for="e in entryList"
             :key="e.uid"
-            class="px-3 py-2 rounded-lg cursor-pointer transition-all text-xs text-zinc-300 hover:bg-white/5"
-            :class="selectedUid === e.uid ? 'bg-amber-500/15 ring-1 ring-amber-500/30' : ''"
+            class="px-3 py-2 rounded-lg cursor-pointer transition-all text-xs"
+            style="color:var(--color-text)"
+            :style="selectedUid === e.uid ? 'background:color-mix(in srgb,var(--color-primary) 15%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--color-primary) 30%,transparent)' : ''"
             @click="selectEntry(e.uid)"
           >
-            <span class="text-zinc-400" :class="{ 'text-zinc-200': selectedUid === e.uid }">{{ e.comment || e.content?.slice(0, 30) || t('wi_untitled') }}</span>
+            <span style="color:var(--color-text-muted)" :style="selectedUid === e.uid ? 'color:var(--color-text)' : ''">{{ e.comment || e.content?.slice(0, 30) || t('wi_untitled') }}</span>
           </div>
-          <div v-if="!entryList.length" class="text-xs text-zinc-500 text-center py-6">
+          <div v-if="!entryList.length" class="text-xs text-center py-6" style="color:var(--color-text-muted)">
             {{ search ? t('world_book_search_empty') : t('world_book_no_entries') }}
           </div>
         </div>
-        <div class="p-2 text-[10px] text-center text-zinc-500 border-t border-white/5">{{ entryList.length }} entries</div>
+        <div class="p-2 text-[10px] text-center border-t" style="color:var(--color-text-muted);border-color:var(--color-border)">{{ entryList.length }} entries</div>
       </div>
 
       <div class="flex-1 flex flex-col">
-        <div v-if="!selectedEntry" class="flex-1 flex items-center justify-center text-center text-zinc-500 text-sm">
+        <div v-if="!selectedEntry" class="flex-1 flex items-center justify-center text-center text-sm" style="color:var(--color-text-muted)">
           <div>
             <div class="text-xs mb-3 opacity-70 uppercase tracking-wider">World Info</div>
             <div>{{ t('world_book_no_selection') }}</div>
@@ -271,54 +272,54 @@ function removeSecKey(idx: number) {
         <template v-else>
           <div class="flex items-center justify-between mb-3">
             <label class="flex items-center gap-2 text-sm cursor-pointer">
-              <input v-model="(selectedEntry as any).disable" type="checkbox" class="accent-amber-500" @change="onEntryFieldChange">
-              <span class="text-zinc-400">{{ t('wi_disable') }}</span>
+              <input v-model="(selectedEntry as any).disable" type="checkbox" style="accent-color:var(--color-primary)" @change="onEntryFieldChange">
+              <span style="color:var(--color-text-muted)">{{ t('wi_disable') }}</span>
             </label>
             <div class="flex gap-2">
-              <button class="px-2.5 py-1 text-xs rounded-lg glass hover:bg-white/10" @click="onDuplicateEntry">{{ t('world_book_duplicate') }}</button>
-              <button class="px-2.5 py-1 text-xs rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20" @click="onDeleteEntry">{{ t('world_book_delete') }}</button>
+              <button class="ui-button" @click="onDuplicateEntry">{{ t('world_book_duplicate') }}</button>
+              <button class="px-2.5 py-1 text-xs rounded-lg bg-red-500/10 hover:bg-red-500/20" style="color:var(--color-danger)" @click="onDeleteEntry">{{ t('world_book_delete') }}</button>
             </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">{{ t('wi_comment') }}</label>
-              <input v-model="(selectedEntry as any).comment" type="text" class="w-full mt-1 px-3 py-2 text-sm glass rounded-xl text-zinc-200 focus:outline-none focus:ring-1 focus:ring-amber-500/40" @change="onEntryFieldChange">
+              <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('wi_comment') }}</label>
+              <input v-model="(selectedEntry as any).comment" type="text" class="ui-input mt-1" @change="onEntryFieldChange">
             </div>
             <div>
-              <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">{{ t('wi_order') }}</label>
-              <input v-model.number="(selectedEntry as any).order" type="number" class="w-full mt-1 px-3 py-2 text-sm glass rounded-xl text-zinc-200 focus:outline-none focus:ring-1 focus:ring-amber-500/40" @change="onEntryFieldChange">
+              <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('wi_order') }}</label>
+              <input v-model.number="(selectedEntry as any).order" type="number" class="ui-input mt-1" @change="onEntryFieldChange">
             </div>
           </div>
 
           <div class="mt-3">
-            <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">{{ t('wi_keys') }}</label>
-            <div class="mt-1 min-h-[34px] flex flex-wrap gap-1 p-2 glass rounded-xl bg-black/20">
-              <span v-for="(k, i) in (selectedEntry as any).key || []" :key="i" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 text-[11px]">
+            <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('wi_keys') }}</label>
+            <div class="mt-1 min-h-[34px] flex flex-wrap gap-1 p-2 ui-panel rounded-xl !shadow-none">
+              <span v-for="(k, i) in (selectedEntry as any).key || []" :key="i" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px]" style="background:color-mix(in srgb,var(--color-primary) 15%,transparent);color:var(--color-primary)">
                 {{ k }}
                 <button class="hover:text-red-400 text-xs leading-none" @click="removeKey(i)">&times;</button>
               </span>
             </div>
             <div class="flex gap-2 mt-1.5">
-              <input v-model="keyInput" type="text" class="flex-1 px-3 py-1.5 text-sm glass rounded-xl" placeholder="Add key..." @keydown.enter.prevent="addKey">
-              <button class="px-4 text-xs font-semibold rounded-xl glass hover:bg-white/10" @click="addKey">{{ t('add') }}</button>
+              <input v-model="keyInput" type="text" class="flex-1 ui-input" placeholder="Add key..." @keydown.enter.prevent="addKey">
+              <button class="ui-button" @click="addKey">{{ t('add') }}</button>
             </div>
-            <div class="text-[10px] text-zinc-500 mt-0.5">{{ t('wi_keys_hint') }}</div>
+            <div class="text-[10px] mt-0.5" style="color:var(--color-text-muted)">{{ t('wi_keys_hint') }}</div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-5 gap-3 items-end mt-3">
             <div class="md:col-span-3">
-              <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">{{ t('wi_secondary') }}</label>
-              <div class="mt-1 min-h-[34px] flex flex-wrap gap-1 p-2 glass rounded-xl bg-black/20">
-                <span v-for="(k, i) in (selectedEntry as any).keysecondary || []" :key="i" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 text-[11px]">
+              <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('wi_secondary') }}</label>
+              <div class="mt-1 min-h-[34px] flex flex-wrap gap-1 p-2 ui-panel rounded-xl !shadow-none">
+                <span v-for="(k, i) in (selectedEntry as any).keysecondary || []" :key="i" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px]" style="background:color-mix(in srgb,var(--color-primary) 15%,transparent);color:var(--color-primary)">
                   {{ k }}
                   <button class="hover:text-red-400 text-xs leading-none" @click="removeSecKey(i)">&times;</button>
                 </span>
               </div>
             </div>
             <div class="md:col-span-2">
-              <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">{{ t('wi_selective_logic') }}</label>
-              <select v-model.number="(selectedEntry as any).selectiveLogic" class="w-full mt-1 px-3 py-2 text-sm glass rounded-xl text-zinc-200 focus:outline-none" @change="onEntryFieldChange">
+              <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('wi_selective_logic') }}</label>
+              <select v-model.number="(selectedEntry as any).selectiveLogic" class="ui-input mt-1" @change="onEntryFieldChange">
                 <option :value="0">{{ t('logic_and_any') }}</option>
                 <option :value="1">{{ t('logic_and_all') }}</option>
                 <option :value="2">{{ t('logic_not_any') }}</option>
@@ -328,14 +329,14 @@ function removeSecKey(idx: number) {
           </div>
 
           <div class="mt-3">
-            <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">{{ t('wi_content') }}</label>
-            <textarea v-model="(selectedEntry as any).content" rows="6" class="w-full mt-1 px-3 py-2 text-sm glass rounded-2xl text-zinc-200 font-mono leading-relaxed focus:outline-none focus:ring-1 focus:ring-amber-500/30 resize-y" @change="onEntryFieldChange" />
+            <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('wi_content') }}</label>
+            <textarea v-model="(selectedEntry as any).content" rows="6" class="ui-input mt-1 font-mono leading-relaxed resize-y" @change="onEntryFieldChange" />
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
             <div>
-              <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">{{ t('wi_position') }}</label>
-              <select v-model.number="(selectedEntry as any).position" class="w-full mt-1 px-3 py-2 text-sm glass rounded-xl" @change="onEntryFieldChange">
+              <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('wi_position') }}</label>
+              <select v-model.number="(selectedEntry as any).position" class="ui-input mt-1" @change="onEntryFieldChange">
                 <option :value="0">{{ t('pos_before_char') }}</option>
                 <option :value="1">{{ t('pos_after_char') }}</option>
                 <option :value="2">{{ t('pos_before_ex') }}</option>
@@ -347,15 +348,15 @@ function removeSecKey(idx: number) {
               </select>
             </div>
             <div>
-              <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">{{ t('wi_probability') }}</label>
+              <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('wi_probability') }}</label>
               <div class="flex items-center gap-2 mt-1">
                 <input v-model.number="(selectedEntry as any).probability" type="range" min="0" max="100" step="5" class="flex-1" @change="onEntryFieldChange">
                 <span class="w-9 text-right text-sm tabular-nums">{{ (selectedEntry as any).probability }}</span>
               </div>
             </div>
             <div>
-              <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">{{ t('wi_depth') }}</label>
-              <input v-model.number="(selectedEntry as any).depth" type="number" min="0" class="w-full mt-1 px-3 py-2 text-sm glass rounded-xl" @change="onEntryFieldChange">
+              <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('wi_depth') }}</label>
+              <input v-model.number="(selectedEntry as any).depth" type="number" min="0" class="ui-input mt-1" @change="onEntryFieldChange">
             </div>
           </div>
         </template>

@@ -106,67 +106,67 @@ function onCancel() {
 
 <template>
   <AppModal modal-id="charEditorModal" name="charEditor" max-width="max-w-2xl">
-    <h2 class="text-lg font-bold text-zinc-100 mb-5">{{ isEditMode ? 'Edit Character' : 'Create New Character' }}</h2>
+    <h2 class="text-lg font-bold mb-5" style="color:var(--color-text)">{{ isEditMode ? t('char_edit_title') : t('char_create_new') }}</h2>
 
     <div class="space-y-4 pr-1">
       <!-- Name + Role Type -->
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Name <span class="text-red-400">*</span></label>
-          <input v-model="form.name" type="text" class="w-full mt-1 px-3 py-2 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all" placeholder="e.g. Adrian Vale">
-          <p v-if="errors.name" class="text-[11px] text-red-400 mt-1">{{ errors.name }}</p>
+          <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">Name <span style="color:var(--color-danger)">*</span></label>
+          <input v-model="form.name" type="text" class="ui-input mt-1" placeholder="e.g. Adrian Vale">
+          <p v-if="errors.name" class="text-[11px] mt-1" style="color:var(--color-danger)">{{ errors.name }}</p>
         </div>
         <div>
-          <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Role Type</label>
-          <input v-model="form.roleType" type="text" class="w-full mt-1 px-3 py-2 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all" placeholder="e.g. Cold Doctor, Vampire Prince">
+          <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">Role Type</label>
+          <input v-model="form.roleType" type="text" class="ui-input mt-1" placeholder="e.g. Cold Doctor, Vampire Prince">
         </div>
       </div>
 
       <!-- Description -->
       <div>
-        <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Description <span class="text-red-400">*</span></label>
-        <textarea v-model="form.description" rows="5" class="w-full mt-1 px-3 py-2 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all resize-none" placeholder="Who is this character? Their backstory, appearance, what makes them unique..." />
-        <p v-if="errors.description" class="text-[11px] text-red-400 mt-1">{{ errors.description }}</p>
+        <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">Description <span style="color:var(--color-danger)">*</span></label>
+        <textarea v-model="form.description" rows="5" class="ui-input mt-1 resize-none" placeholder="Who is this character? Their backstory, appearance, what makes them unique..." />
+        <p v-if="errors.description" class="text-[11px] mt-1" style="color:var(--color-danger)">{{ errors.description }}</p>
       </div>
 
       <!-- Personality -->
       <div>
-        <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Personality <span class="text-red-400">*</span></label>
-        <textarea v-model="form.personality" rows="3" class="w-full mt-1 px-3 py-2 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all resize-none" placeholder="How do they behave? Cold but caring, sarcastic, gentle..." />
-        <p v-if="errors.personality" class="text-[11px] text-red-400 mt-1">{{ errors.personality }}</p>
+        <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">Personality <span style="color:var(--color-danger)">*</span></label>
+        <textarea v-model="form.personality" rows="3" class="ui-input mt-1 resize-none" placeholder="How do they behave? Cold but caring, sarcastic, gentle..." />
+        <p v-if="errors.personality" class="text-[11px] mt-1" style="color:var(--color-danger)">{{ errors.personality }}</p>
       </div>
 
       <!-- Relationship / How you meet -->
       <div>
-        <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Relationship / How you meet</label>
-        <textarea v-model="form.relationship" rows="3" class="w-full mt-1 px-3 py-2 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all resize-none" placeholder="How does the user meet this character? What's the initial dynamic?" />
+        <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">Relationship / How you meet</label>
+        <textarea v-model="form.relationship" rows="3" class="ui-input mt-1 resize-none" placeholder="How does the user meet this character? What's the initial dynamic?" />
       </div>
 
       <!-- Opening Message -->
       <div>
-        <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Opening Message <span class="text-red-400">*</span></label>
-        <textarea v-model="form.first_mes" rows="4" class="w-full mt-1 px-3 py-2 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all resize-none" placeholder="The first message the character sends to start the conversation..." />
-        <p v-if="errors.first_mes" class="text-[11px] text-red-400 mt-1">{{ errors.first_mes }}</p>
+        <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">Opening Message <span style="color:var(--color-danger)">*</span></label>
+        <textarea v-model="form.first_mes" rows="4" class="ui-input mt-1 resize-none" placeholder="The first message the character sends to start the conversation..." />
+        <p v-if="errors.first_mes" class="text-[11px] mt-1" style="color:var(--color-danger)">{{ errors.first_mes }}</p>
       </div>
 
       <!-- Advanced Prompt (折叠) -->
-      <details class="group mt-2 border-t border-white/5 pt-3">
-        <summary class="cursor-pointer text-[11px] font-semibold uppercase tracking-wider text-zinc-500 hover:text-zinc-300 transition-colors select-none list-none flex items-center gap-1">
-          Advanced Prompt
+      <details class="group mt-2 border-t pt-3" style="border-color:var(--color-border)">
+        <summary class="cursor-pointer text-[11px] font-semibold uppercase tracking-wider transition-colors select-none list-none flex items-center gap-1" style="color:var(--color-text-muted)">
+          {{ t('nav_advanced') }} {{ t('nav_prompt') }}
           <span class="ml-auto transition-transform group-open:rotate-90">→</span>
         </summary>
         <div class="mt-3 space-y-3">
           <div>
-            <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">System Prompt</label>
-            <textarea v-model="form.system_prompt" rows="2" class="w-full mt-1 px-3 py-2 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all resize-none" placeholder="Optional custom system-level instructions..." />
+            <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('char_editor_system_prompt') }}</label>
+            <textarea v-model="form.system_prompt" rows="2" class="ui-input mt-1 resize-none" placeholder="Optional custom system-level instructions..." />
           </div>
           <div>
-            <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Post-History Instructions</label>
-            <textarea v-model="form.post_history_instructions" rows="2" class="w-full mt-1 px-3 py-2 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all resize-none" placeholder="Optional instructions injected after chat history..." />
+            <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">Post-History Instructions</label>
+            <textarea v-model="form.post_history_instructions" rows="2" class="ui-input mt-1 resize-none" placeholder="Optional instructions injected after chat history..." />
           </div>
           <div>
-            <label class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Example Messages</label>
-            <textarea v-model="form.mes_example" rows="3" class="w-full mt-1 px-3 py-2 glass rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all resize-none" placeholder="Example dialogue to guide the AI's style..." />
+            <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">Example Messages</label>
+            <textarea v-model="form.mes_example" rows="3" class="ui-input mt-1 resize-none" placeholder="Example dialogue to guide the AI's style..." />
           </div>
         </div>
       </details>
@@ -174,7 +174,7 @@ function onCancel() {
 
     <div class="flex gap-3 mt-5">
       <button class="flex-1 btn-secondary" @click="onCancel">{{ t('char_editor_cancel') }}</button>
-      <button class="flex-1 btn-primary" @click="onSave">{{ isEditMode ? 'Update' : 'Create' }}</button>
+      <button class="flex-1 btn-primary" @click="onSave">{{ t('char_editor_save') }}</button>
     </div>
   </AppModal>
 </template>

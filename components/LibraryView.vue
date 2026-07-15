@@ -80,7 +80,7 @@ function onSelectMyCard(cardVm: CardVM) {
 <template>
   <div id="libraryView" class="flex-1 flex flex-col overflow-hidden">
     <!-- Header -->
-    <div class="flex-shrink-0 px-5 py-3 border-b border-white/5 bg-zinc-950/15 backdrop-blur-2xl">
+    <div class="ui-topbar flex-shrink-0 px-5 py-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <button class="hamburger-btn" aria-label="Menu" @click="openMenu">
@@ -90,26 +90,26 @@ function onSelectMyCard(cardVm: CardVM) {
           </div>
         </div>
       <!-- Tabs -->
-      <div class="mt-3 flex gap-1 border-b border-white/10">
-        <button class="tab-btn px-4 py-2 text-sm font-medium border-b-2 transition-all" :class="activeTab === 'public' ? 'active border-amber-500 text-amber-400' : 'text-zinc-400 hover:text-zinc-200'" @click="activeTab = 'public'">{{ t('tab_public') }}</button>
-        <button class="tab-btn px-4 py-2 text-sm font-medium border-b-2 border-transparent transition-all" :class="activeTab === 'my' ? 'active border-amber-500 text-amber-400' : 'text-zinc-400 hover:text-zinc-200'" @click="activeTab = 'my'">{{ t('tab_my_cards') }}</button>
+      <div class="mt-3 flex gap-1 border-b border-[var(--color-border)]">
+        <button class="tab-btn px-4 py-2 text-sm font-medium border-b-2 transition-all" :class="activeTab === 'public' ? 'active' : ''" style="border-color:transparent" @click="activeTab = 'public'">{{ t('tab_public') }}</button>
+        <button class="tab-btn px-4 py-2 text-sm font-medium border-b-2 transition-all" :class="activeTab === 'my' ? 'active' : ''" style="border-color:transparent" @click="activeTab = 'my'">{{ t('tab_my_cards') }}</button>
       </div>
       <!-- Search -->
       <div class="mt-2 flex items-center gap-2">
-        <input v-model="search" type="text" class="flex-1 px-3 py-1.5 text-sm glass rounded-xl placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-amber-500/40" :placeholder="t('library_search_placeholder')">
+        <input v-model="search" type="text" class="ui-input !py-1.5" :placeholder="t('library_search_placeholder')">
       </div>
       <!-- Otome chips（仅 public tab） -->
       <div v-if="activeTab === 'public'" class="mt-2 flex flex-wrap gap-1">
         <button
-          class="filter-btn px-2 py-1 rounded text-[11px] transition-all"
-          :class="activeChip === null ? 'bg-amber-500/20 text-amber-300' : 'bg-white/10 text-zinc-300 hover:bg-white/15'"
+          class="filter-btn ui-chip !text-[11px] !px-2 !py-1 transition-all"
+          :class="activeChip === null ? 'active' : ''"
           @click="activeChip = null"
-        >All</button>
+        >{{ t('filter_all') }}</button>
         <button
           v-for="chip in otomeChips"
           :key="chip"
-          class="filter-btn px-2 py-1 rounded text-[11px] transition-all"
-          :class="activeChip === chip ? 'bg-amber-500/20 text-amber-300' : 'bg-white/10 text-zinc-300 hover:bg-white/15'"
+          class="filter-btn ui-chip !text-[11px] !px-2 !py-1 transition-all"
+          :class="activeChip === chip ? 'active' : ''"
           @click="activeChip = activeChip === chip ? null : chip"
         >{{ chip }}</button>
       </div>
@@ -120,12 +120,12 @@ function onSelectMyCard(cardVm: CardVM) {
       <!-- Public（注意：不可再有 hidden class 与 v-show 冲突） -->
       <div v-show="activeTab === 'public'" id="publicCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <PublicCardItem v-for="c in publicCards" :key="c.slug" :c="c" mode="app" />
-        <div v-if="!publicCards.length" class="col-span-full text-center text-zinc-500 text-sm py-12">No characters match your search.</div>
+        <div v-if="!publicCards.length" class="col-span-full text-center text-sm py-12" style="color:var(--color-text-muted)">{{ t('no_characters_match') }}</div>
       </div>
       <!-- My Cards -->
       <div v-show="activeTab === 'my'" id="myCardsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
         <CardItem v-for="c in myCards" :key="c.id" :name="c.name" :tags="c.tags" :description="c.description" :image="c.image" @select="onSelectMyCard(c)" />
-        <div v-if="!myCards.length" class="col-span-full text-center text-zinc-500 text-sm py-12">{{ t('char_card_empty') }}</div>
+        <div v-if="!myCards.length" class="col-span-full text-center text-sm py-12" style="color:var(--color-text-muted)">{{ t('char_card_empty') }}</div>
       </div>
     </div>
   </div>

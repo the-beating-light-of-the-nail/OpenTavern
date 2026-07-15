@@ -29,7 +29,7 @@ const imageAttachments = computed(() => {
 
 <template>
   <div class="msg-wrapper flex flex-col w-full" :class="role === 'user' ? 'msg-user items-end' : 'msg-assistant items-start'">
-    <div v-if="senderName" class="text-[11px] text-zinc-500 mb-1 px-1">{{ senderName }}</div>
+    <div v-if="senderName" class="text-[11px] mb-1 px-1" style="color:var(--color-text-muted)">{{ senderName }}</div>
     <div class="msg-bubble max-w-[85%] sm:max-w-[78%]" :class="{ 'typing-cursor': streaming }">
       <details v-if="cot" class="msg-cot" :class="{ streaming }">
         <summary>{{ t('cot_block_title') }}</summary>

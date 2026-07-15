@@ -110,26 +110,26 @@ function onDrop(e: DragEvent) {
 
 <template>
   <AppModal modal-id="importModal" name="charImport" max-width="max-w-md" closable>
-    <h2 class="text-lg font-bold text-zinc-100 mb-5">{{ t('import_title') }}</h2>
+    <h2 class="text-lg font-bold mb-5" style="color:var(--color-text)">{{ t('import_title') }}</h2>
 
     <!-- Step: select -->
     <div v-if="step === 'select'">
-      <p class="text-sm text-zinc-400 mb-4">
+      <p class="text-sm mb-4" style="color:var(--color-text-muted)">
         <span>{{ t('import_desc') }}</span>
-        <code class="text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">chara_card_v1 / v2 / v3</code>
+        <code class="px-1.5 py-0.5 rounded" style="color:var(--color-primary);background:color-mix(in srgb,var(--color-primary) 12%,transparent)">chara_card_v1 / v2 / v3</code>
         <span>{{ t('import_desc2') }}</span>
       </p>
       <label
-        class="flex flex-col items-center gap-3 p-8 glass rounded-2xl border-dashed border-2 border-white/10 hover:border-amber-500/30 cursor-pointer transition-all"
+        class="flex flex-col items-center gap-3 p-8 ui-panel rounded-2xl border-dashed border-2 cursor-pointer transition-all"
         @dragover.prevent
         @drop="onDrop"
         @click="triggerFileInput"
       >
-        <div v-if="isParsing" class="text-amber-400 text-sm animate-pulse">Parsing...</div>
+        <div v-if="isParsing" class="text-sm animate-pulse" style="color:var(--color-primary)">Parsing...</div>
         <template v-else>
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-500"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
-          <span class="text-sm text-zinc-400">{{ t('import_click_hint') }}</span>
-          <span class="text-[10px] text-zinc-600">.json or .png (SillyTavern)</span>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-text-muted)"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+          <span class="text-sm" style="color:var(--color-text-muted)">{{ t('import_click_hint') }}</span>
+          <span class="text-[10px]" style="color:var(--color-text-muted)">.json or .png (SillyTavern)</span>
         </template>
         <input ref="fileInput" type="file" accept=".json,.png" class="hidden" @change="onFileChange">
       </label>
@@ -144,19 +144,19 @@ function onDrop(e: DragEvent) {
         </div>
         <div v-else class="w-14 h-14 rounded-xl ot-avatar-fill flex items-center justify-center text-xl font-bold text-white flex-shrink-0">{{ parsedChar.name.charAt(0) }}</div>
         <div class="min-w-0">
-          <h3 class="text-base font-bold text-zinc-100 truncate">{{ parsedChar.name }}</h3>
-          <p v-if="parsedChar.tags.length" class="text-xs text-amber-400/70 truncate">{{ parsedChar.tags.join(' · ') }}</p>
+          <h3 class="text-base font-bold truncate" style="color:var(--color-text)">{{ parsedChar.name }}</h3>
+          <p v-if="parsedChar.tags.length" class="text-xs truncate" style="color:var(--color-primary)">{{ parsedChar.tags.join(' · ') }}</p>
         </div>
       </div>
 
       <div class="space-y-3">
         <div v-if="parsedChar.description">
-          <label class="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">{{ t('char_editor_description') }}</label>
-          <p class="mt-1 text-xs text-zinc-400 line-clamp-4 leading-relaxed">{{ parsedChar.description }}</p>
+          <label class="text-[10px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('char_editor_description') }}</label>
+          <p class="mt-1 text-xs line-clamp-4 leading-relaxed" style="color:var(--color-text-muted)">{{ parsedChar.description }}</p>
         </div>
         <div v-if="parsedChar.first_mes">
-          <label class="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">{{ t('char_editor_first_mes') }}</label>
-          <p class="mt-1 text-xs text-zinc-400 line-clamp-4 leading-relaxed whitespace-pre-wrap">{{ parsedChar.first_mes }}</p>
+          <label class="text-[10px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('char_editor_first_mes') }}</label>
+          <p class="mt-1 text-xs line-clamp-4 leading-relaxed whitespace-pre-wrap" style="color:var(--color-text-muted)">{{ parsedChar.first_mes }}</p>
         </div>
       </div>
 
@@ -173,11 +173,11 @@ function onDrop(e: DragEvent) {
       <div class="w-16 h-16 rounded-full bg-emerald-500/15 flex items-center justify-center mx-auto mb-4">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-400"><polyline points="20 6 9 17 4 12" /></svg>
       </div>
-      <h3 class="text-base font-bold text-zinc-100">Imported successfully!</h3>
-      <p class="text-xs text-zinc-500 mt-1">{{ parsedChar?.name }} is now in your character library.</p>
+      <h3 class="text-base font-bold" style="color:var(--color-text)">Imported successfully!</h3>
+      <p class="text-xs mt-1" style="color:var(--color-text-muted)">{{ parsedChar?.name }} is now in your character library.</p>
       <div class="flex gap-3 mt-6">
         <button class="flex-1 btn-secondary" @click="viewCharacter">View Character</button>
-        <button class="flex-1 btn-primary" @click="startChat">Start Chat</button>
+        <button class="flex-1 btn-primary" @click="startChat">{{ t('start_chat') }}</button>
       </div>
     </div>
   </AppModal>

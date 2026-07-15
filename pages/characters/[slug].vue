@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getCharacterBySlug, characters } from '~/data/characters';
+const { t } = useI18n();
 
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
@@ -31,7 +32,7 @@ const related = computed(() =>
     <SiteHeader />
 
     <main class="mx-auto max-w-3xl px-5 py-12">
-      <NuxtLink to="/characters" class="rc-nav-link mb-6 inline-flex">← All characters</NuxtLink>
+      <NuxtLink to="/characters" class="rc-nav-link mb-6 inline-flex">{{ t('char_all_characters') }}</NuxtLink>
 
       <!-- Character header -->
       <div class="flex items-center gap-4">
@@ -53,40 +54,40 @@ const related = computed(() =>
 
       <!-- CTA -->
       <div class="mt-8 flex flex-wrap gap-3">
-        <NuxtLink :to="`/app?character=${c.slug}`" class="rc-btn-primary">Start Private Chat</NuxtLink>
-        <NuxtLink to="/characters" class="rc-btn-ghost">Browse others</NuxtLink>
+        <NuxtLink :to="`/app?character=${c.slug}`" class="rc-btn-primary">{{ t('char_start_private_chat') }}</NuxtLink>
+        <NuxtLink to="/characters" class="rc-btn-ghost">{{ t('char_browse_others') }}</NuxtLink>
       </div>
 
       <!-- Description -->
       <section class="mt-10">
-        <h2 class="text-lg font-bold">About {{ c.name }}</h2>
+        <h2 class="text-lg font-bold">{{ t('char_about_prefix') }} {{ c.name }}</h2>
         <p class="mt-3 leading-relaxed text-plum-muted">{{ c.description }}</p>
       </section>
 
       <!-- Personality -->
       <section class="mt-8">
-        <h2 class="text-lg font-bold">Personality</h2>
+        <h2 class="text-lg font-bold">{{ t('char_personality') }}</h2>
         <p class="mt-3 leading-relaxed text-plum-muted">{{ c.personality }}</p>
         <div class="mt-3 flex flex-wrap gap-1.5">
-          <span v-for="t in c.personalityTags" :key="t" class="rounded-full bg-rose-tint px-2.5 py-0.5 text-[0.68rem] font-medium text-plum-light">{{ t }}</span>
+          <span v-for="pt in c.personalityTags" :key="pt" class="rounded-full bg-rose-tint px-2.5 py-0.5 text-[0.68rem] font-medium text-plum-light">{{ pt }}</span>
         </div>
       </section>
 
       <!-- Relationship setup -->
       <section class="mt-8">
-        <h2 class="text-lg font-bold">How you meet</h2>
+        <h2 class="text-lg font-bold">{{ t('char_how_you_meet') }}</h2>
         <p class="mt-3 leading-relaxed text-plum-muted">{{ c.relationshipSetup }}</p>
       </section>
 
       <!-- Scenario -->
       <section class="mt-8">
-        <h2 class="text-lg font-bold">World &amp; scenario</h2>
+        <h2 class="text-lg font-bold">{{ t('char_world_scenario') }}</h2>
         <p class="mt-3 leading-relaxed text-plum-muted">{{ c.scenario }}</p>
       </section>
 
       <!-- Opening message -->
       <section class="mt-8">
-        <h2 class="text-lg font-bold">Opening message</h2>
+        <h2 class="text-lg font-bold">{{ t('char_opening_message') }}</h2>
         <div class="mt-3 rounded-xl border border-border-warm bg-rose-tint p-5">
           <p class="whitespace-pre-wrap leading-relaxed text-plum-light">{{ c.openingMessage }}</p>
         </div>
@@ -94,7 +95,7 @@ const related = computed(() =>
 
       <!-- Related characters -->
       <section v-if="related.length" class="mt-10">
-        <h2 class="text-lg font-bold">Related characters</h2>
+        <h2 class="text-lg font-bold">{{ t('char_related') }}</h2>
         <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
           <NuxtLink v-for="r in related" :key="r.slug" :to="`/characters/${r.slug}`" class="rc-card group flex items-center gap-3 p-4">
             <CharAvatar :avatar="r.avatar" :initial="r.initial" size="sm" />
@@ -108,7 +109,7 @@ const related = computed(() =>
 
       <!-- FAQ -->
       <section class="mt-10">
-        <h2 class="text-lg font-bold">FAQ</h2>
+        <h2 class="text-lg font-bold">{{ t('char_faq') }}</h2>
         <div class="rc-faq mt-4">
           <details v-for="f in c.faq" :key="f.q">
             <summary>{{ f.q }}</summary>
@@ -119,9 +120,9 @@ const related = computed(() =>
 
       <!-- Footer CTA -->
       <section class="mt-12 rounded-2xl border border-border-warm bg-rose-tint p-8 text-center">
-        <h2 class="text-xl font-bold">Ready to talk to {{ c.name }}?</h2>
-        <p class="mx-auto mt-2 max-w-md text-sm text-plum-muted">Open the app, add your AI key, and the story begins. No installation, no setup wizard.</p>
-        <NuxtLink :to="`/app?character=${c.slug}`" class="rc-btn-primary mt-5 inline-flex">Start Private Chat</NuxtLink>
+        <h2 class="text-xl font-bold">{{ t('char_ready_title', { name: c.name }) }}</h2>
+        <p class="mx-auto mt-2 max-w-md text-sm text-plum-muted">{{ t('char_ready_desc') }}</p>
+        <NuxtLink :to="`/app?character=${c.slug}`" class="rc-btn-primary mt-5 inline-flex">{{ t('char_start_private_chat') }}</NuxtLink>
       </section>
     </main>
   </div>

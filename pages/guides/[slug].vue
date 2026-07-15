@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getGuideBySlug } from '~/data/guides';
+const { t } = useI18n();
 
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
@@ -24,7 +25,7 @@ useSeoMeta({
     <SiteHeader />
 
     <main class="mx-auto max-w-2xl px-5 py-12">
-      <NuxtLink to="/guides" class="rc-nav-link mb-6 inline-flex">← All guides</NuxtLink>
+      <NuxtLink to="/guides" class="rc-nav-link mb-6 inline-flex">{{ t('guide_all_guides') }}</NuxtLink>
 
       <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{{ g.title }}</h1>
       <p class="mt-4 leading-relaxed text-plum-muted">{{ g.description }}</p>
@@ -41,7 +42,7 @@ useSeoMeta({
 
       <!-- Internal links -->
       <section class="mt-12 rounded-2xl border border-border-warm bg-rose-tint p-6">
-        <h2 class="text-base font-bold">Keep going</h2>
+        <h2 class="text-base font-bold">{{ t('guide_keep_going') }}</h2>
         <div class="mt-4 flex flex-wrap gap-3">
           <NuxtLink
             v-for="l in g.internalLinks"

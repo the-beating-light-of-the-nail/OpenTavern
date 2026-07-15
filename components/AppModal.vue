@@ -44,15 +44,15 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
     :id="modalId"
     class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center"
   >
-    <div class="absolute inset-0 bg-black/65 backdrop-blur-sm" @click="onBackdrop" />
+    <div class="absolute inset-0 bg-black/40" @click="onBackdrop" />
     <div
-      class="relative glass rounded-3xl w-[92%] shadow-2xl animate-fade-in p-7 max-h-[90vh] overflow-y-auto"
+      class="ui-panel modal-panel relative w-[92%] animate-fade-in p-7 max-h-[90vh] overflow-y-auto"
       :class="[maxWidth, { '!rounded-none !w-full !max-w-none h-[100dvh] p-4': flush }]"
     >
       <slot :close="close" />
       <button
         v-if="closable"
-        class="absolute top-4 right-4 w-8 h-8 rounded-full glass flex items-center justify-center text-zinc-400 hover:text-zinc-200 transition-colors"
+        class="absolute top-4 right-4 w-8 h-8 rounded-full ui-button !px-0 flex items-center justify-center transition-colors"
         aria-label="Close"
         @click="close"
       >&times;</button>
