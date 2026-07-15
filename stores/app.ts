@@ -143,6 +143,14 @@ export const useAppStore = defineStore('app', {
       return id;
     },
 
+    /** 更新已有角色（编辑模式）；角色不存在则忽略 */
+    updateCharacter(id: string, character: Record<string, any>): void {
+      if (this.characters[id]) {
+        this.characters[id] = { id, data: character };
+        this.persist();
+      }
+    },
+
     /**
      * 创建新会话（单角色 / 群组）。
      * 逐字移植原版 newConversation（index.html:574585）。
