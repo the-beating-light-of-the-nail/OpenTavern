@@ -18,7 +18,7 @@ useSeoMeta({
 
     <main class="mx-auto max-w-3xl px-5 py-14">
       <div class="mb-10 text-center">
-        <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{{ t('guides_title') }}</h1>
+        <h1 class="font-display text-3xl font-semibold tracking-wide sm:text-4xl">{{ t('guides_title') }}</h1>
         <p class="mx-auto mt-3 max-w-xl text-plum-muted">
           {{ t('guides_desc') }}
         </p>

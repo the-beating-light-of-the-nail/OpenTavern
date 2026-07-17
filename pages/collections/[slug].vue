@@ -34,7 +34,7 @@ const members = computed(() =>
     <main class="mx-auto max-w-3xl px-5 py-12">
       <NuxtLink to="/characters" class="rc-nav-link mb-6 inline-flex">{{ t('collection_all_characters') }}</NuxtLink>
 
-      <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{{ col.title }}</h1>
+      <h1 class="font-display text-3xl font-semibold tracking-wide sm:text-4xl">{{ col.title }}</h1>
       <p class="mt-4 leading-relaxed text-plum-muted">{{ col.intro }}</p>
 
       <div class="mt-8 flex flex-wrap gap-3">

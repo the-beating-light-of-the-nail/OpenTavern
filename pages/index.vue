@@ -51,11 +51,12 @@ const faqs = computed(() => [
 
     <!-- Hero -->
     <section class="rc-hero-bg relative overflow-hidden">
-      <div class="mx-auto max-w-3xl px-5 py-24 text-center sm:py-32">
+      <PetalField />
+      <div class="relative z-10 mx-auto max-w-3xl px-5 py-24 text-center sm:py-32">
         <div class="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-champagne/40 bg-rose-tint px-3 py-1 text-xs font-medium text-plum-light">
           <span class="h-1.5 w-1.5 rounded-full bg-rose-deep" /> {{ t('home_badge') }}
         </div>
-        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">
+        <h1 class="font-display text-4xl font-semibold tracking-wide sm:text-5xl">
           {{ t('home_hero_title_1') }}<br class="hidden sm:block" /> {{ t('home_hero_title_2') }}
         </h1>
         <p class="mx-auto mt-5 max-w-xl text-base text-plum-muted sm:text-lg">
@@ -71,7 +72,8 @@ const faqs = computed(() => [
     <!-- Popular Romance Characters (原创非 IP，链接到真实角色页) -->
     <section class="mx-auto max-w-5xl px-5 py-20">
       <div class="mb-10 text-center">
-        <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">{{ t('home_popular_title') }}</h2>
+        <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_popular_title') }}</h2>
+        <div class="orn-divider" aria-hidden="true">✦</div>
         <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_popular_desc') }}</p>
       </div>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -79,7 +81,7 @@ const faqs = computed(() => [
           <div class="flex items-center gap-3">
             <CharAvatar :avatar="c.avatar" :initial="c.initial" size="md" />
             <div class="min-w-0">
-              <h3 class="truncate text-base font-bold group-hover:text-rose-accent">{{ c.name }}</h3>
+              <h3 class="font-display truncate text-lg font-semibold tracking-wide group-hover:text-rose-accent">{{ c.name }}</h3>
               <p class="truncate text-xs text-rose-accent">{{ c.archetype }}</p>
             </div>
           </div>
@@ -98,7 +100,8 @@ const faqs = computed(() => [
     <section id="how" class="border-y border-border-warm bg-rose-tint">
       <div class="mx-auto max-w-5xl px-5 py-20">
         <div class="mb-12 text-center">
-          <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">{{ t('home_how_title') }}</h2>
+          <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_how_title') }}</h2>
+          <div class="orn-divider" aria-hidden="true">✦</div>
           <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_how_desc') }}</p>
         </div>
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
@@ -114,7 +117,8 @@ const faqs = computed(() => [
     <!-- Private by Design -->
     <section class="mx-auto max-w-5xl px-5 py-20">
       <div class="mb-12 text-center">
-        <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">{{ t('home_private_title') }}</h2>
+        <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_private_title') }}</h2>
+        <div class="orn-divider" aria-hidden="true">✦</div>
         <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_private_desc') }}</p>
       </div>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -131,7 +135,8 @@ const faqs = computed(() => [
     <section class="border-y border-border-warm bg-rose-tint">
       <div class="mx-auto max-w-5xl px-5 py-20">
         <div class="mb-12 text-center">
-          <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">{{ t('home_guides_title') }}</h2>
+          <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_guides_title') }}</h2>
+          <div class="orn-divider" aria-hidden="true">✦</div>
           <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_guides_desc') }}</p>
         </div>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -146,7 +151,8 @@ const faqs = computed(() => [
     <!-- FAQ -->
     <section id="faq" class="mx-auto max-w-3xl px-5 py-20">
       <div class="mb-10 text-center">
-        <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">{{ t('home_faq_title') }}</h2>
+        <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_faq_title') }}</h2>
+        <div class="orn-divider" aria-hidden="true">✦</div>
         <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_faq_desc') }}</p>
       </div>
       <div class="rc-faq">
@@ -160,7 +166,8 @@ const faqs = computed(() => [
     <!-- Footer CTA -->
     <section class="rc-hero-bg border-t border-border-warm">
       <div class="mx-auto max-w-3xl px-5 py-20 text-center">
-        <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">{{ t('home_footer_ready_title') }}</h2>
+        <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_footer_ready_title') }}</h2>
+        <div class="orn-divider" aria-hidden="true">✦</div>
         <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_footer_ready_desc') }}</p>
         <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
           <NuxtLink to="/app" class="rc-btn-primary">{{ t('home_cta_start') }}</NuxtLink>

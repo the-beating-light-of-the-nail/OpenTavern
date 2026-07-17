@@ -11,7 +11,7 @@ export default <Partial<Config>>{
   theme: {
     extend: {
       colors: {
-        ivory: '#faf5f0',
+        ivory: '#fbf4f2',
         plum: {
           DEFAULT: '#3d2b3d',
           light: '#6a5a6a',
@@ -19,16 +19,18 @@ export default <Partial<Config>>{
           faint: '#9a8a9a',
         },
         rose: {
-          tint: '#fff1ec',
-          accent: '#c8837a',
-          deep: '#b06f66',
+          tint: '#fdf0f3',
+          accent: '#ca7690',
+          deep: '#b86581',
         },
-        champagne: '#c89b6c',
+        champagne: '#d4ab72',
         lavender: '#d9c7e8',
-        'border-warm': '#ece3de',
+        'border-warm': '#f0e3e1',
       },
       fontFamily: {
         sans: ['"SF Pro Display"', '"SF Pro"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
+        // 乙女向展示衬线：西文 Cormorant Garamond（无 CJK 字形自动回退）→ 中文 Noto Serif SC → 系统宋体
+        display: ['"Cormorant Garamond"', '"Noto Serif SC"', '"Songti SC"', '"SimSun"', 'serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-out',

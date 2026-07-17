@@ -38,7 +38,7 @@ const related = computed(() =>
       <div class="flex items-center gap-4">
         <CharAvatar :avatar="c.avatar" :initial="c.initial" size="lg" />
         <div class="min-w-0">
-          <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">{{ c.name }}</h1>
+          <h1 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ c.name }}</h1>
           <p class="text-sm text-rose-accent">{{ c.archetype }}</p>
         </div>
       </div>
@@ -60,13 +60,13 @@ const related = computed(() =>
 
       <!-- Description -->
       <section class="mt-10">
-        <h2 class="text-lg font-bold">{{ t('char_about_prefix') }} {{ c.name }}</h2>
+        <h2 class="font-display text-lg font-semibold tracking-wide">{{ t('char_about_prefix') }} {{ c.name }}</h2>
         <p class="mt-3 leading-relaxed text-plum-muted">{{ c.description }}</p>
       </section>
 
       <!-- Personality -->
       <section class="mt-8">
-        <h2 class="text-lg font-bold">{{ t('char_personality') }}</h2>
+        <h2 class="font-display text-lg font-semibold tracking-wide">{{ t('char_personality') }}</h2>
         <p class="mt-3 leading-relaxed text-plum-muted">{{ c.personality }}</p>
         <div class="mt-3 flex flex-wrap gap-1.5">
           <span v-for="pt in c.personalityTags" :key="pt" class="rounded-full bg-rose-tint px-2.5 py-0.5 text-[0.68rem] font-medium text-plum-light">{{ pt }}</span>
@@ -75,19 +75,19 @@ const related = computed(() =>
 
       <!-- Relationship setup -->
       <section class="mt-8">
-        <h2 class="text-lg font-bold">{{ t('char_how_you_meet') }}</h2>
+        <h2 class="font-display text-lg font-semibold tracking-wide">{{ t('char_how_you_meet') }}</h2>
         <p class="mt-3 leading-relaxed text-plum-muted">{{ c.relationshipSetup }}</p>
       </section>
 
       <!-- Scenario -->
       <section class="mt-8">
-        <h2 class="text-lg font-bold">{{ t('char_world_scenario') }}</h2>
+        <h2 class="font-display text-lg font-semibold tracking-wide">{{ t('char_world_scenario') }}</h2>
         <p class="mt-3 leading-relaxed text-plum-muted">{{ c.scenario }}</p>
       </section>
 
       <!-- Opening message -->
       <section class="mt-8">
-        <h2 class="text-lg font-bold">{{ t('char_opening_message') }}</h2>
+        <h2 class="font-display text-lg font-semibold tracking-wide">{{ t('char_opening_message') }}</h2>
         <div class="mt-3 rounded-xl border border-border-warm bg-rose-tint p-5">
           <p class="whitespace-pre-wrap leading-relaxed text-plum-light">{{ c.openingMessage }}</p>
         </div>
@@ -95,7 +95,7 @@ const related = computed(() =>
 
       <!-- Related characters -->
       <section v-if="related.length" class="mt-10">
-        <h2 class="text-lg font-bold">{{ t('char_related') }}</h2>
+        <h2 class="font-display text-lg font-semibold tracking-wide">{{ t('char_related') }}</h2>
         <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
           <NuxtLink v-for="r in related" :key="r.slug" :to="`/characters/${r.slug}`" class="rc-card group flex items-center gap-3 p-4">
             <CharAvatar :avatar="r.avatar" :initial="r.initial" size="sm" />
@@ -109,7 +109,7 @@ const related = computed(() =>
 
       <!-- FAQ -->
       <section class="mt-10">
-        <h2 class="text-lg font-bold">{{ t('char_faq') }}</h2>
+        <h2 class="font-display text-lg font-semibold tracking-wide">{{ t('char_faq') }}</h2>
         <div class="rc-faq mt-4">
           <details v-for="f in c.faq" :key="f.q">
             <summary>{{ f.q }}</summary>
@@ -120,7 +120,7 @@ const related = computed(() =>
 
       <!-- Footer CTA -->
       <section class="mt-12 rounded-2xl border border-border-warm bg-rose-tint p-8 text-center">
-        <h2 class="text-xl font-bold">{{ t('char_ready_title', { name: c.name }) }}</h2>
+        <h2 class="font-display text-xl font-semibold tracking-wide">{{ t('char_ready_title', { name: c.name }) }}</h2>
         <p class="mx-auto mt-2 max-w-md text-sm text-plum-muted">{{ t('char_ready_desc') }}</p>
         <NuxtLink :to="`/app?character=${c.slug}`" class="rc-btn-primary mt-5 inline-flex">{{ t('char_start_private_chat') }}</NuxtLink>
       </section>

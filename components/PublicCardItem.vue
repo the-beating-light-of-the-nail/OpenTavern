@@ -40,7 +40,7 @@ const isApp = computed(() => props.mode === 'app');
       <div class="flex items-center gap-3.5">
         <CharAvatar :avatar="c.avatar" :initial="c.initial" size="lg" />
         <div class="min-w-0">
-          <h3 class="truncate text-base font-bold text-plum">{{ c.name }}</h3>
+          <h3 class="font-display truncate text-lg font-semibold tracking-wide text-plum">{{ c.name }}</h3>
           <p class="truncate text-xs text-rose-accent">{{ c.archetype }}</p>
         </div>
       </div>
@@ -68,7 +68,7 @@ const isApp = computed(() => props.mode === 'app');
       <div class="flex items-center gap-3.5">
         <CharAvatar :avatar="c.avatar" :initial="c.initial" size="lg" />
         <div class="min-w-0">
-          <h3 class="truncate text-base font-bold" style="color:var(--color-text)">{{ c.name }}</h3>
+          <h3 class="font-display truncate text-lg font-semibold tracking-wide" style="color:var(--color-text)">{{ c.name }}</h3>
           <p class="truncate text-xs" style="color:var(--color-primary)">{{ c.archetype }}</p>
         </div>
       </div>

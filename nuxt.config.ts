@@ -54,6 +54,15 @@ export default defineNuxtConfig({
             'RoleChat AI is an easy private AI roleplay platform. Chat with original romance and fantasy characters in seconds. No installation. No complicated setup. Bring your own AI key.',
         },
       ],
+      link: [
+        // 乙女向展示衬线字体（display=swap + 系统宋体兜底，加载失败不影响渲染）
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Serif+SC:wght@600;700&display=swap',
+        },
+      ],
     },
   },
 
