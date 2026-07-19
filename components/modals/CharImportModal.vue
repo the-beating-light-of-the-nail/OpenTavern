@@ -110,7 +110,7 @@ function onDrop(e: DragEvent) {
 
 <template>
   <AppModal modal-id="importModal" name="charImport" max-width="max-w-md" closable>
-    <h2 class="text-lg font-bold mb-5" style="color:var(--color-text)">{{ t('import_title') }}</h2>
+    <h2 class="ui-modal-title mb-5" style="color:var(--color-text)">{{ t('import_title') }}</h2>
 
     <!-- Step: select -->
     <div v-if="step === 'select'">
@@ -133,7 +133,7 @@ function onDrop(e: DragEvent) {
         </template>
         <input ref="fileInput" type="file" accept=".json,.png" class="hidden" @change="onFileChange">
       </label>
-      <div v-if="error" class="mt-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-xs text-red-300">{{ error }}</div>
+      <div v-if="error" class="ui-alert-danger mt-3 rounded-xl px-4 py-2.5 text-xs">{{ error }}</div>
     </div>
 
     <!-- Step: preview -->
@@ -142,7 +142,7 @@ function onDrop(e: DragEvent) {
         <div v-if="avatarDataUrl" class="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0">
           <img :src="avatarDataUrl" :alt="parsedChar.name" class="w-full h-full object-cover">
         </div>
-        <div v-else class="w-14 h-14 rounded-xl ot-avatar-fill flex items-center justify-center text-xl font-bold text-white flex-shrink-0">{{ parsedChar.name.charAt(0) }}</div>
+        <div v-else class="w-14 h-14 rounded-xl ot-avatar-fill flex items-center justify-center text-xl font-bold text-[var(--color-on-primary)] flex-shrink-0">{{ parsedChar.name.charAt(0) }}</div>
         <div class="min-w-0">
           <h3 class="text-base font-bold truncate" style="color:var(--color-text)">{{ parsedChar.name }}</h3>
           <p v-if="parsedChar.tags.length" class="text-xs truncate" style="color:var(--color-primary)">{{ parsedChar.tags.join(' · ') }}</p>
@@ -160,24 +160,24 @@ function onDrop(e: DragEvent) {
         </div>
       </div>
 
-      <div v-if="error" class="mt-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-xs text-red-300">{{ error }}</div>
+      <div v-if="error" class="ui-alert-danger mt-3 rounded-xl px-4 py-2.5 text-xs">{{ error }}</div>
 
       <div class="flex gap-3 mt-5">
-        <button class="flex-1 btn-secondary" @click="cancel">Cancel</button>
-        <button class="flex-1 btn-primary" @click="confirmImport">Confirm Import</button>
+        <button class="flex-1 ui-button-secondary" @click="cancel">Cancel</button>
+        <button class="flex-1 ui-button-primary" @click="confirmImport">Confirm Import</button>
       </div>
     </div>
 
     <!-- Step: success -->
     <div v-else-if="step === 'success'" class="text-center py-4">
-      <div class="w-16 h-16 rounded-full bg-emerald-500/15 flex items-center justify-center mx-auto mb-4">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-400"><polyline points="20 6 9 17 4 12" /></svg>
+      <div class="ui-status-success w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
       </div>
       <h3 class="text-base font-bold" style="color:var(--color-text)">Imported successfully!</h3>
       <p class="text-xs mt-1" style="color:var(--color-text-muted)">{{ parsedChar?.name }} is now in your character library.</p>
       <div class="flex gap-3 mt-6">
-        <button class="flex-1 btn-secondary" @click="viewCharacter">View Character</button>
-        <button class="flex-1 btn-primary" @click="startChat">{{ t('start_chat') }}</button>
+        <button class="flex-1 ui-button-secondary" @click="viewCharacter">View Character</button>
+        <button class="flex-1 ui-button-primary" @click="startChat">{{ t('start_chat') }}</button>
       </div>
     </div>
   </AppModal>

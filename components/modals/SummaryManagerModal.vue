@@ -46,7 +46,7 @@ function close() { ui.close('summaryManager'); }
 
 <template>
   <AppModal modal-id="summaryManagerModal" name="summaryManager" max-width="max-w-3xl" closable>
-    <h2 class="text-lg font-bold mb-4" style="color:var(--color-text)">{{ t('summary_manager_title') }}</h2>
+    <h2 class="ui-modal-title mb-4" style="color:var(--color-text)">{{ t('summary_manager_title') }}</h2>
 
     <div v-if="!conv" class="text-center py-8 text-sm" style="color:var(--color-text-muted)">
       {{ t('summary_no_conversation') }}
@@ -62,7 +62,7 @@ function close() { ui.close('summaryManager'); }
           <div
             v-for="(s, i) in summaries"
             :key="i"
-            class="ui-panel rounded-xl !shadow-none p-3"
+            class="ui-panel ui-panel-flat rounded-xl p-3"
           >
             <div class="flex items-start justify-between gap-2">
               <div class="min-w-0 flex-1">
@@ -72,7 +72,7 @@ function close() { ui.close('summaryManager'); }
                 </p>
               </div>
               <button
-                class="flex-shrink-0 hover:text-red-400 transition-colors text-xs"
+                class="ui-action-danger flex-shrink-0 transition-colors text-xs"
                 style="color:var(--color-text-muted)"
                 @click="deleteSummary(i)"
               >&times;</button>
@@ -83,7 +83,7 @@ function close() { ui.close('summaryManager'); }
 
       <div class="md:w-7/12 flex flex-col">
         <span class="label-base mb-3">{{ t('summary_new_section') }}</span>
-        <div class="flex rounded-xl ui-panel !shadow-none p-1 mb-4 w-fit">
+        <div class="flex rounded-xl ui-panel ui-panel-flat p-1 mb-4 w-fit">
           <button
             class="px-4 py-1.5 text-sm rounded-lg font-medium transition-all"
             :style="mode === 'recent' ? 'background:var(--color-surface-soft);color:var(--color-text)' : 'color:var(--color-text-muted)'"
@@ -98,7 +98,7 @@ function close() { ui.close('summaryManager'); }
 
         <div v-show="mode === 'recent'" class="flex items-center gap-3 mb-3">
           <span class="text-sm" style="color:var(--color-text-muted)">{{ t('summary_manual_desc') }}</span>
-          <input v-model.number="recentTurns" type="number" min="2" max="60" class="ui-input !w-16 text-center">
+          <input v-model.number="recentTurns" type="number" min="2" max="60" class="ui-input ui-input-w-16 text-center">
           <span class="text-sm" style="color:var(--color-text-muted)">{{ t('summary_manual_turns') }}</span>
         </div>
 
@@ -115,7 +115,7 @@ function close() { ui.close('summaryManager'); }
 
         <button
           id="summaryGenerateBtn"
-          class="mt-2 btn-primary"
+          class="mt-2 ui-button-primary"
           :disabled="isGenerating"
           @click="onGenerate"
         >

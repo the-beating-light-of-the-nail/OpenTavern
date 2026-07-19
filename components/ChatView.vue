@@ -111,23 +111,23 @@ function onComfyGenerate() {
         <button class="hamburger-btn" aria-label="Menu" @click="openMenu">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
         </button>
-        <div id="charAvatar" class="w-9 h-9 rounded-xl flex items-center justify-center text-[10px] font-semibold uppercase flex-shrink-0 ot-avatar-fill" style="color:#fff">{{ charName.charAt(0) || t('new_chat_title').charAt(0) }}</div>
+        <div id="charAvatar" class="w-9 h-9 rounded-xl flex items-center justify-center text-[10px] font-semibold uppercase flex-shrink-0 ot-avatar-fill" style="color:var(--color-on-primary)">{{ charName.charAt(0) || t('new_chat_title').charAt(0) }}</div>
         <div class="min-w-0 cursor-pointer" @click="backToLibrary">
           <h3 id="chatTitle" class="text-sm font-semibold truncate" style="color:var(--color-text)">{{ conv?.title || t('new_chat_title') }}</h3>
           <p id="chatSubtitle" class="text-[10px] truncate" style="color:var(--color-text-muted)">{{ charName }}</p>
         </div>
       </div>
       <div class="flex items-center gap-2 flex-shrink-0 topbar-actions">
-        <NuxtLink v-if="currentSlug" :to="`/characters/${currentSlug}`" class="ui-button !px-2 sm:!px-3 !py-1.5 !text-xs" :title="t('profile')">
+        <NuxtLink v-if="currentSlug" :to="`/characters/${currentSlug}`" class="ui-button ui-button-sm" :title="t('profile')">
           <span class="hidden sm:inline">{{ t('profile') }}</span>
           <span class="sm:hidden text-[10px] font-semibold uppercase leading-none">Pr</span>
         </NuxtLink>
-        <button id="summarizeBtn" class="ui-button !px-2 sm:!px-3 !py-1.5 !text-xs flex items-center justify-center" @click="ui.open('summaryManager')">
+        <button id="summarizeBtn" class="ui-button ui-button-sm" @click="ui.open('summaryManager')">
           <span class="hidden sm:inline">{{ t('summary_btn') }}</span>
           <span class="sm:hidden text-[10px] font-semibold uppercase leading-none">{{ t('summary_short') }}</span>
         </button>
-        <button id="topConnectBtn" class="ui-button !w-8 !h-8 !px-0 flex items-center justify-center !text-[10px] !font-bold" :title="t('connect_your_ai')" @click="ui.open('settings')">AI</button>
-        <button id="topClearChatBtn" v-if="hasActiveConv" class="ui-button !w-8 !h-8 !px-0 flex items-center justify-center" :title="t('clear_chat')" @click="confirmClear">Clr</button>
+        <button id="topConnectBtn" class="ui-button ui-button-icon-sm text-[10px] font-bold" :title="t('connect_your_ai')" @click="ui.open('settings')">AI</button>
+        <button id="topClearChatBtn" v-if="hasActiveConv" class="ui-button ui-button-icon-sm text-[10px]" :title="t('clear_chat')" @click="confirmClear">Clr</button>
 
       </div>
     </div>
@@ -167,13 +167,13 @@ function onComfyGenerate() {
         <button id="mentionPillClear" class="text-sm leading-none" style="color:color-mix(in srgb,var(--color-primary) 70%,var(--color-text))" @click="groupMention.clear()">&times;</button>
       </div>
       <div class="flex items-center gap-2 sm:gap-2.5">
-        <button id="mentionBtn" class="ui-button flex-shrink-0 !w-11 !h-11 !px-0 !text-xl !font-bold touch-manipulation" :title="t('mention_button_title')" aria-label="Mention Character" @click="onMentionClick">@</button>
+        <button id="mentionBtn" class="ui-button ui-button-icon text-xl font-bold touch-manipulation" :title="t('mention_button_title')" aria-label="Mention Character" @click="onMentionClick">@</button>
         <textarea
           ref="textarea"
           id="messageInput"
           v-model="inputText"
           rows="1"
-          class="ui-input flex-1 !min-h-[44px]"
+          class="ui-input ui-input-chat flex-1"
           :placeholder="t('input_placeholder')"
           :disabled="!hasActiveConv"
           @keydown="onKeydown"
@@ -183,7 +183,7 @@ function onComfyGenerate() {
         <button
           v-if="showComfyBtn"
           id="comfyGenerateBtn"
-          class="ui-button flex-shrink-0 !w-11 !h-11 !px-0 transition-all duration-200"
+          class="ui-button ui-button-icon"
           :class="{ 'animate-pulse': comfy.isGenerating.value }"
           :disabled="!comfy.canGenerate()"
           :title="t('comfy_generate_title')"
@@ -192,18 +192,18 @@ function onComfyGenerate() {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
         </button>
         <!-- 停止按钮（生成中显示） -->
-        <button v-if="isGenerating" id="stopBtn" class="ui-button flex-shrink-0 !w-11 !h-11 !px-0 transition-all duration-200 flex items-center justify-center" style="color:var(--color-danger)" @click="stopGeneration">
+        <button v-if="isGenerating" id="stopBtn" class="ui-button ui-button-icon" style="color:var(--color-danger)" @click="stopGeneration">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2" /></svg>
         </button>
         <!-- 重新生成按钮（最后一条是助手消息且非生成中） -->
-        <button v-else-if="messages.length && messages[messages.length - 1].role === 'assistant'" class="ui-button flex-shrink-0 !w-11 !h-11 !px-0 transition-all duration-200 flex items-center justify-center" @click="regenerate">
+        <button v-else-if="messages.length && messages[messages.length - 1].role === 'assistant'" class="ui-button ui-button-icon" @click="regenerate">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></svg>
         </button>
         <!-- 发送按钮 -->
         <button
           v-else
           id="sendBtn"
-          class="ui-button-primary flex-shrink-0 !w-11 !h-11 !px-0 transition-all duration-200 flex items-center justify-center"
+          class="ui-button-primary ui-button-icon"
           :disabled="!inputText.trim() || !hasActiveConv"
           @click="handleSend"
         >

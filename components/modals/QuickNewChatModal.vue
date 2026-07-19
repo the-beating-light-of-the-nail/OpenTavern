@@ -27,11 +27,11 @@ function onNewGroup() {
 
 <template>
   <AppModal modal-id="quickNewChatModal" name="quickNewChat" max-width="max-w-sm" closable>
-    <h2 class="text-lg font-bold mb-4" style="color:var(--color-text)">{{ t('quick_new_chat_title') }}</h2>
+    <h2 class="ui-modal-title mb-4" style="color:var(--color-text)">{{ t('quick_new_chat_title') }}</h2>
     <div class="space-y-2.5">
-      <button id="quickNewChatWithCurrentBtn" class="w-full btn-primary" @click="onWithCurrent">{{ t('quick_new_with_current') }}</button>
-      <button id="quickReturnToLibraryBtn" class="w-full btn-secondary" @click="ui.close('quickNewChat')">{{ t('quick_return_library') }}</button>
-      <button id="quickNewGroupChatBtn" class="w-full btn-ghost border" style="border-color:var(--color-border)" @click="onNewGroup">{{ t('quick_new_group') }}</button>
+      <button id="quickNewChatWithCurrentBtn" class="w-full ui-button-primary" @click="onWithCurrent">{{ t('quick_new_with_current') }}</button>
+      <button id="quickReturnToLibraryBtn" class="w-full ui-button-secondary" @click="ui.close('quickNewChat')">{{ t('quick_return_library') }}</button>
+      <button id="quickNewGroupChatBtn" class="w-full ui-button-ghost border" style="border-color:var(--color-border)" @click="onNewGroup">{{ t('quick_new_group') }}</button>
     </div>
   </AppModal>
 </template>

@@ -36,7 +36,7 @@ const fallbackSrc = computed(() => (props.cardSlug ? `/cards/${props.cardSlug}-$
         <img :src="fallbackSrc" :alt="name" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" width="300" height="400">
       </picture>
       <!-- 占位（首字母） -->
-      <div v-else class="absolute inset-0 flex items-center justify-center text-3xl font-bold text-white/80">
+      <div v-else class="absolute inset-0 flex items-center justify-center text-3xl font-bold text-[var(--color-on-primary)]">
         {{ (name || '?').charAt(0) }}
       </div>
     </div>

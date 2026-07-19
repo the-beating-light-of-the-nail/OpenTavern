@@ -1,0 +1,138 @@
+/* ============================================================
+   营销页 Romance Light 风格（引用统一 --color-* token）
+   自包含：SSR 首屏即正确，不依赖 /app 的 useTheme。
+   ============================================================ */
+
+.rc-nav-link {
+    padding: 0.4rem 0.85rem; border-radius: 0.6rem;
+    font-size: 0.8rem; font-weight: 600;
+    color: var(--color-text-muted); transition: all 0.18s ease;
+}
+.rc-nav-link:hover { color: var(--color-text); background: color-mix(in srgb, var(--color-primary) 8%, transparent); }
+
+.rc-nav-link-primary {
+    padding: 0.4rem 0.85rem; border-radius: 0.6rem;
+    font-size: 0.8rem; font-weight: 600;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+    color: var(--color-on-primary);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    transition: all 0.18s ease;
+}
+.rc-nav-link-primary:hover { filter: brightness(1.06); }
+
+.rc-btn-primary {
+    position: relative; overflow: hidden;
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 0.8rem 1.6rem; border-radius: 0.9rem;
+    font-size: 0.95rem; font-weight: 700;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+    color: var(--color-on-primary);
+    box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--color-primary) 48%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transition: all 0.18s ease;
+}
+.rc-btn-primary:hover { filter: brightness(1.06); transform: translateY(-1px); }
+.rc-btn-compact { padding: 0.5rem 0.75rem; border-radius: 0.6rem; font-size: 0.75rem; }
+.rc-btn-primary::after {
+    content: ''; position: absolute; top: 0; left: -70%; width: 45%; height: 100%;
+    background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, 0.5) 50%, transparent 100%);
+    transform: skewX(-18deg); pointer-events: none;
+}
+.rc-btn-primary:hover::after { left: 130%; transition: left 0.7s ease; }
+
+.rc-btn-ghost {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 0.8rem 1.6rem; border-radius: 0.9rem;
+    font-size: 0.95rem; font-weight: 700;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted); transition: all 0.18s ease;
+}
+.rc-btn-ghost:hover { border-color: var(--color-primary); background: color-mix(in srgb, var(--color-primary) 6%, transparent); color: var(--color-text); }
+.rc-btn-ghost.rc-btn-compact { padding: 0.5rem 0.75rem; border-radius: 0.6rem; font-size: 0.75rem; }
+
+.rc-hero-bg {
+    background:
+        radial-gradient(52% 42% at 50% 0%, color-mix(in srgb, var(--color-primary) 16%, transparent) 0%, transparent 62%),
+        radial-gradient(38% 32% at 84% 14%, color-mix(in srgb, var(--color-lavender) 24%, transparent) 0%, transparent 60%),
+        radial-gradient(34% 30% at 12% 18%, color-mix(in srgb, var(--color-accent) 14%, transparent) 0%, transparent 60%),
+        linear-gradient(180deg, var(--color-bg) 0%, var(--color-surface-soft) 58%, var(--color-bg) 100%);
+}
+
+/* —— 乙女向装饰：✦ 分隔符（两侧金线）—— */
+.orn-divider { display: flex; align-items: center; justify-content: center; gap: 0.7rem; margin-top: 0.85rem; color: var(--color-accent); font-size: 0.7rem; user-select: none; }
+.orn-divider::before,
+.orn-divider::after { content: ''; height: 1px; width: 46px; }
+.orn-divider::before { background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-accent) 60%, transparent)); }
+.orn-divider::after { background: linear-gradient(270deg, transparent, color-mix(in srgb, var(--color-accent) 60%, transparent)); }
+
+/* —— 乙女向装饰：飘落花瓣（SSR 安全，纯 CSS 驱动）—— */
+.petal-field { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 1; }
+.petal {
+    position: absolute; top: -6%;
+    border-radius: 62% 38% 60% 40% / 55% 45% 55% 45%;
+    background: linear-gradient(135deg, #f6cdd9 0%, #e9a6bd 100%);
+    box-shadow: inset 0 0 4px rgba(255, 255, 255, 0.65);
+    opacity: 0;
+    animation: petalFall linear infinite;
+    will-change: transform, opacity;
+}
+.petal.petal-spark {
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff 0%, color-mix(in srgb, var(--color-accent) 55%, #fff) 100%);
+    box-shadow: 0 0 6px 1px color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+@keyframes petalFall {
+    0% { transform: translate3d(0, -8vh, 0) rotate(0deg); opacity: 0; }
+    8% { opacity: 0.75; }
+    50% { transform: translate3d(var(--drift, 22px), 42vh, 0) rotate(170deg); }
+    92% { opacity: 0.55; }
+    100% { transform: translate3d(calc(var(--drift, 22px) * -0.7), 88vh, 0) rotate(330deg); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .petal-field { display: none; } }
+body.low-power .petal-field { display: none; }
+
+.rc-card {
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+    transition: all 0.2s ease;
+}
+.rc-card:hover { border-color: var(--color-primary); box-shadow: 0 8px 24px -6px color-mix(in srgb, var(--color-primary) 15%, transparent); transform: translateY(-2px); }
+
+.rc-tag {
+    display: inline-flex; align-items: center;
+    padding: 0.15rem 0.55rem; border-radius: 999px;
+    font-size: 0.68rem; font-weight: 600;
+    background: linear-gradient(120deg, color-mix(in srgb, var(--color-lavender) 40%, transparent) 0%, color-mix(in srgb, var(--color-primary) 15%, transparent) 100%);
+    color: var(--color-text-muted);
+}
+
+.rc-coming-badge {
+    position: absolute; top: 0.75rem; right: 0.75rem;
+    padding: 0.2rem 0.6rem; border-radius: 999px;
+    font-size: 0.62rem; font-weight: 700; letter-spacing: 0.02em;
+    background: rgba(255, 255, 255, 0.85);
+    color: var(--color-accent);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+}
+
+.rc-faq details { border: 1px solid var(--color-border); border-radius: 0.85rem; background: var(--color-surface); overflow: hidden; }
+.rc-faq details + details { margin-top: 0.6rem; }
+.rc-faq summary {
+    padding: 1rem 1.2rem; font-weight: 600; color: var(--color-text);
+    cursor: pointer; list-style: none; user-select: none;
+}
+.rc-faq summary::-webkit-details-marker { display: none; }
+.rc-faq summary::after {
+    content: '+'; float: right; color: var(--color-text-muted);
+    font-weight: 400; font-size: 1.1rem; transition: transform 0.18s ease;
+}
+.rc-faq details[open] summary::after { content: '−'; }
+.rc-faq details[open] summary { border-bottom: 1px solid var(--color-border); }
+.rc-faq .rc-faq-a { padding: 1rem 1.2rem; color: var(--color-text-muted); font-size: 0.9rem; line-height: 1.6; }
+
+/* 角色卡顶部柔玫瑰渐变条 */
+.rc-card-accent {
+    height: 4px; border-radius: 1rem 1rem 0 0;
+    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-lavender) 50%, var(--color-accent) 100%);
+}

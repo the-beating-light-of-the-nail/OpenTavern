@@ -90,7 +90,7 @@ async function onImportFile(e: Event) {
   <aside id="sidebar" :class="{ open: store.sidebarOpen }" class="ui-sidebar w-[270px] flex-shrink-0 flex flex-col">
     <!-- Header -->
     <NuxtLink to="/" class="px-5 py-4 flex items-center gap-3 border-b border-[var(--color-border)] hover:bg-[var(--color-surface-soft)] transition-colors">
-      <div class="w-9 h-9 rounded-xl ot-avatar-fill flex items-center justify-center text-white text-xs font-bold tracking-tighter">RC</div>
+      <div class="w-9 h-9 rounded-xl ot-avatar-fill flex items-center justify-center text-[var(--color-on-primary)] text-xs font-bold tracking-tighter">RC</div>
       <div class="flex-1">
         <div class="flex items-center gap-2">
           <p class="text-sm font-bold leading-tight" style="color:var(--color-text)">RoleChat AI</p>
@@ -102,13 +102,13 @@ async function onImportFile(e: Event) {
 
     <!-- Site nav -->
     <div class="px-3 py-2 flex items-center gap-1 border-b border-[var(--color-border)]">
-      <NuxtLink to="/characters" class="ui-button flex-1 text-[11px] !px-2 !py-1.5">{{ t('nav_characters') }}</NuxtLink>
-      <NuxtLink to="/guides" class="ui-button flex-1 text-[11px] !px-2 !py-1.5">{{ t('nav_guides') }}</NuxtLink>
+      <NuxtLink to="/characters" class="ui-button ui-button-xs flex-1">{{ t('nav_characters') }}</NuxtLink>
+      <NuxtLink to="/guides" class="ui-button ui-button-xs flex-1">{{ t('nav_guides') }}</NuxtLink>
     </div>
 
     <!-- New Chat -->
     <div class="px-3 py-3 border-b border-[var(--color-border)]">
-      <button id="newChatBtn" class="ui-button-primary w-full !px-3 !py-2.5 !text-sm" @click="ui.open('newChatPicker')">
+      <button id="newChatBtn" class="ui-button-primary ui-button-block" @click="ui.open('newChatPicker')">
         <span class="text-base">+</span> <span>{{ t('new_chat') }}</span>
       </button>
     </div>
@@ -133,7 +133,7 @@ async function onImportFile(e: Event) {
     <!-- Footer -->
     <div class="px-3 py-2 border-t border-[var(--color-border)] space-y-1.5">
       <!-- Connect AI (primary) -->
-      <button id="sidebarSettingsBtn" class="ui-button-primary w-full !px-2 !py-2 !text-xs" @click="ui.open('settings')">
+      <button id="sidebarSettingsBtn" class="ui-button-primary ui-button-block ui-button-sm" @click="ui.open('settings')">
         {{ t('connect_ai') }}
       </button>
 
@@ -145,7 +145,7 @@ async function onImportFile(e: Event) {
         </summary>
         <div class="mt-1.5 space-y-1.5">
           <!-- Character Card -->
-          <div class="ui-panel rounded-xl !shadow-none px-3 py-2 space-y-1.5">
+          <div class="ui-panel ui-panel-flat rounded-xl px-3 py-2 space-y-1.5">
             <div class="flex items-center justify-between">
               <span class="text-[10px] uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('char_card_title') }}</span>
               <div id="charCardActions" class="flex items-center gap-0.5">
@@ -162,30 +162,30 @@ async function onImportFile(e: Event) {
             <p v-else id="charCardEmptyHint" class="text-[10px]" style="color:var(--color-text-muted)">{{ t('char_card_empty') }}</p>
 
             <div class="flex gap-1.5">
-              <button id="charImportBtn" class="ui-button flex-1 !text-[11px] !px-2 !py-1.5" @click="ui.open('charImport')">
+              <button id="charImportBtn" class="ui-button ui-button-xs flex-1" @click="ui.open('charImport')">
                 <span>&#128229;</span> <span>{{ t('char_btn_import') }}</span>
               </button>
-              <button id="charCreateBtn" class="ui-button flex-1 !text-[11px] !px-2 !py-1.5" @click="ui.open('charEditor')">
+              <button id="charCreateBtn" class="ui-button ui-button-xs flex-1" @click="ui.open('charEditor')">
                 <span>+</span> <span>{{ t('char_btn_create') }}</span>
               </button>
             </div>
           </div>
 
           <!-- World Book -->
-          <div class="ui-panel rounded-xl !shadow-none px-3 py-2 flex items-center gap-2 text-xs">
+          <div class="ui-panel ui-panel-flat rounded-xl px-3 py-2 flex items-center gap-2 text-xs">
             <span class="flex-shrink-0 text-[10px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">WI</span>
             <span class="flex-1 truncate" style="color:var(--color-text)">{{ t('world_book') }}</span>
             <span id="wiEntryCount" class="text-[10px] px-1.5 py-0.5 rounded flex-shrink-0" style="background:var(--color-surface-soft);color:var(--color-text-muted)">{{ Object.keys(store.worldBooks || {}).length }}</span>
-            <button id="worldBookBtn" class="ui-button !px-2.5 !py-1 !text-[11px] flex-shrink-0 min-h-[28px]" @click="ui.open('worldBook')">{{ t('world_book_btn') }}</button>
+            <button id="worldBookBtn" class="ui-button ui-button-xs flex-shrink-0 min-h-[28px]" @click="ui.open('worldBook')">{{ t('world_book_btn') }}</button>
           </div>
 
           <!-- Export / Import / Prompt -->
           <div class="flex items-center gap-1.5">
             <input ref="exportImportInput" type="file" accept=".json" class="hidden" @change="onImportFile">
-            <button id="exportAllBtn" class="ui-button flex-1 !text-[10px]" @click="exportAll">{{ t('conv_export_all_btn') }}</button>
-            <button id="importConvBtn" class="ui-button flex-1 !text-[10px]" @click="triggerImport">{{ t('conv_import_btn') }}</button>
+            <button id="exportAllBtn" class="ui-button ui-button-xs flex-1" @click="exportAll">{{ t('conv_export_all_btn') }}</button>
+            <button id="importConvBtn" class="ui-button ui-button-xs flex-1" @click="triggerImport">{{ t('conv_import_btn') }}</button>
           </div>
-          <button id="viewPromptBtn" class="ui-button w-full !text-[10px]" @click="ui.open('promptViewer')">
+          <button id="viewPromptBtn" class="ui-button ui-button-xs ui-button-block" @click="ui.open('promptViewer')">
             <span class="text-[10px] font-semibold uppercase tracking-wider">{{ t('nav_prompt') }}</span>
           </button>
         </div>

@@ -124,7 +124,7 @@ const faqs = computed(() => [
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div v-for="p in privatePoints" :key="p.title" class="rc-card p-6">
           <h3 class="flex items-center gap-2 text-base font-bold">
-            <span class="h-2 w-2 flex-shrink-0 rounded-full bg-emerald-400" /> {{ p.title }}
+            <span class="h-2 w-2 flex-shrink-0 rounded-full" style="background:var(--color-success)" /> {{ p.title }}
           </h3>
           <p class="mt-2 text-sm leading-relaxed text-plum-muted">{{ p.desc }}</p>
         </div>
@@ -195,4 +195,3 @@ const faqs = computed(() => [
     </footer>
   </div>
 </template>
-

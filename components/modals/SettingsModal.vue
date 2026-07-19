@@ -68,7 +68,7 @@ const langOptions = [
 
 <template>
   <AppModal modal-id="settingsModal" name="settings" max-width="max-w-lg" closable>
-    <h2 class="text-lg font-bold mb-1" style="color:var(--color-text)">{{ t('connect_your_ai') }}</h2>
+    <h2 class="ui-modal-title mb-1" style="color:var(--color-text)">{{ t('connect_your_ai') }}</h2>
     <p class="text-xs mb-6 leading-relaxed" style="color:var(--color-text-muted)">{{ t('connect_ai_explanation') }}</p>
 
     <div class="space-y-5">
@@ -80,7 +80,7 @@ const langOptions = [
             v-for="p in quickProviders"
             :key="p.label"
             type="button"
-            class="ui-button !text-xs"
+            class="ui-button ui-button-sm"
             @click="fillProvider(p)"
           >{{ p.label }}</button>
         </div>
@@ -108,14 +108,14 @@ const langOptions = [
           {{ t('advanced_settings') }}
           <span class="ml-auto transition-transform group-open:rotate-90">→</span>
         </summary>
-        <div class="mt-4 space-y-5">
+        <div class="settings-advanced mt-4 space-y-5">
           <!-- Raw API Endpoint -->
           <div>
             <label class="label-base">{{ t('settings_api_endpoint') }}</label>
             <input v-model="s.apiEndpoint" type="text" class="ui-input mt-1.5" placeholder="https://api.openai.com/v1" @change="persist">
             <div class="mt-1.5 flex flex-wrap gap-1.5">
-              <button type="button" class="ui-button !text-xs" @click="fillProvider(quickProviders[0])">{{ t('provider_openrouter') }}</button>
-              <button type="button" class="ui-button !text-xs">{{ t('api_test_button') }}</button>
+              <button type="button" class="ui-button ui-button-sm" @click="fillProvider(quickProviders[0])">{{ t('provider_openrouter') }}</button>
+              <button type="button" class="ui-button ui-button-sm">{{ t('api_test_button') }}</button>
             </div>
           </div>
 
@@ -130,20 +130,20 @@ const langOptions = [
             </select>
             <div v-show="isWebLLM" class="mt-2">
               <label class="text-xs font-semibold" style="color:var(--color-text-muted)">{{ t('settings_webllm_model') }}</label>
-              <select v-model="s.webllmModel" class="ui-input mt-1 !py-2" @change="onModelChange">
+              <select v-model="s.webllmModel" class="ui-input ui-input-compact mt-1" @change="onModelChange">
                 <option value="Llama-3.2-1B-Instruct-q4f16_1-MLC">Llama-3.2-1B (q4f16)</option>
                 <option value="Llama-3.2-3B-Instruct-q4f16_1-MLC">Llama-3.2-3B (q4f16)</option>
               </select>
-              <p class="mt-1 text-[10px]" style="color:var(--color-primary)">{{ t('settings_webllm_hint') }}</p>
+              <p class="ui-help-text mt-1" style="color:var(--color-primary)">{{ t('settings_webllm_hint') }}</p>
             </div>
           </div>
 
           <!-- Ollama compat -->
-          <div class="ui-panel rounded-2xl !shadow-none p-3">
+          <div class="ui-panel ui-panel-flat rounded-2xl p-3">
             <div class="flex items-center justify-between gap-3">
               <div>
                 <label class="label-base">{{ t('settings_ollama_compat_label') }}</label>
-                <p class="text-[10px] mt-0.5" style="color:var(--color-text-muted)">{{ t('settings_ollama_compat_hint') }}</p>
+                <p class="ui-help-text mt-0.5">{{ t('settings_ollama_compat_hint') }}</p>
               </div>
               <input v-model="s.ollamaCompatMode" type="checkbox" style="accent-color:var(--color-primary)" @change="persist">
             </div>
@@ -204,16 +204,16 @@ const langOptions = [
           </div>
 
           <!-- Two stage -->
-          <div class="ui-panel rounded-2xl !shadow-none p-3">
+          <div class="ui-panel ui-panel-flat rounded-2xl p-3">
             <div class="flex items-center justify-between gap-3 mb-2">
               <label class="label-base">{{ t('settings_two_stage_label') }}</label>
               <input v-model="s.twoStageEnabled" type="checkbox" style="accent-color:var(--color-primary)" @change="persist">
             </div>
-            <p class="text-[10px]" style="color:var(--color-text-muted)">{{ t('settings_two_stage_hint') }}</p>
+            <p class="ui-help-text">{{ t('settings_two_stage_hint') }}</p>
           </div>
 
           <!-- CoT -->
-          <div class="ui-panel rounded-2xl !shadow-none p-3 space-y-3">
+          <div class="ui-panel ui-panel-flat rounded-2xl p-3 space-y-3">
             <label class="flex items-center justify-between gap-3">
               <span class="label-base">{{ t('settings_cot_request_label') }}</span>
               <input v-model="s.requestCotEnabled" type="checkbox" style="accent-color:var(--color-primary)" @change="persist">
@@ -240,7 +240,7 @@ const langOptions = [
           </div>
           <div>
             <label class="text-xs font-semibold" style="color:var(--color-text-muted)">{{ t('settings_summary_max_words') }}</label>
-            <input v-model.number="s.summaryMaxWords" type="number" min="0" max="10000" step="50" class="ui-input w-24 mt-1 !py-1.5" @change="persist">
+            <input v-model.number="s.summaryMaxWords" type="number" min="0" max="10000" step="50" class="ui-input ui-input-compact ui-input-w-24 mt-1" @change="persist">
           </div>
           <div>
             <label class="label-base">{{ t('settings_summary_prompt') }}</label>
@@ -265,7 +265,7 @@ const langOptions = [
           <!-- ST preset -->
           <div>
             <label class="label-base">{{ t('settings_st_preset_title') }}</label>
-            <p class="text-[10px] mt-0.5" style="color:var(--color-text-muted)">{{ t('settings_st_preset_hint') }}</p>
+            <p class="ui-help-text mt-0.5">{{ t('settings_st_preset_hint') }}</p>
           </div>
 
           <hr style="border-color:var(--color-border)">
@@ -273,7 +273,7 @@ const langOptions = [
           <!-- UI theme -->
           <div>
             <label class="label-base">{{ t('settings_ui_theme_label') }}</label>
-            <select v-model="s.uiTheme" class="ui-input mt-2 !py-2" @change="persist">
+            <select v-model="s.uiTheme" class="ui-input ui-input-compact mt-2" @change="persist">
               <option value="classic">{{ t('settings_ui_theme_classic') }}</option>
               <option value="new-light">{{ t('settings_ui_theme_new_light') }}</option>
               <option value="new-dark">{{ t('settings_ui_theme_new_dark') }}</option>
@@ -283,7 +283,7 @@ const langOptions = [
           <!-- Language -->
           <div>
             <label class="label-base">{{ t('announce_lang_label') }}</label>
-            <select :value="s.lang" class="ui-input mt-2 !py-2" @change="onLangChange">
+            <select :value="s.lang" class="ui-input ui-input-compact mt-2" @change="onLangChange">
               <option v-for="o in langOptions" :key="o.code" :value="o.code">{{ o.label }}</option>
             </select>
           </div>
@@ -295,45 +295,45 @@ const langOptions = [
 
           <!-- ComfyUI -->
           <hr style="border-color:var(--color-border)">
-          <div class="ui-panel rounded-2xl !shadow-none p-3">
+          <div class="ui-panel ui-panel-flat rounded-2xl p-3">
             <div class="flex items-center justify-between gap-3">
               <label class="label-base">{{ t('settings_comfy_title') }}</label>
               <input v-model="s.comfyEnabled" type="checkbox" style="accent-color:var(--color-primary)" @change="persist">
             </div>
-            <p class="text-[10px] mt-1" style="color:var(--color-text-muted)">{{ t('settings_comfy_hint') }}</p>
+            <p class="ui-help-text mt-1">{{ t('settings_comfy_hint') }}</p>
             <div class="mt-3 space-y-2">
               <div>
                 <label class="text-[11px]" style="color:var(--color-text-muted)">{{ t('settings_comfy_server') }}</label>
-                <input v-model="s.comfyServer" type="text" class="ui-input mt-1 !py-2" placeholder="http://127.0.0.1:8188" @change="persist">
+                <input v-model="s.comfyServer" type="text" class="ui-input ui-input-compact mt-1" placeholder="http://127.0.0.1:8188" @change="persist">
               </div>
               <div class="grid grid-cols-3 gap-2">
                 <div>
                   <label class="text-[11px]" style="color:var(--color-text-muted)">{{ t('settings_comfy_positive_node') }}</label>
-                  <input v-model="s.comfyPositiveNodeId" type="text" class="ui-input mt-1 !py-2" placeholder="6" @change="persist">
+                  <input v-model="s.comfyPositiveNodeId" type="text" class="ui-input ui-input-compact mt-1" placeholder="6" @change="persist">
                 </div>
                 <div>
                   <label class="text-[11px]" style="color:var(--color-text-muted)">{{ t('settings_comfy_negative_node') }}</label>
-                  <input v-model="s.comfyNegativeNodeId" type="text" class="ui-input mt-1 !py-2" placeholder="7" @change="persist">
+                  <input v-model="s.comfyNegativeNodeId" type="text" class="ui-input ui-input-compact mt-1" placeholder="7" @change="persist">
                 </div>
                 <div>
                   <label class="text-[11px]" style="color:var(--color-text-muted)">{{ t('settings_comfy_seed_node') }}</label>
-                  <input v-model="s.comfySeedNodeId" type="text" class="ui-input mt-1 !py-2" placeholder="3" @change="persist">
+                  <input v-model="s.comfySeedNodeId" type="text" class="ui-input ui-input-compact mt-1" placeholder="3" @change="persist">
                 </div>
               </div>
               <div>
                 <label class="text-[11px]" style="color:var(--color-text-muted)">{{ t('settings_comfy_negative_prompt') }}</label>
-                <input v-model="s.comfyNegativePrompt" type="text" class="ui-input mt-1 !py-2" placeholder="low quality, blurry" @change="persist">
+                <input v-model="s.comfyNegativePrompt" type="text" class="ui-input ui-input-compact mt-1" placeholder="low quality, blurry" @change="persist">
               </div>
               <div>
                 <label class="text-[11px]" style="color:var(--color-text-muted)">{{ t('settings_comfy_prompt_template_placeholder') }}</label>
-                <textarea v-model="s.comfyPromptTemplate" rows="3" class="ui-input mt-1 !py-2 resize-y" @change="persist" />
+                <textarea v-model="s.comfyPromptTemplate" rows="3" class="ui-input ui-input-compact mt-1 resize-y" @change="persist" />
               </div>
               <input ref="comfyWorkflowFile" type="file" accept=".json,application/json" class="hidden" @change="onWorkflowFile">
               <div class="flex flex-wrap gap-2 items-center">
-                <button class="ui-button !text-xs" @click="triggerImport">{{ t('settings_comfy_import_workflow') }}</button>
-                <button class="ui-button !text-xs" @click="onTestComfy">{{ t('settings_comfy_test') }}</button>
+                <button class="ui-button ui-button-sm" @click="triggerImport">{{ t('settings_comfy_import_workflow') }}</button>
+                <button class="ui-button ui-button-sm" @click="onTestComfy">{{ t('settings_comfy_test') }}</button>
               </div>
-              <div class="text-[11px]" :style="{ color: comfy.hasWorkflow.value ? '#34d399' : 'var(--color-text-muted)' }">
+              <div class="text-[11px]" :style="{ color: comfy.hasWorkflow.value ? 'var(--color-success)' : 'var(--color-text-muted)' }">
                 {{ comfy.workflowStatus.value }}
               </div>
             </div>

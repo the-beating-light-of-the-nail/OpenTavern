@@ -220,7 +220,7 @@ function removeSecKey(idx: number) {
     <div class="px-5 py-3 border-b flex items-center gap-3 -mx-7 -mt-7 mb-4" style="border-color:var(--color-border);background:var(--color-surface-soft)">
       <div class="flex items-center gap-2 flex-1 min-w-0">
         <span class="text-xs font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">WI</span>
-        <span class="font-bold text-lg" style="color:var(--color-text)">{{ t('world_book_title') }}</span>
+        <span class="ui-modal-title" style="color:var(--color-text)">{{ t('world_book_title') }}</span>
         <input
           id="wiBookName"
           v-model="currentBook.name"
@@ -233,7 +233,7 @@ function removeSecKey(idx: number) {
         <button class="ui-button" @click="onNewBook">{{ t('world_book_new') }}</button>
         <button class="ui-button" @click="onImport">{{ t('world_book_import') }}</button>
         <button class="ui-button" @click="onExport">{{ t('world_book_export') }}</button>
-        <button class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 transition-all" style="color:var(--color-danger)" @click="onDeleteAllConfirm">{{ t('world_book_delete_all') }}</button>
+        <button class="ui-button-danger-ghost ui-button-sm" @click="onDeleteAllConfirm">{{ t('world_book_delete_all') }}</button>
         <button class="ui-button-primary" @click="onAddEntry">{{ t('world_book_add_entry') }}</button>
       </div>
       <input ref="fileInput" type="file" accept=".json" class="hidden" @change="onImportFile">
@@ -277,7 +277,7 @@ function removeSecKey(idx: number) {
             </label>
             <div class="flex gap-2">
               <button class="ui-button" @click="onDuplicateEntry">{{ t('world_book_duplicate') }}</button>
-              <button class="px-2.5 py-1 text-xs rounded-lg bg-red-500/10 hover:bg-red-500/20" style="color:var(--color-danger)" @click="onDeleteEntry">{{ t('world_book_delete') }}</button>
+              <button class="ui-button-danger-ghost ui-button-xs" @click="onDeleteEntry">{{ t('world_book_delete') }}</button>
             </div>
           </div>
 
@@ -294,10 +294,10 @@ function removeSecKey(idx: number) {
 
           <div class="mt-3">
             <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('wi_keys') }}</label>
-            <div class="mt-1 min-h-[34px] flex flex-wrap gap-1 p-2 ui-panel rounded-xl !shadow-none">
+            <div class="mt-1 min-h-[34px] flex flex-wrap gap-1 p-2 ui-panel ui-panel-flat rounded-xl">
               <span v-for="(k, i) in (selectedEntry as any).key || []" :key="i" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px]" style="background:color-mix(in srgb,var(--color-primary) 15%,transparent);color:var(--color-primary)">
                 {{ k }}
-                <button class="hover:text-red-400 text-xs leading-none" @click="removeKey(i)">&times;</button>
+                <button class="ui-action-danger text-xs leading-none" @click="removeKey(i)">&times;</button>
               </span>
             </div>
             <div class="flex gap-2 mt-1.5">
@@ -310,10 +310,10 @@ function removeSecKey(idx: number) {
           <div class="grid grid-cols-1 md:grid-cols-5 gap-3 items-end mt-3">
             <div class="md:col-span-3">
               <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('wi_secondary') }}</label>
-              <div class="mt-1 min-h-[34px] flex flex-wrap gap-1 p-2 ui-panel rounded-xl !shadow-none">
+              <div class="mt-1 min-h-[34px] flex flex-wrap gap-1 p-2 ui-panel ui-panel-flat rounded-xl">
                 <span v-for="(k, i) in (selectedEntry as any).keysecondary || []" :key="i" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px]" style="background:color-mix(in srgb,var(--color-primary) 15%,transparent);color:var(--color-primary)">
                   {{ k }}
-                  <button class="hover:text-red-400 text-xs leading-none" @click="removeSecKey(i)">&times;</button>
+                  <button class="ui-action-danger text-xs leading-none" @click="removeSecKey(i)">&times;</button>
                 </span>
               </div>
             </div>

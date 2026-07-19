@@ -1,0 +1,129 @@
+/* ============================================================
+   RoleChat AI — 统一全站设计 token
+   营销页与 /app 共用同一套变量；body 默认 = new-light 品牌体验。
+   主题变体（classic / new-dark）仅覆盖同一组 token，不影响默认品牌一致性。
+   ============================================================ */
+
+:root {
+    /* —— 核心品牌 token（new-light 默认，乙女向：樱粉 × 金箔 × 珠光）—— */
+    --color-bg: #fbf4f2;
+    --color-bg-rgb: 251 244 242;
+    --color-surface: #ffffff;
+    --color-surface-rgb: 255 255 255;
+    --color-surface-soft: #fdf0f3;
+    --color-surface-soft-rgb: 253 240 243;
+    --color-primary: #a94f6d;
+    --color-primary-rgb: 169 79 109;
+    --color-primary-hover: #913d59;
+    --color-primary-hover-rgb: 145 61 89;
+    --color-on-primary: #ffffff;
+    --color-accent: #d4ab72;
+    --color-accent-rgb: 212 171 114;
+    --color-text: #3d2b3d;
+    --color-text-rgb: 61 43 61;
+    --color-text-soft: #6a5a6a;
+    --color-text-soft-rgb: 106 90 106;
+    --color-text-muted: #7a6674;
+    --color-text-muted-rgb: 122 102 116;
+    --color-text-faint: #756b74;
+    --color-text-faint-rgb: 117 107 116;
+    --color-border: #f0e3e1;
+    --color-border-rgb: 240 227 225;
+    --color-border-strong: #dfccd0;
+    --color-danger: #a6544f;
+    --color-on-danger: #ffffff;
+    --color-success: #287a57;
+    --color-on-success: #ffffff;
+    --color-info: #3978bd;
+    --color-lavender: #d9c7e8;
+    --color-lavender-rgb: 217 199 232;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --shadow-card: 0 18px 50px rgba(92, 54, 74, 0.10);
+    --shadow-focus: 0 0 0 3px color-mix(in srgb, var(--color-primary) 22%, transparent);
+
+    /* —— 运行时 / 布局 —— */
+    --blur-intensity: 0px;
+    --app-height: 100vh;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+
+}
+
+/* —— 主题：新版低亮度工作区（仅覆盖 token）—— */
+body.theme-new-dark {
+    --color-bg: #1c191b;
+    --color-bg-rgb: 28 25 27;
+    --color-surface: #292327;
+    --color-surface-rgb: 41 35 39;
+    --color-surface-soft: #342a30;
+    --color-surface-soft-rgb: 52 42 48;
+    --color-primary: #e18aa5;
+    --color-primary-rgb: 225 138 165;
+    --color-primary-hover: #ef9eb7;
+    --color-primary-hover-rgb: 239 158 183;
+    --color-on-primary: #28151e;
+    --color-accent: #d2aa72;
+    --color-accent-rgb: 210 170 114;
+    --color-text: #f5edf0;
+    --color-text-rgb: 245 237 240;
+    --color-text-soft: #e0d3d8;
+    --color-text-soft-rgb: 224 211 216;
+    --color-text-muted: #c9b9c0;
+    --color-text-muted-rgb: 201 185 192;
+    --color-text-faint: #a6949c;
+    --color-text-faint-rgb: 166 148 156;
+    --color-border: #55434b;
+    --color-border-rgb: 85 67 75;
+    --color-border-strong: #665e52;
+    --color-danger: #e09a94;
+    --color-on-danger: #271817;
+    --color-success: #74c69d;
+    --color-on-success: #13271d;
+    --color-info: #7eb6ed;
+    --color-lavender: #b9a5c9;
+    --color-lavender-rgb: 185 165 201;
+    --shadow-card: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+
+/* —— 主题：经典暗色玻璃（玫瑰金主调 + 真玻璃模糊）—— */
+body.theme-classic {
+    --color-bg: #06060d;
+    --color-bg-rgb: 6 6 13;
+    --color-surface: rgba(14, 14, 18, 0.42);
+    --color-surface-rgb: 14 14 18;
+    --color-surface-soft: rgba(24, 24, 30, 0.52);
+    --color-surface-soft-rgb: 24 24 30;
+    --color-primary: #e18aa5;
+    --color-primary-rgb: 225 138 165;
+    --color-primary-hover: #ef9eb7;
+    --color-primary-hover-rgb: 239 158 183;
+    --color-on-primary: #28151e;
+    --color-accent: #d5aa73;
+    --color-accent-rgb: 213 170 115;
+    --color-text: #e4e4e7;
+    --color-text-rgb: 228 228 231;
+    --color-text-soft: #c4c4ca;
+    --color-text-soft-rgb: 196 196 202;
+    --color-text-muted: #a1a1aa;
+    --color-text-muted-rgb: 161 161 170;
+    --color-text-faint: #71717a;
+    --color-text-faint-rgb: 113 113 122;
+    --color-border: rgba(255, 255, 255, 0.10);
+    --color-border-rgb: 255 255 255;
+    --color-border-strong: rgba(255, 255, 255, 0.16);
+    --color-danger: #f87171;
+    --color-on-danger: #2b0b0b;
+    --color-success: #34d399;
+    --color-on-success: #06271c;
+    --color-info: #60a5fa;
+    --color-lavender: #a78bfa;
+    --color-lavender-rgb: 167 139 250;
+    --shadow-card: 0 18px 50px rgba(0, 0, 0, 0.45);
+    --blur-intensity: 20px;
+}
+
+/* —— new-light = :root 默认，无需覆盖 —— */
+body.theme-new-light { /* no-op: 默认 token 即 new-light 品牌体验 */ }

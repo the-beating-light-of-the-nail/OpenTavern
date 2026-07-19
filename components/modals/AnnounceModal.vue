@@ -7,13 +7,13 @@ function close() { ui.close('announce'); }
 <template>
   <AppModal modal-id="announceModal" name="announce" max-width="max-w-lg" closable>
     <div class="text-xs mb-1 uppercase tracking-wider" style="color:var(--color-text-muted)">RoleChat AI</div>
-    <h2 class="text-xl font-bold" style="color:var(--color-text)">{{ t('announce_title') }}</h2>
+    <h2 class="ui-modal-title" style="color:var(--color-text)">{{ t('announce_title') }}</h2>
     <p class="text-xs mt-0.5" style="color:var(--color-text-muted)">{{ t('announce_subtitle') }}</p>
 
 
 
     <div class="space-y-3 mb-5 text-sm">
-      <div v-for="n in [1,2,3]" :key="n" class="flex gap-3 p-3 ui-panel rounded-xl !shadow-none">
+      <div v-for="n in [1,2,3]" :key="n" class="flex gap-3 p-3 ui-panel ui-panel-flat rounded-xl">
         <div class="w-6 h-6 flex-shrink-0 rounded-xl flex items-center justify-center text-xs font-bold" style="background:color-mix(in srgb,var(--color-primary) 12%,transparent);color:var(--color-primary)">{{ n }}</div>
         <div class="flex-1">
           <div class="font-medium" style="color:var(--color-text)">{{ t(('announce_step'+n+'_title') as any) }}</div>
@@ -27,7 +27,7 @@ function close() { ui.close('announce'); }
       <input type="checkbox" class="w-4 h-4 flex-shrink-0" style="accent-color:var(--color-primary)">
       <span>{{ t('announce_dont_show') }}</span>
     </label>
-    <button id="announceGotItBtn" class="w-full btn-primary" @click="close">{{ t('announce_got_it') }}</button>
+    <button id="announceGotItBtn" class="w-full ui-button-primary" @click="close">{{ t('announce_got_it') }}</button>
 
     <div class="mt-5 pt-4 border-t text-center" style="border-color:var(--color-border)">
       <div class="text-[10px] leading-tight" style="color:var(--color-text-muted)">

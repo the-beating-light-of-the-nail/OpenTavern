@@ -51,10 +51,10 @@ const isApp = computed(() => props.mode === 'app');
         <span v-if="displayTags.extra" class="rc-tag opacity-70">{{ displayTags.extra }}</span>
       </div>
       <div v-if="showProfileButton || showStartButton" class="mt-4 flex gap-2">
-        <NuxtLink v-if="showProfileButton" :to="`/characters/${c.slug}`" class="flex-1 rounded-lg border border-border-warm px-3 py-2 text-center text-xs font-semibold text-plum-muted transition-all hover:border-rose-accent hover:bg-rose-tint hover:text-plum">
+        <NuxtLink v-if="showProfileButton" :to="`/characters/${c.slug}`" class="rc-btn-ghost rc-btn-compact flex-1">
           {{ t('view_profile') }}
         </NuxtLink>
-        <NuxtLink v-if="showStartButton" :to="`/app?character=${c.slug}`" class="flex-1 rounded-lg bg-rose-accent px-3 py-2 text-center text-xs font-bold text-white transition-all hover:bg-rose-deep">
+        <NuxtLink v-if="showStartButton" :to="`/app?character=${c.slug}`" class="rc-btn-primary rc-btn-compact flex-1">
           {{ t('start_chat') }}
         </NuxtLink>
       </div>
@@ -79,10 +79,10 @@ const isApp = computed(() => props.mode === 'app');
         <span v-if="displayTags.extra" class="char-tag opacity-70">{{ displayTags.extra }}</span>
       </div>
       <div v-if="showProfileButton || showStartButton" class="mt-4 flex gap-2">
-        <NuxtLink v-if="showProfileButton" :to="`/characters/${c.slug}`" class="ui-button-ghost flex-1 !text-xs !px-3 !py-2">
+        <NuxtLink v-if="showProfileButton" :to="`/characters/${c.slug}`" class="ui-button-ghost ui-button-sm flex-1">
           {{ t('view_profile') }}
         </NuxtLink>
-        <NuxtLink v-if="showStartButton" :to="`/app?character=${c.slug}`" class="ui-button-primary flex-1 !text-xs !px-3 !py-2">
+        <NuxtLink v-if="showStartButton" :to="`/app?character=${c.slug}`" class="ui-button-primary ui-button-sm flex-1">
           {{ t('start_chat') }}
         </NuxtLink>
       </div>

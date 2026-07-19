@@ -47,7 +47,7 @@ const related = computed(() =>
 
       <!-- Meta + safety + tags -->
       <div class="mt-5 flex flex-wrap items-center gap-1.5">
-        <span class="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[0.68rem] font-bold text-emerald-300 ring-1 ring-emerald-400/30">{{ c.safetyLevel }}</span>
+        <span class="ui-chip-success rounded-full px-2.5 py-0.5 text-xs font-bold">{{ c.safetyLevel }}</span>
         <span class="rc-tag">{{ c.category }}</span>
         <span v-for="t in c.tags" :key="t" class="rc-tag">{{ t }}</span>
       </div>

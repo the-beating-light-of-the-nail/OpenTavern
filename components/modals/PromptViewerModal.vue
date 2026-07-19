@@ -40,7 +40,7 @@ watch(() => ui.isOpen('promptViewer'), (open) => {
 <template>
   <AppModal modal-id="promptViewerModal" name="promptViewer" max-width="max-w-2xl" closable>
     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-bold" style="color:var(--color-text)">{{ t('prompt_viewer_title') }}</h2>
+      <h2 class="ui-modal-title" style="color:var(--color-text)">{{ t('prompt_viewer_title') }}</h2>
       <div class="flex items-center gap-2">
         <button
           id="copyPromptBtn"

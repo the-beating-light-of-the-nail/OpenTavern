@@ -47,12 +47,12 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
     <div class="absolute inset-0 bg-black/40" @click="onBackdrop" />
     <div
       class="ui-panel modal-panel relative w-[92%] animate-fade-in p-7 max-h-[90vh] overflow-y-auto"
-      :class="[maxWidth, { '!rounded-none !w-full !max-w-none h-[100dvh] p-4': flush }]"
+      :class="[maxWidth, { 'modal-panel-flush': flush }]"
     >
       <slot :close="close" />
       <button
         v-if="closable"
-        class="absolute top-4 right-4 w-8 h-8 rounded-full ui-button !px-0 flex items-center justify-center transition-colors"
+        class="absolute top-4 right-4 rounded-full ui-button ui-button-icon-sm"
         aria-label="Close"
         @click="close"
       >&times;</button>

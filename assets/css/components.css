@@ -1,0 +1,164 @@
+/* ============================================================
+   统一语义组件类 .ui-*（token 驱动，不依赖 zinc/amber 工具类）
+   /app 与营销页共用；主题切换通过 token 自动跟随。
+   ============================================================ */
+.ui-panel {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+}
+.ui-panel-flat { box-shadow: none; }
+.ui-button {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    padding: 0.5rem 0.9rem; border-radius: var(--radius-md);
+    font-size: 0.8rem; font-weight: 600;
+    background: var(--color-surface); border: 1px solid var(--color-border);
+    color: var(--color-text-muted); cursor: pointer;
+    transition: all 0.18s ease;
+}
+.ui-button:hover { background: var(--color-surface-soft); border-color: var(--color-border-strong); color: var(--color-text); }
+.ui-button:disabled,
+.ui-button-ghost:disabled,
+.ui-button-secondary:disabled,
+.ui-button-danger:disabled { opacity: 0.45; cursor: not-allowed; transform: none; filter: none; }
+.ui-button-primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    padding: 0.5rem 1rem; border-radius: var(--radius-md);
+    font-size: 0.85rem; font-weight: 700;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+    border: 1px solid color-mix(in srgb, var(--color-primary) 85%, #6e2f47);
+    color: var(--color-on-primary); cursor: pointer;
+    box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--color-primary) 45%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    transition: all 0.18s ease;
+}
+.ui-button-primary:hover { filter: brightness(1.06); transform: translateY(-1px); }
+.ui-button-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; filter: none; }
+.ui-button-secondary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    padding: 0.5rem 1rem; border-radius: var(--radius-md);
+    font-size: 0.85rem; font-weight: 700;
+    background: var(--color-surface-soft); border: 1px solid var(--color-border);
+    color: var(--color-text); cursor: pointer;
+    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+.ui-button-secondary:hover { border-color: var(--color-border-strong); background: var(--color-surface); }
+.ui-button-ghost {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    padding: 0.5rem 1rem; border-radius: var(--radius-md);
+    font-size: 0.85rem; font-weight: 700;
+    background: transparent; border: 1px solid var(--color-border);
+    color: var(--color-text-muted); cursor: pointer;
+    transition: all 0.18s ease;
+}
+.ui-button-ghost:hover { border-color: var(--color-primary); background: color-mix(in srgb, var(--color-primary) 6%, transparent); color: var(--color-text); }
+.ui-button-danger {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    padding: 0.5rem 1rem; border-radius: var(--radius-md);
+    font-size: 0.85rem; font-weight: 700;
+    background: var(--color-danger); border: 1px solid color-mix(in srgb, var(--color-danger) 82%, #401010);
+    color: var(--color-on-danger); cursor: pointer;
+    transition: filter 0.18s ease, transform 0.18s ease;
+}
+.ui-button-danger:hover { filter: brightness(1.06); transform: translateY(-1px); }
+.ui-button-danger-ghost {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    padding: 0.5rem 1rem; border-radius: var(--radius-md);
+    font-size: 0.85rem; font-weight: 700;
+    background: color-mix(in srgb, var(--color-danger) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-danger) 24%, transparent);
+    color: var(--color-danger); cursor: pointer;
+    transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+.ui-button-danger-ghost:hover { background: color-mix(in srgb, var(--color-danger) 14%, transparent); border-color: color-mix(in srgb, var(--color-danger) 38%, transparent); }
+.ui-button-xs { padding: 0.3rem 0.55rem; font-size: 0.6875rem; }
+.ui-button-sm { padding: 0.4rem 0.75rem; font-size: 0.75rem; }
+.ui-button-icon { width: 2.75rem; height: 2.75rem; padding: 0; flex-shrink: 0; }
+.ui-button-icon-sm { width: 2rem; height: 2rem; padding: 0; flex-shrink: 0; }
+.ui-button-block { width: 100%; }
+.ui-input {
+    width: 100%; padding: 0.6rem 0.8rem; border-radius: var(--radius-md);
+    font-size: 0.875rem; line-height: 1.5;
+    background: var(--color-surface); border: 1px solid var(--color-border);
+    color: var(--color-text);
+    transition: all 0.18s ease;
+}
+.ui-input::placeholder { color: var(--color-text-faint); }
+.ui-input:focus { outline: 0; border-color: var(--color-primary); box-shadow: var(--shadow-focus); }
+.ui-input-compact { padding-top: 0.45rem; padding-bottom: 0.45rem; }
+.ui-input-w-16 { width: 4rem; }
+.ui-input-w-24 { width: 6rem; }
+.ui-input-chat { min-height: 2.75rem; }
+.ui-chip {
+    display: inline-flex; align-items: center;
+    padding: 0.15rem 0.6rem; border-radius: 999px;
+    font-size: 0.7rem; font-weight: 600;
+    background: linear-gradient(120deg, color-mix(in srgb, var(--color-lavender) 38%, transparent) 0%, color-mix(in srgb, var(--color-primary) 14%, transparent) 100%);
+    color: var(--color-text-muted);
+}
+.ui-chip.active,
+.filter-btn.active {
+    background: color-mix(in srgb, var(--color-primary) 18%, var(--color-surface));
+    color: var(--color-text);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 55%, transparent);
+}
+.ui-chip-sm { padding: 0.25rem 0.5rem; font-size: 0.6875rem; }
+.ui-chip-success {
+    background: color-mix(in srgb, var(--color-success) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-success) 30%, transparent);
+    color: var(--color-success);
+}
+.ui-alert-danger {
+    border: 1px solid color-mix(in srgb, var(--color-danger) 24%, transparent);
+    background: color-mix(in srgb, var(--color-danger) 9%, transparent);
+    color: var(--color-danger);
+}
+.ui-status-success {
+    background: color-mix(in srgb, var(--color-success) 15%, transparent);
+    color: var(--color-success);
+}
+.ui-action-danger { color: var(--color-text-faint); }
+.ui-action-danger:hover { color: var(--color-danger); }
+.tab-btn { color: var(--color-text-muted); border-color: transparent; }
+.tab-btn:hover { color: var(--color-text); }
+.tab-btn.active {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+:where(a, button, summary, [role="button"], input, select, textarea):focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+.ui-sidebar {
+    background: var(--color-surface-soft);
+    border-right: 1px solid var(--color-border);
+}
+.ui-topbar {
+    background: var(--color-surface-soft);
+    border-bottom: 1px solid var(--color-border);
+}
+
+/* —— 头像渐变填充（logo / 角色首字母）—— */
+.ot-avatar-fill,
+.rc-avatar-fill {
+    background-image: linear-gradient(145deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+}
+/* 头像描金环（乙女向装饰，img/填充通用）—— 不占布局，用 box-shadow 成环 */
+.rc-avatar-img,
+.rc-avatar-fill,
+.ot-avatar-fill {
+    box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--color-accent) 65%, #fff), 0 3px 10px -3px color-mix(in srgb, var(--color-primary) 38%, transparent);
+}
+
+.ui-modal-title {
+    font-family: "Cormorant Garamond", "Noto Serif SC", "Songti SC", serif;
+    font-size: 1.35rem; line-height: 1.2; letter-spacing: 0.015em;
+    color: var(--color-text);
+}
+.ui-help-text { font-size: 0.75rem; line-height: 1.5; color: var(--color-text-muted); }
+.settings-advanced > hr { margin-block: 0.25rem; border-color: var(--color-border); }
+.settings-advanced > .ui-panel { background: color-mix(in srgb, var(--color-surface-soft) 62%, var(--color-surface)); }
+.label-base { font-size: 0.75rem; line-height: 1.2; font-weight: 600; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; }

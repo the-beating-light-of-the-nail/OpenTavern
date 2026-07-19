@@ -91,24 +91,24 @@ function onSelectMyCard(cardVm: CardVM) {
         </div>
       <!-- Tabs -->
       <div class="mt-3 flex gap-1 border-b border-[var(--color-border)]">
-        <button class="tab-btn px-4 py-2 text-sm font-medium border-b-2 transition-all" :class="activeTab === 'public' ? 'active' : ''" style="border-color:transparent" @click="activeTab = 'public'">{{ t('tab_public') }}</button>
-        <button class="tab-btn px-4 py-2 text-sm font-medium border-b-2 transition-all" :class="activeTab === 'my' ? 'active' : ''" style="border-color:transparent" @click="activeTab = 'my'">{{ t('tab_my_cards') }}</button>
+        <button class="tab-btn px-4 py-2 text-sm font-medium border-b-2 transition-all" :class="activeTab === 'public' ? 'active' : ''" @click="activeTab = 'public'">{{ t('tab_public') }}</button>
+        <button class="tab-btn px-4 py-2 text-sm font-medium border-b-2 transition-all" :class="activeTab === 'my' ? 'active' : ''" @click="activeTab = 'my'">{{ t('tab_my_cards') }}</button>
       </div>
       <!-- Search -->
       <div class="mt-2 flex items-center gap-2">
-        <input v-model="search" type="text" class="ui-input !py-1.5" :placeholder="t('library_search_placeholder')">
+        <input v-model="search" type="text" class="ui-input ui-input-compact" :placeholder="t('library_search_placeholder')">
       </div>
       <!-- Otome chips（仅 public tab） -->
       <div v-if="activeTab === 'public'" class="mt-2 flex flex-wrap gap-1">
         <button
-          class="filter-btn ui-chip !text-[11px] !px-2 !py-1 transition-all"
+          class="filter-btn ui-chip ui-chip-sm transition-all"
           :class="activeChip === null ? 'active' : ''"
           @click="activeChip = null"
         >{{ t('filter_all') }}</button>
         <button
           v-for="chip in otomeChips"
           :key="chip"
-          class="filter-btn ui-chip !text-[11px] !px-2 !py-1 transition-all"
+          class="filter-btn ui-chip ui-chip-sm transition-all"
           :class="activeChip === chip ? 'active' : ''"
           @click="activeChip = activeChip === chip ? null : chip"
         >{{ chip }}</button>

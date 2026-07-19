@@ -106,7 +106,7 @@ function onCancel() {
 
 <template>
   <AppModal modal-id="charEditorModal" name="charEditor" max-width="max-w-2xl">
-    <h2 class="text-lg font-bold mb-5" style="color:var(--color-text)">{{ isEditMode ? t('char_edit_title') : t('char_create_new') }}</h2>
+    <h2 class="ui-modal-title mb-5" style="color:var(--color-text)">{{ isEditMode ? t('char_edit_title') : t('char_create_new') }}</h2>
 
     <div class="space-y-4 pr-1">
       <!-- Name + Role Type -->
@@ -173,8 +173,8 @@ function onCancel() {
     </div>
 
     <div class="flex gap-3 mt-5">
-      <button class="flex-1 btn-secondary" @click="onCancel">{{ t('char_editor_cancel') }}</button>
-      <button class="flex-1 btn-primary" @click="onSave">{{ t('char_editor_save') }}</button>
+      <button class="flex-1 ui-button-secondary" @click="onCancel">{{ t('char_editor_cancel') }}</button>
+      <button class="flex-1 ui-button-primary" @click="onSave">{{ t('char_editor_save') }}</button>
     </div>
   </AppModal>
 </template>

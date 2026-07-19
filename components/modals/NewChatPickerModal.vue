@@ -58,7 +58,7 @@ function startNoCharacter() {
 <template>
   <AppModal modal-id="newChatPickerModal" name="newChatPicker" max-width="max-w-lg" closable>
     <div class="flex items-center justify-between mb-4 gap-2">
-      <h2 class="text-lg font-bold">{{ t('new_chat_picker_title') }}</h2>
+      <h2 class="ui-modal-title">{{ t('new_chat_picker_title') }}</h2>
       <button
         :class="multiMode ? 'ui-button-primary text-xs font-semibold' : 'ui-button text-xs font-semibold'"
         @click="toggleMulti"
@@ -71,13 +71,13 @@ function startNoCharacter() {
       <div
         v-for="c in cards"
         :key="c.id"
-        class="ui-panel rounded-xl !shadow-none p-3 cursor-pointer transition-all relative"
+        class="ui-panel ui-panel-flat rounded-xl p-3 cursor-pointer transition-all relative"
         style="border-color:var(--color-primary)"
         :style="isSelected(c) ? 'box-shadow:0 0 0 2px var(--color-primary)' : ''"
         @click="onCardClick(c)"
       >
-        <div v-if="isSelected(c)" class="absolute top-1.5 right-1.5 w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center" style="background:var(--color-primary);color:#1a1a1a">&#10003;</div>
-        <div class="w-full aspect-square rounded-lg ot-avatar-fill flex items-center justify-center text-white font-bold mb-1.5">{{ (c.data?.name || '?').charAt(0) }}</div>
+        <div v-if="isSelected(c)" class="absolute top-1.5 right-1.5 w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center" style="background:var(--color-primary);color:var(--color-on-primary)">&#10003;</div>
+        <div class="w-full aspect-square rounded-lg ot-avatar-fill flex items-center justify-center text-[var(--color-on-primary)] font-bold mb-1.5">{{ (c.data?.name || '?').charAt(0) }}</div>
         <p class="text-xs font-medium truncate" style="color:var(--color-text)">{{ c.data?.name || 'Untitled' }}</p>
       </div>
     </div>
@@ -98,8 +98,8 @@ function startNoCharacter() {
     </div>
 
     <div class="mt-4 pt-4 border-t flex flex-col gap-2" style="border-color:var(--color-border)">
-      <button id="newChatNoCharacterBtn" class="w-full btn-secondary" @click="startNoCharacter">{{ t('new_chat_no_character') }}</button>
-      <button id="newChatImportCharacterBtn" class="w-full btn-ghost border" style="border-color:var(--color-border)" @click="ui.close('newChatPicker'); ui.open('charImport')">{{ t('new_chat_import_character') }}</button>
+      <button id="newChatNoCharacterBtn" class="w-full ui-button-secondary" @click="startNoCharacter">{{ t('new_chat_no_character') }}</button>
+      <button id="newChatImportCharacterBtn" class="w-full ui-button-ghost border" style="border-color:var(--color-border)" @click="ui.close('newChatPicker'); ui.open('charImport')">{{ t('new_chat_import_character') }}</button>
     </div>
   </AppModal>
 </template>
