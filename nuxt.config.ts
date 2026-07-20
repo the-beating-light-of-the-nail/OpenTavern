@@ -16,7 +16,7 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
-  modules: ['@nuxtjs/i18n', '@pinia/nuxt'],
+  modules: ['@nuxtjs/i18n', '@pinia/nuxt', '@nuxtjs/sitemap'],
 
   // 组件按文件名注册（禁用路径前缀）：components/modals/SettingsModal.vue → <SettingsModal />
   // 否则 Nuxt 默认加目录前缀注册为 ModalsSettingsModal，与 <SettingsModal /> 用法不匹配，
@@ -41,9 +41,13 @@ export default defineNuxtConfig({
 
   // Vercel 部署目标（预渲染路由生成静态 HTML，/app SPA 由路由 fallback 处理）
   // crawlLinks: 从已预渲染页面爬取 <NuxtLink> 自动发现动态 [slug] 路由并一并预渲染
+  // routes 显式列入 /sitemap.xml：@nuxtjs/sitemap 注册的是运行时路由，crawlLinks 不会自动预渲染它
   nitro: {
     preset: 'vercel',
-    prerender: { crawlLinks: true },
+    prerender: {
+      crawlLinks: true,
+      routes: ['/sitemap.xml'],
+    },
   },
 
   app: {
@@ -84,6 +88,18 @@ export default defineNuxtConfig({
       { code: 'zh-CN', language: 'zh-CN', name: '简', file: 'zh-CN.json' },
       { code: 'zh-TW', language: 'zh-TW', name: '繁', file: 'zh-TW.json' },
     ],
+  },
+
+  // 站点 URL — sitemap.xml 生成 <loc> 绝对路径所需
+  site: {
+    url: 'https://open-tavern.vercel.app',
+  },
+
+  sitemap: {
+    // /app 是纯客户端 SPA，不索引；其余预渲染路由由模块从 nitro prerender 自动发现
+    exclude: ['/app/**', '/app'],
+    // 与 i18n no_prefix 策略对齐：sitemap 内不区分 locale
+    autoLastmod: true,
   },
 
   compatibilityDate: '2024-11-01',
