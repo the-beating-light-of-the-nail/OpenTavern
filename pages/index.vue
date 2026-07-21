@@ -3,12 +3,12 @@ import { characters } from '~/data/characters';
 const { t } = useI18n();
 
 useSeoMeta({
-  title: 'RoleChat AI - Private AI Character Roleplay',
+  title: 'Open Tavern · RoleChat AI — Private AI Character Roleplay',
   description:
-    'RoleChat AI is an easy private AI roleplay platform. Chat with original romance and fantasy characters in seconds. No installation. No complicated setup. Bring your own AI key.',
-  ogTitle: 'RoleChat AI - Private AI Character Roleplay',
+    'Open Tavern (also known as RoleChat AI) is an easy private AI roleplay platform. Chat with original romance and fantasy characters in seconds. No installation. No complicated setup. Bring your own AI key.',
+  ogTitle: 'Open Tavern · RoleChat AI — Private AI Character Roleplay',
   ogDescription:
-    'RoleChat AI is an easy private AI roleplay platform. Chat with original romance and fantasy characters in seconds. No installation. No complicated setup. Bring your own AI key.',
+    'Open Tavern (also known as RoleChat AI) is an easy private AI roleplay platform. Chat with original romance and fantasy characters in seconds. No installation. No complicated setup. Bring your own AI key.',
 });
 
 // 首页展示前 6 个原创角色（链接到真实角色页）

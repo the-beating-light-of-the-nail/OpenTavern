@@ -53,14 +53,14 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: { lang: 'en', class: 'theme-new-light' },
-      title: 'RoleChat AI - Private AI Character Roleplay',
+      title: 'Open Tavern · RoleChat AI — Private AI Character Roleplay',
       meta: [
         { charset: 'UTF-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1.0, viewport-fit=cover' },
         {
           name: 'description',
           content:
-            'RoleChat AI is an easy private AI roleplay platform. Chat with original romance and fantasy characters in seconds. No installation. No complicated setup. Bring your own AI key.',
+            'Open Tavern (also known as RoleChat AI) is an easy private AI roleplay platform. Chat with original romance and fantasy characters in seconds. No installation. No complicated setup. Bring your own AI key.',
         },
       ],
       link: [
