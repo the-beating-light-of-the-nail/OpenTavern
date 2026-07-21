@@ -30,6 +30,12 @@ useSeoMeta({
           <p class="mt-2 leading-relaxed text-plum-muted">{{ g.description }}</p>
           <p class="mt-3 text-xs font-semibold text-rose-accent/70">{{ t('guides_read') }}</p>
         </NuxtLink>
+
+        <NuxtLink to="/where-to-find-character-cards" class="rc-card group block p-6">
+          <h2 class="text-lg font-bold group-hover:text-rose-accent">Where to Find Character Cards</h2>
+          <p class="mt-2 leading-relaxed text-plum-muted">A curated list of websites where you can download free AI character cards (SillyTavern, RisuAI, Janitor AI and more) and use them in Open Tavern.</p>
+          <p class="mt-3 text-xs font-semibold text-rose-accent/70">{{ t('guides_read') }}</p>
+        </NuxtLink>
       </div>
 
       <div class="mt-12 text-center">

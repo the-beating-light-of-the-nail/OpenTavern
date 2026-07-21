@@ -28,6 +28,13 @@ const privatePoints = computed(() => [
   { title: t('home_private_point4_title'), desc: t('home_private_point4_desc') },
 ]);
 
+const compatPoints = computed(() => [
+  { title: t('home_compat_point1_title'), desc: t('home_compat_point1_desc') },
+  { title: t('home_compat_point2_title'), desc: t('home_compat_point2_desc') },
+  { title: t('home_compat_point3_title'), desc: t('home_compat_point3_desc') },
+  { title: t('home_compat_point4_title'), desc: t('home_compat_point4_desc') },
+]);
+
 const guides = computed(() => [
   { title: t('home_guide1_title'), desc: t('home_guide1_desc') },
   { title: t('home_guide2_title'), desc: t('home_guide2_desc') },
@@ -93,6 +100,32 @@ const faqs = computed(() => [
       </div>
       <div class="mt-10 text-center">
         <NuxtLink to="/characters" class="rc-btn-ghost">{{ t('home_see_all') }}</NuxtLink>
+      </div>
+    </section>
+
+    <!-- SillyTavern Compatible -->
+    <section class="border-y border-border-warm bg-rose-tint">
+      <div class="mx-auto max-w-5xl px-5 py-20">
+        <div class="mb-12 text-center">
+          <div class="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-champagne/40 bg-bg px-3 py-1 text-xs font-medium text-plum-light">
+            <span class="h-1.5 w-1.5 rounded-full bg-rose-deep" /> {{ t('home_compat_badge') }}
+          </div>
+          <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_compat_title') }}</h2>
+          <div class="orn-divider" aria-hidden="true">✦</div>
+          <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_compat_desc') }}</p>
+        </div>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div v-for="p in compatPoints" :key="p.title" class="rc-card p-6">
+            <h3 class="flex items-center gap-2 text-base font-bold">
+              <span class="h-2 w-2 flex-shrink-0 rounded-full" style="background:var(--color-rose-deep)" /> {{ p.title }}
+            </h3>
+            <p class="mt-2 text-sm leading-relaxed text-plum-muted">{{ p.desc }}</p>
+          </div>
+        </div>
+        <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
+          <NuxtLink to="/app" class="rc-btn-primary">{{ t('home_compat_cta_app') }}</NuxtLink>
+          <NuxtLink to="/where-to-find-character-cards" class="rc-btn-ghost">{{ t('home_compat_cta_cards') }}</NuxtLink>
+        </div>
       </div>
     </section>
 
