@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{ showExtraLinks?: boolean }>();
+withDefaults(defineProps<{ showExtraLinks?: boolean }>(), { showExtraLinks: true });
 const { t } = useI18n();
 </script>
 
