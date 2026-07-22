@@ -1,0 +1,169 @@
+{
+  "summary": {
+    "health_score": 55,
+    "business_type": "SaaS / Web app (AI roleplay platform) with Publisher-style content marketing",
+    "top_findings": [
+      "No canonical tags on any page (duplicate-URL risk; ?utm_source variants return 200)",
+      "No Open Graph / Twitter Card images — social shares render as bare text",
+      "Zero JSON-LD structured data across all templates",
+      "No images in SSR HTML — no image SEO, missing engagement visuals",
+      "Missing security headers (CSP, X-Content-Type-Options, Referrer-Policy, Permissions-Policy)"
+    ],
+    "quick_wins": [
+      "Add canonical + OG/Twitter image globally via useSeoMeta",
+      "Add Organization + WebSite JSON-LD once",
+      "Generate default + per-character OG images (1200x630)",
+      "Add vercel.json security headers",
+      "Submit sitemap.xml in Google Search Console"
+    ]
+  },
+  "categories": [
+    {
+      "name": "Technical SEO",
+      "score": 58,
+      "what_works": [
+        "robots.txt allows all, disallows /app, declares sitemap",
+        "Valid sitemap with 33 URLs, all with lastmod",
+        "HTTPS with HSTS preload",
+        "Double-slash normalized via 308"
+      ],
+      "findings": [
+        {
+          "title": "No canonical link tags",
+          "severity": "Critical",
+          "description": "<link rel=canonical> absent on home, character, and guide templates. ?utm_source=test returns HTTP 200 identical to /, so each query variant is a separately-indexable duplicate.",
+          "recommendation": "Emit <link rel=canonical href=baseURL+route.path> stripped of query params on every page."
+        },
+        {
+          "title": "Missing security headers",
+          "severity": "High",
+          "description": "No content-security-policy, x-content-type-options, referrer-policy, or permissions-policy. Only HSTS present.",
+          "recommendation": "Add vercel.json headers block; baseline CSP + nosniff + referrer-policy + permissions-policy."
+        },
+        {
+          "title": "/app returns 200 to direct requests",
+          "severity": "Medium",
+          "description": "/app is disallowed in robots.txt but returns 200; relies entirely on robots honoring.",
+          "recommendation": "Add X-Robots-Tag: noindex for /app* as defense-in-depth."
+        }
+      ]
+    },
+    {
+      "name": "Content Quality",
+      "score": 68,
+      "what_works": [
+        "Homepage 889 words of genuine on-topic copy",
+        "Unique persona-rich titles and descriptions per character",
+        "Clear H1 -> H2 -> H3 hierarchy, single H1 per page"
+      ],
+      "findings": [
+        {
+          "title": "No author / E-E-A-T trust signals",
+          "severity": "High",
+          "description": "No About, author bios, or contact page visible in templates.",
+          "recommendation": "Add /about and /contact pages linked in footer."
+        },
+        {
+          "title": "Guide depth moderate for competitive terms",
+          "severity": "Medium",
+          "description": "how-to-start-ai-roleplay ~596 words; top-ranking competitors run 1200-2000.",
+          "recommendation": "Expand guides with screenshots, FAQ, internal links to characters."
+        }
+      ]
+    },
+    {
+      "name": "On-Page SEO",
+      "score": 65,
+      "what_works": [
+        "Titles 50-65 chars, keyword-forward, consistent brand suffix",
+        "Meta descriptions 140-170 chars, action-oriented",
+        "Exactly one H1 per page"
+      ],
+      "findings": [
+        {
+          "title": "No Open Graph / Twitter Card tags",
+          "severity": "High",
+          "description": "og:image, og:type, og:url, twitter:card absent across all templates.",
+          "recommendation": "Set og:type=website, og:url, og:image (1200x630), twitter:card globally; override per character."
+        },
+        {
+          "title": "No hreflang",
+          "severity": "Low",
+          "description": "Acceptable while English-only; add when shipping additional languages.",
+          "recommendation": "Add hreflang when localizing."
+        }
+      ]
+    },
+    {
+      "name": "Schema / Structured Data",
+      "score": 10,
+      "what_works": [],
+      "findings": [
+        {
+          "title": "Zero JSON-LD on every page type",
+          "severity": "Critical",
+          "description": "application/ld+json appears 0 times on home, character, and guide pages. No Organization, WebSite, WebPage, Article, or BreadcrumbList.",
+          "recommendation": "Site-wide Organization + WebSite; Article + BreadcrumbList on character/guide pages; HowTo on step guides. Use nuxt-schema-org."
+        }
+      ]
+    },
+    {
+      "name": "Performance (CWV)",
+      "score": 70,
+      "what_works": [
+        "Homepage HTML 69KB (reasonable SSR payload)",
+        "LCP element is text (no large images) — likely fast LCP"
+      ],
+      "findings": [
+        {
+          "title": "Field data not collected",
+          "severity": "Info",
+          "description": "Plugin Python runtime not provisioned; CrUX/PageSpeed unavailable. Scores are lab estimates.",
+          "recommendation": "Install python3.10-venv, run /seo setup, then /seo google setup (Tier 0) for real CWV."
+        }
+      ]
+    },
+    {
+      "name": "AI Search Readiness",
+      "score": 45,
+      "what_works": [
+        "Well-written on-topic content is a good base",
+        "Question-style FAQ section exists on homepage"
+      ],
+      "findings": [
+        {
+          "title": "Weak citability + no entity signals",
+          "severity": "High",
+          "description": "No schema (entities), no og:image, low attribution density. llms.txt is NOT a lever per Google's AI Optimization Guide — do not chase it.",
+          "recommendation": "Prioritize Schema + trust fixes; add 130-170 word answer-style intro blocks on character pages."
+        }
+      ]
+    },
+    {
+      "name": "Images",
+      "score": 20,
+      "what_works": [],
+      "findings": [
+        {
+          "title": "No images in server-rendered HTML",
+          "severity": "High",
+          "description": "0 img, 0 picture, 0 nuxt-img, 0 background-image on home, character, guide pages.",
+          "recommendation": "Render character avatars via <NuxtImg> in SSR with descriptive alt + width/height."
+        }
+      ]
+    }
+  ],
+  "action_plan": {
+    "phases": [
+      {"name": "Phase 1: Critical Fixes", "timeframe": "Week 1", "items": ["Canonical tags on every page", "OG + Twitter Card images", "Organization + WebSite JSON-LD"]},
+      {"name": "Phase 2: High-Impact Improvements", "timeframe": "Weeks 2-3", "items": ["SSR character avatars", "Security headers (vercel.json)", "Article + BreadcrumbList schema", "About + Contact pages", "noindex /app"]},
+      {"name": "Phase 3: Content & Authority", "timeframe": "Month 2", "items": ["Deepen guides to 1200-2000 words", "HowTo schema", "Per-character OG images"]},
+      {"name": "Phase 4: Monitoring & Iteration", "timeframe": "Ongoing", "items": ["Provision plugin toolchain (python3.10-venv)", "Drift baseline monitoring", "GSC + sitemap submission", "Optional /seo google setup"]}
+    ]
+  },
+  "artifacts": {
+    "findings_dir": "findings/",
+    "screenshots_dir": "screenshots/",
+    "note": "PDF report generation requires plugin Python runtime (blocked by missing python3.10-venv)."
+  }
+}
