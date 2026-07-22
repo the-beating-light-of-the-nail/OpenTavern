@@ -77,6 +77,8 @@ export interface GuideSeo {
   slug: string;
   title: string;
   description: string;
+  /** ISO 发布日期（YYYY-MM-DD），用于 Article schema */
+  datePublished: string;
   sections: GuideSection[];
   internalLinks: GuideInternalLink[];
 }

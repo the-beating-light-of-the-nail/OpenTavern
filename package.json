@@ -10,7 +10,8 @@
     "postinstall": "nuxt prepare",
     "typecheck": "nuxt typecheck",
     "optimize:cards": "node scripts/optimize-cards.mjs",
-    "og:image": "node scripts/generate-og-image.mjs"
+    "og:image": "node scripts/generate-og-image.mjs",
+    "og:image:characters": "node scripts/generate-character-og.mjs"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.5.5",

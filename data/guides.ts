@@ -8,6 +8,7 @@ export const guides: GuideSeo[] = [
   {
     slug: 'how-to-start-ai-roleplay',
     title: 'How to Start AI Roleplay as a Beginner',
+    datePublished: '2026-07-15',
     description:
       'A complete beginner\'s guide to starting your first AI roleplay on RoleChat AI. Pick a character, add your AI key, and send your first message in under five minutes.',
     sections: [
@@ -62,6 +63,7 @@ export const guides: GuideSeo[] = [
   {
     slug: 'how-to-get-an-api-key',
     title: 'How to Get an AI Key for RoleChat AI',
+    datePublished: '2026-07-15',
     description:
       'A step-by-step guide to getting an OpenAI-compatible API key and adding it to RoleChat AI. No technical background needed — takes about two minutes.',
     sections: [
@@ -111,6 +113,7 @@ export const guides: GuideSeo[] = [
   {
     slug: 'tips-for-better-roleplay',
     title: 'Tips for Better AI Roleplay',
+    datePublished: '2026-07-15',
     description:
       'Small habits that make AI characters feel more alive — tone, pacing, and how to gently steer the story without breaking immersion.',
     sections: [
@@ -159,6 +162,7 @@ export const guides: GuideSeo[] = [
   {
     slug: 'how-to-use-openrouter-for-roleplay',
     title: 'How to Use OpenRouter for AI Character Roleplay',
+    datePublished: '2026-07-15',
     description:
       'A step-by-step beginner guide to using OpenRouter with RoleChat AI. Create an account, get your API key, pick a model, and start chatting with original romance characters in minutes.',
     sections: [
@@ -222,6 +226,7 @@ export const guides: GuideSeo[] = [
   {
     slug: 'what-is-a-character-card',
     title: 'What Is an AI Character Card?',
+    datePublished: '2026-07-15',
     description:
       'A beginner-friendly explanation of AI character cards: what they are, how they work, and how to use them in RoleChat AI for private romance roleplay.',
     sections: [
@@ -277,6 +282,7 @@ export const guides: GuideSeo[] = [
   {
     slug: 'sillytavern-vs-web-tavern',
     title: 'SillyTavern vs Web Tavern: Which One Is Easier?',
+    datePublished: '2026-07-15',
     description:
       'A friendly comparison of SillyTavern and RoleChat AI (formerly Web Tavern) for beginners. Installation, setup, privacy, and character cards — which is right for you?',
     sections: [
@@ -340,6 +346,7 @@ export const guides: GuideSeo[] = [
   {
     slug: 'best-ai-roleplay-prompts',
     title: 'Best AI Roleplay Prompts for Beginners',
+    datePublished: '2026-07-15',
     description:
       'Simple, effective AI roleplay prompts and techniques for beginners. Learn how to set the scene, build emotion, and make your character feel alive — no experience needed.',
     sections: [

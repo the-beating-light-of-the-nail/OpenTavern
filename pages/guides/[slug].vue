@@ -20,7 +20,7 @@ useSeoMeta({
 });
 
 // 结构化数据：Article（指南正文实体）+ BreadcrumbList（面包屑富结果）
-// TODO(E-E-A-T): 给 guides.ts 加 datePublished/作者后，可解锁 Article 富结果
+// datePublished 取自 guides.ts；如需 Person 作者以增强 E-E-A-T，可加 author 字段
 const guideUrl = absUrl(`/guides/${g.slug}`);
 useHead({
   script: [
@@ -33,6 +33,8 @@ useHead({
         description: g.description,
         url: guideUrl,
         inLanguage: 'en',
+        datePublished: g.datePublished,
+        dateModified: g.datePublished,
         author: { '@type': 'Organization', name: 'Open Tavern' },
         publisher: { '@type': 'Organization', name: 'Open Tavern' },
       }),

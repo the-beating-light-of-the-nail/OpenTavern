@@ -18,6 +18,9 @@ useSeoMeta({
   description: c.seoDescription,
   ogTitle: c.seoTitle,
   ogDescription: c.seoDescription,
+  // 每角色专属分享图（scripts/generate-character-og.mjs 生成）
+  ogImage: absUrl(`/og/characters/${c.slug}.png`),
+  twitterImage: absUrl(`/og/characters/${c.slug}.png`),
 });
 
 // 结构化数据：WebPage（角色实体信号）+ BreadcrumbList（面包屑富结果）
