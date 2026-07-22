@@ -18,6 +18,37 @@ useSeoMeta({
   ogTitle: `${g.title} | RoleChat AI`,
   ogDescription: g.description,
 });
+
+// 结构化数据：Article（指南正文实体）+ BreadcrumbList（面包屑富结果）
+// TODO(E-E-A-T): 给 guides.ts 加 datePublished/作者后，可解锁 Article 富结果
+const guideUrl = absUrl(`/guides/${g.slug}`);
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: g.title,
+        description: g.description,
+        url: guideUrl,
+        inLanguage: 'en',
+        author: { '@type': 'Organization', name: 'Open Tavern' },
+        publisher: { '@type': 'Organization', name: 'Open Tavern' },
+      }),
+    },
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify(
+        breadcrumbSchema([
+          { name: 'Home', path: '/' },
+          { name: 'Guides', path: '/guides' },
+          { name: g.title, path: `/guides/${g.slug}` },
+        ]),
+      ),
+    },
+  ],
+});
 </script>
 
 <template>

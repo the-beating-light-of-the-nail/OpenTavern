@@ -11,7 +11,16 @@ export default defineNuxtConfig({
     '/collections/**': { prerender: true },
     '/guides': { prerender: true },
     '/guides/**': { prerender: true },
-    '/app': { ssr: false },
+    '/app': { ssr: false, headers: { 'X-Robots-Tag': 'noindex' } },
+    // 全站安全响应头（审计 Phase 2）；CSP 留待渲染回归测试后再加，避免误伤内联 hydration 脚本
+    '/**': {
+      headers: {
+        'X-Content-Type-Options': 'nosniff',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+        'X-Frame-Options': 'SAMEORIGIN',
+      },
+    },
   },
 
   devtools: { enabled: true },

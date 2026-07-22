@@ -20,6 +20,34 @@ useSeoMeta({
   ogDescription: c.seoDescription,
 });
 
+// 结构化数据：WebPage（角色实体信号）+ BreadcrumbList（面包屑富结果）
+const charUrl = absUrl(`/characters/${c.slug}`);
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: c.name,
+        description: c.seoDescription,
+        url: charUrl,
+        inLanguage: 'en',
+      }),
+    },
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify(
+        breadcrumbSchema([
+          { name: 'Home', path: '/' },
+          { name: 'Characters', path: '/characters' },
+          { name: c.name, path: `/characters/${c.slug}` },
+        ]),
+      ),
+    },
+  ],
+});
+
 const related = computed(() =>
   c.relatedSlugs
     .map((s) => getCharacterBySlug(s))
