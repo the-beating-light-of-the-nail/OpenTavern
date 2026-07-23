@@ -110,7 +110,7 @@ async function onImportFile(e: Event) {
         </div>
         <p class="text-[10px] leading-tight" style="color:var(--color-text-muted)">{{ t('app_subtitle') }}</p>
       </div>
-      <select :value="store.settings.lang" class="lang-select text-[10px] font-semibold rounded-md px-1.5 py-1 border-0 cursor-pointer appearance-none text-center" style="background:var(--color-surface-soft);color:var(--color-text)" @change="onLangChange">
+      <select :value="store.settings.lang" class="lang-select text-xs font-semibold rounded-md px-2 py-1 border-0 cursor-pointer appearance-none text-center" style="background:var(--color-surface-soft);color:var(--color-text)" @change="onLangChange">
         <option v-for="o in langOptions" :key="o.code" :value="o.code">{{ o.label }}</option>
       </select>
       <button class="hamburger-close-btn w-7 h-7 rounded-lg flex items-center justify-center transition-all" style="color:var(--color-text-muted)" aria-label="Close menu" @click.prevent.stop="toggleSidebar">&times;</button>

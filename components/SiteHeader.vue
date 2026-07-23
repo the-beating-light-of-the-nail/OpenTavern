@@ -27,7 +27,7 @@ function onLangChange(e: Event) {
         <span class="text-sm font-bold">RoleChat AI</span>
       </NuxtLink>
       <nav class="flex items-center gap-1.5">
-        <select :value="store.settings.lang" class="text-[10px] font-semibold rounded-md px-1.5 py-1 border-0 cursor-pointer appearance-none text-center mr-1" style="background:var(--color-surface-soft);color:var(--color-text)" @change="onLangChange">
+        <select :value="store.settings.lang" class="text-xs font-semibold rounded-md px-2 py-1 border-0 cursor-pointer appearance-none text-center mr-1" style="background:var(--color-surface-soft);color:var(--color-text)" @change="onLangChange">
           <option v-for="o in langOptions" :key="o.code" :value="o.code">{{ o.label }}</option>
         </select>
         <NuxtLink to="/characters" class="rc-nav-link">{{ t('nav_characters') }}</NuxtLink>
