@@ -6,7 +6,6 @@ import {
   extractCotDelta,
   splitInlineCot,
 } from '~/utils/chat-helpers';
-
 export interface StreamCallbacks {
   onToken: (token: string, fullContent: string, fullCot: string) => void;
   onComplete: (content: string, cot: string) => void;
@@ -25,6 +24,7 @@ export interface RequestOptions {
  * 忠实移植原版 streamChatWithMessages（index.html:10029）的 pump/SSE 解析逻辑。
  */
 export function useRemoteAPI() {
+  const { t } = useI18n();
   async function streamChat(
     messages: any[],
     settings: Settings,
@@ -35,7 +35,7 @@ export function useRemoteAPI() {
     const { onToken, onComplete, onError } = callbacks;
 
     if (!settings.apiEndpoint || !settings.apiKey) {
-      onError(new Error('Please configure your API endpoint and API key in Connect Your AI first.'));
+      onError(new Error(t('no_api_error')));
       return;
     }
 
@@ -77,7 +77,7 @@ export function useRemoteAPI() {
 
     if (!response.ok) {
       const text = await response.text().catch(() => '');
-      let errMsg = 'API Error ' + response.status;
+      let errMsg = t('api_error_prefix') + ' ' + response.status;
       try {
         const errJson = JSON.parse(text);
         if (errJson.error?.message) errMsg += ': ' + errJson.error.message;

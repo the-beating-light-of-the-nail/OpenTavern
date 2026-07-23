@@ -47,7 +47,7 @@ async function onFileChange(e: Event) {
       try {
         jsonData = JSON.parse(text);
       } catch {
-        throw new Error('Invalid JSON file. Please select a valid character card JSON.');
+        throw new Error('ERR_INVALID_JSON');
       }
       parsedChar.value = parseCharacterCard(jsonData);
       // JSON 卡可能内嵌 avatar（base64 data URL）
@@ -59,12 +59,22 @@ async function onFileChange(e: Event) {
       // PNG 文件本身作为 avatar
       avatarDataUrl.value = await fileToDataUrl(file);
     } else {
-      throw new Error('Unsupported file type. Please select a .json or .png file.');
+      throw new Error('ERR_UNSUPPORTED_TYPE');
     }
 
     step.value = 'preview';
   } catch (err: any) {
-    error.value = err?.message || 'Failed to parse character card.';
+    const msg = err?.message || '';
+    const errMap: Record<string, string> = {
+      ERR_INVALID_CARD: t('import_invalid_format'),
+      ERR_MISSING_NAME: t('import_missing_name'),
+      ERR_INVALID_PNG: t('import_invalid_png'),
+      ERR_NO_CHARA_DATA: t('import_no_chara_data'),
+      ERR_FILE_READ: t('import_read_error'),
+      ERR_INVALID_JSON: t('import_invalid_json'),
+      ERR_UNSUPPORTED_TYPE: t('import_unsupported_type'),
+    };
+    error.value = errMap[msg] || errMap[msg.replace(/^ERR_/, '')] || t('import_parse_error');
   } finally {
     isParsing.value = false;
     // 重置 input 以便重复选择同一文件
@@ -163,8 +173,8 @@ function onDrop(e: DragEvent) {
       <div v-if="error" class="ui-alert-danger mt-3 rounded-xl px-4 py-2.5 text-xs">{{ error }}</div>
 
       <div class="flex gap-3 mt-5">
-        <button class="flex-1 ui-button-secondary" @click="cancel">Cancel</button>
-        <button class="flex-1 ui-button-primary" @click="confirmImport">Confirm Import</button>
+        <button class="flex-1 ui-button-secondary" @click="cancel">{{ t('char_import_cancel') }}</button>
+        <button class="flex-1 ui-button-primary" @click="confirmImport">{{ t('char_import_confirm') }}</button>
       </div>
     </div>
 
@@ -173,10 +183,10 @@ function onDrop(e: DragEvent) {
       <div class="ui-status-success w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
       </div>
-      <h3 class="text-base font-bold" style="color:var(--color-text)">Imported successfully!</h3>
-      <p class="text-xs mt-1" style="color:var(--color-text-muted)">{{ parsedChar?.name }} is now in your character library.</p>
+      <h3 class="text-base font-bold" style="color:var(--color-text)">{{ t('char_import_success') }}</h3>
+      <p class="text-xs mt-1" style="color:var(--color-text-muted)">{{ t('char_import_in_library', { name: parsedChar?.name }) }}</p>
       <div class="flex gap-3 mt-6">
-        <button class="flex-1 ui-button-secondary" @click="viewCharacter">View Character</button>
+        <button class="flex-1 ui-button-secondary" @click="viewCharacter">{{ t('char_import_view') }}</button>
         <button class="flex-1 ui-button-primary" @click="startChat">{{ t('start_chat') }}</button>
       </div>
     </div>

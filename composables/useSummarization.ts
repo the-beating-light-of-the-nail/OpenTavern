@@ -90,7 +90,7 @@ export function useSummarization() {
     });
     const data = await resp.json();
     const choice = data.choices?.[0];
-    if (!choice?.message?.content) throw new Error('Unexpected API response');
+    if (!choice?.message?.content) throw new Error(t('summarize_unexpected_response'));
     return String(choice.message.content).trim();
   }
 

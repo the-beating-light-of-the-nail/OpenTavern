@@ -280,7 +280,7 @@ export function useComfy() {
     const wf = store.settings.comfyWorkflow;
     if (wf && typeof wf === 'object') {
       const count = Object.keys(wf).length;
-      return (store.settings.comfyWorkflowName || 'workflow.json') + ' · ' + count + ' nodes';
+      return (store.settings.comfyWorkflowName || 'workflow.json') + ' · ' + count + ' ' + t('comfy_workflow_nodes');
     }
     return t('settings_comfy_no_workflow');
   });

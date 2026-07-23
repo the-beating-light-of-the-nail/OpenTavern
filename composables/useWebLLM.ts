@@ -92,7 +92,7 @@ export function useWebLLM() {
       return engine.value;
     }
 
-    if (!import.meta.client) throw new Error('WebLLM 仅在浏览器可用');
+    if (!import.meta.client) throw new Error('NO_WEBLLM_BROWSER');
     // WebGPU 能力检测（必须）
     if (!(navigator as any).gpu) throw new Error('NO_WEBGPU');
 
@@ -101,10 +101,10 @@ export function useWebLLM() {
       // @ts-expect-error 远程 URL 模块，运行时由浏览器解析（与原版一致）
       webllm = await import(/* @vite-ignore */ 'https://esm.run/@mlc-ai/web-llm');
     } catch (e: any) {
-      throw new Error('无法加载 WebLLM 库：' + (e?.message || e));
+      throw new Error('LIB_LOAD_ERROR:' + (e?.message || e));
     }
     const CreateMLCEngine = webllm.CreateMLCEngine;
-    if (!CreateMLCEngine) throw new Error('WebLLM 库加载异常（缺少 CreateMLCEngine）');
+    if (!CreateMLCEngine) throw new Error('NO_WEBLLM_ENGINE');
 
     try {
       const eng: any = await withHighPerformanceWebGPUAdapterRequest(() =>
@@ -281,7 +281,12 @@ export function useWebLLM() {
       .then(() => { if (!initAbortByUser) finish(true); })
       .catch((e: any) => {
         if (initAbortByUser) return;
-        const reason = e?.message === 'NO_WEBGPU' ? t('webllm_init_no_webgpu') : (e?.message) || String(e);
+        const msg = e?.message || '';
+        const reason = msg === 'NO_WEBGPU' ? t('webllm_init_no_webgpu')
+          : msg === 'NO_WEBLLM_BROWSER' ? t('webllm_browser_only')
+          : msg === 'NO_WEBLLM_ENGINE' ? t('webllm_lib_missing_engine')
+          : msg.startsWith('LIB_LOAD_ERROR:') ? t('webllm_lib_load_error', { msg: msg.slice('LIB_LOAD_ERROR:'.length) })
+          : msg || String(e);
         finish(false, reason);
       });
   }

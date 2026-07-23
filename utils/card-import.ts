@@ -24,7 +24,7 @@ export interface ParsedCharacter {
  * 无效格式或缺 name 抛 Error。
  */
 export function parseCharacterCard(jsonData: any): ParsedCharacter {
-  if (!jsonData) throw new Error('Invalid character card format.');
+  if (!jsonData) throw new Error('ERR_INVALID_CARD');
 
   let data: any = null;
 
@@ -45,12 +45,12 @@ export function parseCharacterCard(jsonData: any): ParsedCharacter {
     data = jsonData.data;
   }
 
-  if (!data) throw new Error('Invalid character card format. Expected chara_card_v1/v2/v3 JSON.');
-  if (!data.name) throw new Error('Character card missing required "name" field.');
+  if (!data) throw new Error('ERR_INVALID_CARD');
+  if (!data.name) throw new Error('ERR_MISSING_NAME');
 
   // 强制字符串化，防止非字符串值导致后续 .replace 报错
   return {
-    name: String(data.name || 'Unnamed'),
+    name: String(data.name || ''),
     description: String(data.description || ''),
     personality: String(data.personality || ''),
     scenario: String(data.scenario || ''),
@@ -77,7 +77,7 @@ export async function extractCharaFromPng(file: File): Promise<any> {
   // PNG signature check
   const sig = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
   for (let i = 0; i < 8; i++) {
-    if (bytes[i] !== sig[i]) throw new Error('Not a valid PNG file.');
+    if (bytes[i] !== sig[i]) throw new Error('ERR_INVALID_PNG');
   }
 
   let offset = 8;
@@ -109,7 +109,7 @@ export async function extractCharaFromPng(file: File): Promise<any> {
     if (type === 'IEND') break;
   }
 
-  throw new Error('No SillyTavern character data found in PNG (missing chara/ccv3 chunk).');
+  throw new Error('ERR_NO_CHARA_DATA');
 }
 
 /**
@@ -119,7 +119,7 @@ export function fileToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result as string);
-    reader.onerror = () => reject(new Error('Failed to read file.'));
+    reader.onerror = () => reject(new Error('ERR_FILE_READ'));
     reader.readAsDataURL(file);
   });
 }

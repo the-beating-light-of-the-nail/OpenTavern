@@ -117,7 +117,7 @@ export function useChat() {
 
     if (forcedSpeaker) {
       const fsName = forcedSpeaker.name;
-      parts.push(`\n【本轮用户特别指定】用户在本条消息中明确 @ 了 ${fsName}。**本轮回复必须以 ${fsName} 为主角/主要发言者**：场景描述、动作、对话和内心活动应主要围绕 ${fsName} 展开，或让 ${fsName} 首先/主要回应用户。其他角色可以作为配角出现、评论或互动，但不能抢夺本轮的主要叙述焦点和第一人称/第三人称主视角。严格遵守本轮由 ${fsName} 驱动回复。`);
+      parts.push('\n' + t('group_mention_forced_speaker', { name: fsName }));
     }
 
     // World Info 激活 + 注入（复用单角色路径的 activateWI/injectWI）
@@ -180,7 +180,7 @@ export function useChat() {
     const summaries = (conv.value as any).summaries as any[] | undefined;
     if (summaries && summaries.length > 0) {
       const summaryText = summaries.map((s) => s.text).join('\n---\n');
-      apiMessages.push({ role: 'system', content: '[以下是先前对话的自动摘要，供上下文参考]\n' + summaryText });
+      apiMessages.push({ role: 'system', content: t('summary_inject_prefix') + '\n' + summaryText });
     }
 
     // 上下文裁剪：取最近 N 条非空消息
@@ -225,7 +225,7 @@ export function useChat() {
     (conv.value as any).updated = Date.now();
 
     // 首条消息自动改标题
-    const titleNew = 'New Chat';
+    const titleNew = t('new_chat_title');
     if ((conv.value as any).title === titleNew || !(conv.value as any).title) {
       (conv.value as any).title = text.slice(0, 50) + (text.length > 50 ? '...' : '');
     }
@@ -259,7 +259,7 @@ export function useChat() {
       messages = buildMessagesForAPI();
     } catch (e: any) {
       store.isGenerating = false;
-      await ui.showDialog({ message: 'Error building prompt: ' + (e.message || e), showCancel: false });
+      await ui.showDialog({ message: t('build_prompt_error', { msg: e.message || e }), showCancel: false });
       return;
     }
 
