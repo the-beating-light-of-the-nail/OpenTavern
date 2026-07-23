@@ -1,9 +1,22 @@
 <script setup lang="ts">
 import { useAppStore } from '~/stores/app';
+import { useLocale } from '~/composables/useLocale';
 
 const store = useAppStore();
 const { t } = useI18n();
 const ui = useUiStore();
+const { setLocale, supported } = useLocale();
+
+const langOptions = [
+  { code: 'en', label: 'EN' },
+  { code: 'zh-CN', label: '简' },
+  { code: 'zh-TW', label: '繁' },
+].filter((o) => supported.includes(o.code as any));
+
+function onLangChange(e: Event) {
+  const target = e.target as HTMLSelectElement;
+  setLocale(target.value);
+}
 
 const conversations = computed(() =>
   (store.conversationOrder || [])
@@ -97,6 +110,9 @@ async function onImportFile(e: Event) {
         </div>
         <p class="text-[10px] leading-tight" style="color:var(--color-text-muted)">{{ t('app_subtitle') }}</p>
       </div>
+      <select :value="store.settings.lang" class="lang-select text-[10px] font-semibold rounded-md px-1.5 py-1 border-0 cursor-pointer appearance-none text-center" style="background:var(--color-surface-soft);color:var(--color-text)" @change="onLangChange">
+        <option v-for="o in langOptions" :key="o.code" :value="o.code">{{ o.label }}</option>
+      </select>
       <button class="hamburger-close-btn w-7 h-7 rounded-lg flex items-center justify-center transition-all" style="color:var(--color-text-muted)" aria-label="Close menu" @click.prevent.stop="toggleSidebar">&times;</button>
     </NuxtLink>
 

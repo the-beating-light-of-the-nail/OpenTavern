@@ -1,6 +1,22 @@
 <script setup lang="ts">
+import { useAppStore } from '~/stores/app';
+import { useLocale } from '~/composables/useLocale';
+
 withDefaults(defineProps<{ showExtraLinks?: boolean }>(), { showExtraLinks: true });
 const { t } = useI18n();
+const store = useAppStore();
+const { setLocale, supported } = useLocale();
+
+const langOptions = [
+  { code: 'en', label: 'EN' },
+  { code: 'zh-CN', label: '简' },
+  { code: 'zh-TW', label: '繁' },
+].filter((o) => supported.includes(o.code as any));
+
+function onLangChange(e: Event) {
+  const target = e.target as HTMLSelectElement;
+  setLocale(target.value);
+}
 </script>
 
 <template>
@@ -11,6 +27,9 @@ const { t } = useI18n();
         <span class="text-sm font-bold">RoleChat AI</span>
       </NuxtLink>
       <nav class="flex items-center gap-1.5">
+        <select :value="store.settings.lang" class="text-[10px] font-semibold rounded-md px-1.5 py-1 border-0 cursor-pointer appearance-none text-center mr-1" style="background:var(--color-surface-soft);color:var(--color-text)" @change="onLangChange">
+          <option v-for="o in langOptions" :key="o.code" :value="o.code">{{ o.label }}</option>
+        </select>
         <NuxtLink to="/characters" class="rc-nav-link">{{ t('nav_characters') }}</NuxtLink>
         <NuxtLink to="/guides" class="rc-nav-link">{{ t('nav_guides') }}</NuxtLink>
         <template v-if="showExtraLinks">

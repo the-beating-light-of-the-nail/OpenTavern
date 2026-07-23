@@ -19,8 +19,13 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   } finally {
     store.ready = true;
   }
-  const { restore } = useLocale();
-  nuxtApp.hook('app:mounted', () => {
-    restore().catch((e) => console.error('[init] restore locale failed:', e));
+  const { restore, detectAndSet } = useLocale();
+  nuxtApp.hook('app:mounted', async () => {
+    try {
+      await restore();
+      await detectAndSet();
+    } catch (e) {
+      console.error('[init] locale init failed:', e);
+    }
   });
 });
