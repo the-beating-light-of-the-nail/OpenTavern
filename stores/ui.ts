@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { useNuxtApp } from '#app';
 
 /**
  * UI 运行时状态：模态框统一开关控制。
@@ -59,7 +60,9 @@ export const useUiStore = defineStore('ui', {
 
     /** 通用确认/提示对话框，返回 Promise<boolean>（true=确定，false=取消） */
     showDialog(opts: { title?: string; message: string; icon?: string; danger?: boolean; showCancel?: boolean; okText?: string; cancelText?: string }): Promise<boolean> {
-      this.dialog.title = opts.title || (opts.showCancel ? '请确认' : '提示');
+      let t: (k: string) => string = (k) => k;
+      try { const app = useNuxtApp(); if (app?.$i18n?.t) t = (k: string) => app.$i18n.t(k); } catch { /* noop */ }
+      this.dialog.title = opts.title || (opts.showCancel ? t('dialog_confirm_default_title') : t('dialog_info_default_title'));
       this.dialog.message = String(opts.message || '');
       this.dialog.icon = opts.icon || (opts.showCancel ? '?' : '!');
       this.dialog.danger = !!opts.danger;

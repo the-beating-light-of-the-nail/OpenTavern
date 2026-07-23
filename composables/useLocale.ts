@@ -12,7 +12,7 @@ import { useAppStore } from '~/stores/app';
  * 生产构建表现为 SyntaxError: 26。改用 useNuxtApp().$i18n，插件与 setup 两种上下文均可用，
  * 且 $i18n.setLocale 是 @nuxtjs/i18n 扩展过的异步方法（处理 lazy locale 加载）。
  */
-const SUPPORTED = ['en', 'zh-CN', 'zh-TW'] as const;
+const SUPPORTED = ['en', 'zh-CN', 'zh-TW', 'es', 'ar', 'pt', 'ru', 'fr', 'de'] as const;
 type SupportedLang = (typeof SUPPORTED)[number];
 
 function isSupported(lang: string | undefined | null): lang is SupportedLang {
@@ -31,6 +31,12 @@ function mapBrowserLang(raw: string): SupportedLang {
     // 其他中文（含简体、新加坡、通用 zh）→ zh-CN
     return 'zh-CN';
   }
+  if (lang.startsWith('es')) return 'es';
+  if (lang.startsWith('ar')) return 'ar';
+  if (lang.startsWith('pt')) return 'pt';
+  if (lang.startsWith('ru')) return 'ru';
+  if (lang.startsWith('fr')) return 'fr';
+  if (lang.startsWith('de')) return 'de';
   return 'en';
 }
 
@@ -86,7 +92,7 @@ export function useLocale() {
     // 如果当前 URL 已经有 locale 前缀，说明已经重定向过了，不再处理
     if (typeof location !== 'undefined') {
       const path = location.pathname;
-      if (path.startsWith('/zh-CN') || path.startsWith('/zh-TW')) return;
+      if (/^\/(zh-CN|zh-TW|es|ar|pt|ru|fr|de)\b/.test(path)) return;
     }
     const detected = mapBrowserLang(navigator.language);
     if (detected === 'en') return;

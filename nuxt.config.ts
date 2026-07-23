@@ -57,7 +57,7 @@ export default defineNuxtConfig({
     preset: 'vercel',
     prerender: {
       crawlLinks: true,
-      routes: ['/sitemap.xml', '/zh-CN/sitemap.xml', '/zh-TW/sitemap.xml'],
+      routes: ['/sitemap.xml', '/zh-CN/sitemap.xml', '/zh-TW/sitemap.xml', '/es/sitemap.xml', '/ar/sitemap.xml', '/pt/sitemap.xml', '/ru/sitemap.xml', '/fr/sitemap.xml', '/de/sitemap.xml'],
     },
   },
 
@@ -103,6 +103,12 @@ export default defineNuxtConfig({
       { code: 'en', language: 'en-US', name: 'EN', file: 'en.json' },
       { code: 'zh-CN', language: 'zh-CN', name: '简', file: 'zh-CN.json' },
       { code: 'zh-TW', language: 'zh-TW', name: '繁', file: 'zh-TW.json' },
+      { code: 'es', language: 'es-ES', name: 'ES', file: 'es.json' },
+      { code: 'ar', language: 'ar-SA', name: 'ع', file: 'ar.json' },
+      { code: 'pt', language: 'pt-PT', name: 'PT', file: 'pt.json' },
+      { code: 'ru', language: 'ru-RU', name: 'RU', file: 'ru.json' },
+      { code: 'fr', language: 'fr-FR', name: 'FR', file: 'fr.json' },
+      { code: 'de', language: 'de-DE', name: 'DE', file: 'de.json' },
     ],
     customRoutes: 'config',
     pages: {},
@@ -115,7 +121,7 @@ export default defineNuxtConfig({
 
   sitemap: {
     // /app 是纯客户端 SPA，不索引；其余预渲染路由由模块从 nitro prerender 自动发现
-    exclude: ['/app/**', '/app', '/zh-CN/app', '/zh-TW/app'],
+    exclude: ['/app/**', '/app', '/zh-CN/app', '/zh-TW/app', '/es/app', '/ar/app', '/pt/app', '/ru/app', '/fr/app', '/de/app'],
     // 与 i18n 集成：自动生成 <xhtml:link rel="alternate" hreflang="..."> 备选语言链接
     autoLastmod: true,
     i18n: true,

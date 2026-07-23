@@ -37,6 +37,7 @@ function groupInstructionFor(lang: string): string {
 export function useChat() {
   const store = useAppStore();
   const ui = useUiStore();
+  const { t } = useI18n();
   const { streamChat: remoteStreamChat } = useRemoteAPI();
   const webllm = useWebLLM();
   const { activate: activateWI, injectIntoSystem: injectWI } = useWorldInfo();
@@ -379,7 +380,7 @@ export function useChat() {
     store.streamingContent = '';
     store.streamingCot = '';
     if (partial && conv.value) {
-      (conv.value as any).messages.push({ role: 'assistant', content: partial + '\n\n[已停止]', id: makeId() });
+      (conv.value as any).messages.push({ role: 'assistant', content: partial + '\n\n' + t('generation_stopped'), id: makeId() });
       store.persist();
     }
   }

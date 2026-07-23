@@ -12,6 +12,7 @@ const pendingGroupMention = ref<any>(null);
 
 export function useGroupMention() {
   const ui = useUiStore();
+  const { t } = useI18n();
 
   const hasPending = computed(() => !!pendingGroupMention.value);
 
@@ -19,7 +20,7 @@ export function useGroupMention() {
   const pillDisplayName = computed(() => {
     const char = pendingGroupMention.value;
     if (!char) return '';
-    let display = char.name || '角色';
+    let display = char.name || t('unknown_character');
     if (display.includes('（')) display = display.split('（')[0];
     if (display.length > 5) display = display.slice(0, 4) + '…';
     return '@' + display;

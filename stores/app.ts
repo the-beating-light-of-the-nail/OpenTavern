@@ -182,10 +182,10 @@ export const useAppStore = defineStore('app', {
       };
 
       // i18n（在 Nuxt 上下文中可用）
-      let t: (k: string) => string = (k) => k;
+      let t: (k: string, opts?: Record<string, any>) => string = (k) => k;
       try {
         const app: any = useNuxtApp();
-        if (app?.$i18n?.t) t = (k: string) => app.$i18n.t(k);
+        if (app?.$i18n?.t) t = (k: string, opts?: Record<string, any>) => app.$i18n.t(k, opts);
       } catch { /* noop */ }
 
       if (Array.isArray(charOrEntries) && charOrEntries.length >= 2) {
@@ -197,7 +197,7 @@ export const useAppStore = defineStore('app', {
         }));
         conv.group = {
           id: makeId(),
-          name: members.map((m: any) => m.character?.name).filter(Boolean).join('、') + ' 的群聊',
+          name: t('group_chat_name_format', { names: members.map((m: any) => m.character?.name).filter(Boolean).join('、') }),
           members,
           replyStrategy: 'list_order',
           generationMode: 'switch',

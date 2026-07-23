@@ -88,7 +88,7 @@ export function useWebLLM() {
    */
   async function ensureEngine(modelId: string, onProgress?: (r: { progress: number; text: string }) => void): Promise<any> {
     if (engine.value && currentModel.value === modelId) {
-      if (onProgress) onProgress({ progress: 1, text: '已就绪' });
+      if (onProgress) onProgress({ progress: 1, text: t('webllm_ready') });
       return engine.value;
     }
 
@@ -147,7 +147,7 @@ export function useWebLLM() {
 
     const modelId = getModelId();
     if (!engine.value || currentModel.value !== modelId) {
-      onError(new Error('本地引擎未就绪，请在设置中重新初始化 WebLLM 模型'));
+      onError(new Error(t('webllm_engine_not_ready')));
       return;
     }
 
@@ -212,9 +212,9 @@ export function useWebLLM() {
     } catch { info = getPlainAdapterInfo(adapter.info); }
     webgpuLastDeviceReport = { info, detectedAt: Date.now(), source: 'detectWebGPUDevice' };
     const lines = Object.entries(info).map(([k, v]) => `${k}: ${v}`);
-    const desc = lines.length ? lines.join('\n') : '(无 adapter 信息)';
+    const desc = lines.length ? lines.join('\n') : t('webllm_no_adapter_info');
     if (opts.showDialog) {
-      ui.showDialog({ title: 'WebGPU 设备', message: desc, showCancel: false });
+      ui.showDialog({ title: t('webllm_device_dialog_title'), message: desc, showCancel: false });
     }
     return webgpuLastDeviceReport;
   }
@@ -237,9 +237,10 @@ export function useWebLLM() {
           const currentUsed = sInfo.originUsed && sInfo.originUsed > 0 ? sInfo.originUsed : sInfo.used;
           const freeEst = sInfo.quota - currentUsed;
           if (freeEst < needMB * 1024 * 1024 * 1.6) {
+            const sizeStr = info.sizeMB >= 1000 ? (info.sizeMB / 1000).toFixed(1) + ' GB' : info.sizeMB + ' MB';
             const ok = await ui.showDialog({
-              title: '存储空间提醒',
-              message: '存储空间可能不足（模型约需 ' + (info.sizeMB >= 1000 ? (info.sizeMB / 1000).toFixed(1) + ' GB' : info.sizeMB + ' MB') + '）。是否继续？',
+              title: t('webllm_storage_warning_title'),
+              message: t('webllm_storage_warning_msg', { size: sizeStr }),
               showCancel: true,
             });
             if (!ok) {
@@ -258,7 +259,7 @@ export function useWebLLM() {
       if (!success) {
         store.settings.inferenceBackend = 'remote-api';
         store.persist();
-        const msg = t('webllm_init_failed', { msg: errMsg || '未知错误' });
+        const msg = t('webllm_init_failed', { msg: errMsg || t('webllm_unknown_error') });
         ui.showDialog({ message: msg, showCancel: false });
       } else {
         console.log('[WebLLM]', t('webllm_init_success', { model: info.label }));
@@ -268,13 +269,13 @@ export function useWebLLM() {
     if (!await preflightStorageQuota()) return;
 
     progressPercent.value = 0;
-    progressStatus.value = '正在准备下载...';
+    progressStatus.value = t('webllm_download_preparing');
     ui.open('webllmProgress');
 
     ensureEngine(modelId, (report) => {
       const pct = Math.max(0, Math.min(100, Math.round((report.progress || 0) * 100)));
       progressPercent.value = pct;
-      const txt = report.text || (pct < 100 ? '下载/初始化中...' : '完成');
+      const txt = report.text || (pct < 100 ? t('webllm_download_in_progress') : t('webllm_download_done'));
       progressStatus.value = txt + ' (' + info.label + ')';
     })
       .then(() => { if (!initAbortByUser) finish(true); })
@@ -306,16 +307,12 @@ export function useWebLLM() {
     onCancel?: () => void,
   ): void {
     const modelId = targetModelId || getModelId();
-    const info = WEBLLM_MODEL_INFO[modelId] || { label: '所选模型', sizeMB: 1000 };
+    const info = WEBLLM_MODEL_INFO[modelId] || { label: t('webllm_selected_model'), sizeMB: 1000 };
     const sizeText = info.sizeMB >= 1000 ? (info.sizeMB / 1000).toFixed(1) + ' GB' : info.sizeMB + ' MB';
 
     const html = isModelSwitch
-      ? '注意：更换浏览器本地模型需要下载新模型文件（约 <strong>' + sizeText + '</strong>）。<br>' +
-        '首次下载会使用较多流量，建议在 Wi-Fi 环境下进行。<br>' +
-        '是否继续下载「' + (info.label || modelId) + '」？'
-      : '注意：启用浏览器本地模型需要下载模型文件（约 <strong>' + sizeText + '</strong>）。<br>' +
-        '首次下载会使用较多流量，建议在 Wi-Fi 环境下进行。<br>' +
-        '是否继续？';
+      ? t('webllm_confirm_switch_model', { size: sizeText, model: info.label || modelId })
+      : t('webllm_confirm_first_enable', { size: sizeText });
 
     confirmResolvers = { onContinue, onCancel };
     ui.open('webllmConfirm', { html, isFirstEnable: !isModelSwitch, targetModelId: modelId, isModelSwitch });
@@ -422,8 +419,8 @@ export function useWebLLM() {
     if (!opts.silent) {
       ui.showDialog({
         message: cleared > 0
-          ? '已清理 ' + cleared + ' 个 WebLLM 相关 Cache。'
-          : '没有检测到可清理的 WebLLM 缓存，如仍需释放空间，请使用浏览器“清除站点数据”。',
+          ? t('webllm_cache_cleared', { count: cleared })
+          : t('webllm_cache_none'),
         showCancel: false,
       });
     }

@@ -9,6 +9,7 @@ import { normalizeApiEndpoint, shouldUseOllamaCompat, normalizeMessagesForOllama
 export function useSummarization() {
   const store = useAppStore();
   const ui = useUiStore();
+  const { t } = useI18n();
 
   const conv = computed(() => store.activeConversation);
 
@@ -108,7 +109,7 @@ export function useSummarization() {
       (conv.value as any).updated = Date.now();
       store.persist();
     } catch (e: any) {
-      await ui.showDialog({ message: '总结生成失败：' + (e.message || e), danger: true });
+      await ui.showDialog({ message: t('summary_generation_failed', { msg: e.message || e }), danger: true });
     }
   }
 
