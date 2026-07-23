@@ -672,6 +672,6 @@
   "lang_de_short": "DE",
   "group_profile_header": "=== Complete Group Character Profiles (all character info below must be strictly followed) ===",
   "group_role_fallback": "Character {idx}",
-  "group_mention_forced_speaker": "[This Turn's Special Designation] The user explicitly @ mentioned {name} in this message. **{name} must be the primary character / speaker this turn**: scene descriptions, actions, dialogue, and inner thoughts should mainly revolve around {name}, or have {name} respond first/primarily. Other characters may appear as supporting roles, comment, or interact, but must not steal the main narrative focus or first/third-person perspective of this turn. Strictly follow that {name} drives the reply this turn.",
+  "group_mention_forced_speaker": "[This Turn's Special Designation] The user explicitly {'@'} mentioned {name} in this message. **{name} must be the primary character / speaker this turn**: scene descriptions, actions, dialogue, and inner thoughts should mainly revolve around {name}, or have {name} respond first/primarily. Other characters may appear as supporting roles, comment, or interact, but must not steal the main narrative focus or first/third-person perspective of this turn. Strictly follow that {name} drives the reply this turn.",
   "two_stage_prompt_en": ""
 }
