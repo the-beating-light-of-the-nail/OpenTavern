@@ -102,19 +102,20 @@ async function onImportFile(e: Event) {
 <template>
   <aside id="sidebar" :class="{ open: store.sidebarOpen }" class="ui-sidebar w-[270px] flex-shrink-0 flex flex-col">
     <!-- Header -->
-    <NuxtLink to="/" class="px-5 py-4 flex items-center gap-3 border-b border-[var(--color-border)] hover:bg-[var(--color-surface-soft)] transition-colors">
-      <div class="w-9 h-9 rounded-xl ot-avatar-fill flex items-center justify-center text-[var(--color-on-primary)] text-xs font-bold tracking-tighter">RC</div>
-      <div class="flex-1">
-        <div class="flex items-center gap-2">
+    <div class="px-5 py-4 flex items-center gap-3 border-b border-[var(--color-border)]">
+      <NuxtLink to="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+        <div class="w-9 h-9 rounded-xl ot-avatar-fill flex items-center justify-center text-[var(--color-on-primary)] text-xs font-bold tracking-tighter">RC</div>
+        <div>
           <p class="text-sm font-bold leading-tight" style="color:var(--color-text)">RoleChat AI</p>
+          <p class="text-[10px] leading-tight" style="color:var(--color-text-muted)">{{ t('app_subtitle') }}</p>
         </div>
-        <p class="text-[10px] leading-tight" style="color:var(--color-text-muted)">{{ t('app_subtitle') }}</p>
-      </div>
+      </NuxtLink>
+      <div class="flex-1" />
       <select :value="store.settings.lang" class="lang-select text-xs font-semibold rounded-md px-2 py-1 border-0 cursor-pointer appearance-none text-center" style="background:var(--color-surface-soft);color:var(--color-text)" @change="onLangChange">
         <option v-for="o in langOptions" :key="o.code" :value="o.code">{{ o.label }}</option>
       </select>
       <button class="hamburger-close-btn w-7 h-7 rounded-lg flex items-center justify-center transition-all" style="color:var(--color-text-muted)" aria-label="Close menu" @click.prevent.stop="toggleSidebar">&times;</button>
-    </NuxtLink>
+    </div>
 
     <!-- Site nav -->
     <div class="px-3 py-2 flex items-center gap-1 border-b border-[var(--color-border)]">
