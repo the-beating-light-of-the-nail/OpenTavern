@@ -660,5 +660,18 @@
   "group_profile_header": "=== 群组角色完整资料（以下所有角色信息必须严格遵守） ===",
   "group_role_fallback": "角色{idx}",
   "group_mention_forced_speaker": "【本轮用户特别指定】用户在本条消息中明确 {'@'} 了 {name}。**本轮回复必须以 {name} 为主角/主要发言者**：场景描述、动作、对话和内心活动应主要围绕 {name} 展开，或让 {name} 首先/主要回应用户。其他角色可以作为配角出现、评论或互动，但不能抢夺本轮的主要叙述焦点和第一人称/第三人称主视角。严格遵守本轮由 {name} 驱动回复。",
-  "two_stage_prompt_en": ""
+  "two_stage_prompt_en": "",
+  "home_compat_badge": "SillyTavern 兼容",
+  "home_compat_title": "天生兼容 SillyTavern",
+  "home_compat_desc": "Open Tavern 完全遵循 SillyTavern 角色卡规范。你现有的角色卡直接就能用——拖进来，开始聊天。",
+  "home_compat_point1_title": "100% 兼容 SillyTavern 角色卡",
+  "home_compat_point1_desc": "可读取 V1、V2、V3 JSON 以及内嵌数据的 SillyTavern PNG 角色卡。把文件拖进来就能开始聊天——无需转换，无需插件，无需设置。",
+  "home_compat_point2_title": "导入你的整个收藏",
+  "home_compat_point2_desc": "已经有来自 SillyTavern、RisuAI 或 Janitor AI 的角色卡？全部都能导入。预设提示词和世界书也会一起带过来。",
+  "home_compat_point3_title": "无需自己制作",
+  "home_compat_point3_desc": "不想学角色卡格式？完全不用学。应用会自动处理所有格式——你只需选一个角色，开始聊天。",
+  "home_compat_point4_title": "内置精心打造的原创角色",
+  "home_compat_point4_desc": "20 个原创言情与奇幻角色，由团队亲自撰写。浏览角色库，点击任意喜欢的角色，几秒即可开始。",
+  "home_compat_cta_app": "打开应用",
+  "home_compat_cta_cards": "哪里能找到更多角色卡"
 }
