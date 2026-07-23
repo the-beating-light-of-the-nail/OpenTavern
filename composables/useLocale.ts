@@ -34,10 +34,15 @@ function mapBrowserLang(raw: string): SupportedLang {
   return 'en';
 }
 
-/** 检查是否有已保存的用户语言偏好（排除默认值 'en'） */
+/** 检查是否有已保存的用户语言偏好 */
 function hasSavedPreference(): boolean {
   try {
-    // 先检查 localStorage 是否有之前保存过的数据
+    // 检查 i18n cookie（由 detectBrowserLanguage 设置）
+    if (typeof document !== 'undefined') {
+      const match = document.cookie.match(/(?:^|;\s*)rolechat_locale=([^;]*)/);
+      if (match && match[1]) return true;
+    }
+    // 回退检查 localStorage 中的旧数据
     const raw = localStorage.getItem('opentavern-data');
     if (!raw) return false;
     const data = JSON.parse(raw);
@@ -53,13 +58,13 @@ export function useLocale() {
 
   async function setLocale(lang: string) {
     if (!isSupported(lang)) return;
-    if ($i18n.locale.value !== lang) {
-      await $i18n.setLocale(lang);
-    }
     store.settings.lang = lang;
     store.persist(true);
     if (typeof document !== 'undefined') {
       document.documentElement.lang = lang;
+    }
+    if ($i18n.locale.value !== lang) {
+      await $i18n.setLocale(lang);
     }
   }
 
@@ -76,10 +81,16 @@ export function useLocale() {
   /** 根据浏览器语言自动检测并设置默认语言（仅在首次访问、无已有偏好时生效） */
   async function detectAndSet() {
     if (typeof navigator === 'undefined') return;
-    // 如果用户已有明确偏好，不覆盖
+    // 如果用户已有明确偏好（cookie 或 localStorage），不覆盖
     if (hasSavedPreference()) return;
+    // 如果当前 URL 已经有 locale 前缀，说明已经重定向过了，不再处理
+    if (typeof location !== 'undefined') {
+      const path = location.pathname;
+      if (path.startsWith('/zh-CN') || path.startsWith('/zh-TW')) return;
+    }
     const detected = mapBrowserLang(navigator.language);
-    if (detected === 'en') return; // 默认已是 en，无需设置
+    if (detected === 'en') return;
+    // 使用 $i18n.setLocale 会自动导航到带前缀的 URL（如 /zh-CN/characters）
     await setLocale(detected);
   }
 

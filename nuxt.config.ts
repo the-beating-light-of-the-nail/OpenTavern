@@ -57,7 +57,7 @@ export default defineNuxtConfig({
     preset: 'vercel',
     prerender: {
       crawlLinks: true,
-      routes: ['/sitemap.xml'],
+      routes: ['/sitemap.xml', '/zh-CN/sitemap.xml', '/zh-TW/sitemap.xml'],
     },
   },
 
@@ -87,11 +87,16 @@ export default defineNuxtConfig({
   },
 
   i18n: {
-    strategy: 'no_prefix',
+    strategy: 'prefix_except_default',
     defaultLocale: 'en',
     langDir: 'locales',
     lazy: true,
-    detectBrowserLanguage: false,
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'rolechat_locale',
+      alwaysRedirect: true,
+      fallbackLocale: 'en',
+    },
     bundle: { optimizeTranslationDirective: false },
     compilation: { strictMessage: false, escapeHtml: false },
     locales: [
@@ -99,6 +104,8 @@ export default defineNuxtConfig({
       { code: 'zh-CN', language: 'zh-CN', name: '简', file: 'zh-CN.json' },
       { code: 'zh-TW', language: 'zh-TW', name: '繁', file: 'zh-TW.json' },
     ],
+    customRoutes: 'config',
+    pages: {},
   },
 
   // 站点 URL — sitemap.xml 生成 <loc> 绝对路径所需
@@ -108,9 +115,10 @@ export default defineNuxtConfig({
 
   sitemap: {
     // /app 是纯客户端 SPA，不索引；其余预渲染路由由模块从 nitro prerender 自动发现
-    exclude: ['/app/**', '/app'],
-    // 与 i18n no_prefix 策略对齐：sitemap 内不区分 locale
+    exclude: ['/app/**', '/app', '/zh-CN/app', '/zh-TW/app'],
+    // 与 i18n 集成：自动生成 <xhtml:link rel="alternate" hreflang="..."> 备选语言链接
     autoLastmod: true,
+    i18n: true,
   },
 
   compatibilityDate: '2024-11-01',

@@ -7,10 +7,14 @@
 // 解决审计发现的全站缺失项：canonical、OG/Twitter、Organization/WebSite JSON-LD
 // SITE_URL / 绝对 URL 统一来自 composables/useSeo.ts（单一来源）
 const canonicalUrl = useCanonicalUrl();
+const hreflangLinks = useHreflang();
 const ogImage = absUrl('/og-default.png');
 
 useHead({
-  link: [{ rel: 'canonical', href: canonicalUrl }],
+  link: [
+    { rel: 'canonical', href: canonicalUrl },
+    ...hreflangLinks.value,
+  ],
 });
 
 useSeoMeta({
