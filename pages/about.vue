@@ -1,4 +1,6 @@
 <script setup lang="ts">
+const { t } = useI18n();
+
 useSeoMeta({
   title: 'About Open Tavern · RoleChat AI',
   description:

@@ -19,7 +19,7 @@ useHead({
       innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'ContactPage',
-        name: seoTitle,
+        name: seoTitle.value,
         url: absUrl('/contact'),
         inLanguage: 'en',
         mainEntity: {
