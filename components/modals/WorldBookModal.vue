@@ -259,13 +259,13 @@ function removeSecKey(idx: number) {
             {{ search ? t('world_book_search_empty') : t('world_book_no_entries') }}
           </div>
         </div>
-        <div class="p-2 text-[10px] text-center border-t" style="color:var(--color-text-muted);border-color:var(--color-border)">{{ entryList.length }} entries</div>
+        <div class="p-2 text-[10px] text-center border-t" style="color:var(--color-text-muted);border-color:var(--color-border)">{{ t('wi_entries_count', { n: entryList.length }) }}</div>
       </div>
 
       <div class="flex-1 flex flex-col">
         <div v-if="!selectedEntry" class="flex-1 flex items-center justify-center text-center text-sm" style="color:var(--color-text-muted)">
           <div>
-            <div class="text-xs mb-3 opacity-70 uppercase tracking-wider">World Info</div>
+            <div class="text-xs mb-3 opacity-70 uppercase tracking-wider">{{ t('world_info_label') }}</div>
             <div>{{ t('world_book_no_selection') }}</div>
           </div>
         </div>

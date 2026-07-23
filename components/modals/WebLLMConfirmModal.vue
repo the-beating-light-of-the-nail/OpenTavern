@@ -14,7 +14,7 @@ const isFirstEnable = computed(() => !!payload.value?.isFirstEnable);
 <template>
   <AppModal modal-id="webllmConfirmModal" name="webllmConfirm" max-width="max-w-md" :backdrop-close="false" closable>
     <div class="flex items-center gap-3 mb-4">
-      <span class="text-xs font-semibold uppercase tracking-wider" style="color:var(--color-primary)">Local</span>
+      <span class="text-xs font-semibold uppercase tracking-wider" style="color:var(--color-primary)">{{ t('webllm_local') }}</span>
       <h2 class="ui-modal-title" style="color:var(--color-text)">{{ t('webllm_confirm_title') }}</h2>
     </div>
     <!-- eslint-disable-next-line vue/no-v-html -- 原版 innerHTML，文案来自常量 -->
@@ -24,11 +24,11 @@ const isFirstEnable = computed(() => !!payload.value?.isFirstEnable);
       <div class="grid grid-cols-1 gap-2">
         <button id="webllmChoice1B" class="ui-button w-full px-3 py-2.5 text-sm font-medium text-left transition-all" @click="webllm.confirmChoose('Llama-3.2-1B-Instruct-q4f16_1-MLC')">
           <div class="font-semibold">Llama-3.2-1B (q4f16)</div>
-          <div class="text-[11px]" style="color:var(--color-primary)">约 850 MB · 适合大多数设备</div>
+          <div class="text-[11px]" style="color:var(--color-primary)">{{ t('webllm_model_1b_desc') }}</div>
         </button>
         <button id="webllmChoice3B" class="ui-button w-full px-3 py-2.5 text-sm font-medium text-left transition-all" @click="webllm.confirmChoose('Llama-3.2-3B-Instruct-q4f16_1-MLC')">
           <div class="font-semibold">Llama-3.2-3B (q4f16)</div>
-          <div class="text-[11px]" style="color:var(--color-primary)">约 2100 MB · 需要较强 GPU</div>
+          <div class="text-[11px]" style="color:var(--color-primary)">{{ t('webllm_model_3b_desc') }}</div>
         </button>
       </div>
     </div>

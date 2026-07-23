@@ -38,7 +38,7 @@ function choose(m: any) {
           <p class="font-medium truncate">{{ m.character?.name }}</p>
           <p v-if="m.character?.personality" class="text-[10px] truncate" style="color:var(--color-text-muted)">{{ m.character.personality }}</p>
         </div>
-        <span v-if="m.muted" class="text-[10px]" style="color:var(--color-text-muted)">muted</span>
+        <span v-if="m.muted" class="text-[10px]" style="color:var(--color-text-muted)">{{ t('group_muted') }}</span>
       </div>
       <p v-if="!members.length" class="text-xs text-center py-6" style="color:var(--color-text-muted)">{{ t('group_mention_no_group') }}</p>
     </div>

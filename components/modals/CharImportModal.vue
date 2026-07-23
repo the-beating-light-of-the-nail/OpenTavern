@@ -125,11 +125,11 @@ function onDrop(e: DragEvent) {
         @drop="onDrop"
         @click="triggerFileInput"
       >
-        <div v-if="isParsing" class="text-sm animate-pulse" style="color:var(--color-primary)">Parsing...</div>
+        <div v-if="isParsing" class="text-sm animate-pulse" style="color:var(--color-primary)">{{ t('import_parsing') }}</div>
         <template v-else>
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-text-muted)"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
           <span class="text-sm" style="color:var(--color-text-muted)">{{ t('import_click_hint') }}</span>
-          <span class="text-[10px]" style="color:var(--color-text-muted)">.json or .png (SillyTavern)</span>
+          <span class="text-[10px]" style="color:var(--color-text-muted)">{{ t('import_format_hint') }}</span>
         </template>
         <input ref="fileInput" type="file" accept=".json,.png" class="hidden" @change="onFileChange">
       </label>
