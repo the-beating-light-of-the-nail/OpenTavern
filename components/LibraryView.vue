@@ -57,7 +57,7 @@ const myCards = computed<CardVM[]>(() => {
   return Object.values(store.characters || {})
     .map((c: any): CardVM => ({
       id: c.id ?? c.data?.name ?? Math.random().toString(36),
-      name: c.data?.name || c.name || 'Untitled',
+      name: c.data?.name || c.name || t('default_untitled'),
       tags: c.data?.tags || c.tags || [],
       description: c.data?.description || c.description || '',
       image: c.data?.avatar || c.avatar,

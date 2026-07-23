@@ -83,6 +83,16 @@ export const DEFAULT_FIRST_STAGE_POST_HISTORY_INSTRUCTIONS = [
   '-完全沉浸在正文，严禁输出除正文以外的结构，包括但不限于：可选项、剧情走向、状态栏、好感度等等，输出正文以外的内容是严重错误',
 ].join('\n');
 
+export const DEFAULT_FIRST_STAGE_POST_HISTORY_INSTRUCTIONS_EN = [
+  '[Output Requirements]',
+  '- Reasonably infer and describe in detail the physical actions, glances, emotional expressions, and inner thoughts the user might make, and their effects on the scene and characters. However, NEVER speak on behalf of the user.',
+  '- All NPCs must have independent personalities, motivations, and boundaries.',
+  '- Each reply body must be complex and uniquely distinctive. Use long sentences for atmosphere and buildup, switch to shorter sentences for key emotional or action moments. Avoid any kind of repetition; guard against potential similarity.',
+  '- Prioritize body word count when outputting prose.',
+  '- Maintain the speaking style and verbal tics defined by the character card.',
+  '- Fully immerse in the prose. STRICTLY FORBIDDEN to output any structure beyond the body, including but not limited to: choices, plot directions, status bars, affinity meters, etc. Outputting anything beyond the body is a serious error.',
+].join('\n');
+
 /** World Info 位置常量（原版 7632） */
 export const WI_POS = {
   BEFORE_CHAR: 0,

@@ -59,11 +59,17 @@ function onLangChange(e: Event) {
   setLocale(target.value);
 }
 
-const langOptions = [
-  { code: 'en', label: 'English' },
-  { code: 'zh-CN', label: '简体中文' },
-  { code: 'zh-TW', label: '繁體中文' },
-].filter((o) => supported.includes(o.code as any));
+const langOptions = computed(() => [
+  { code: 'en', label: t('language_en') },
+  { code: 'zh-CN', label: t('language_zh_cn') },
+  { code: 'zh-TW', label: t('language_zh_tw') },
+  { code: 'es', label: t('language_es') },
+  { code: 'ar', label: t('language_ar') },
+  { code: 'pt', label: t('language_pt') },
+  { code: 'ru', label: t('language_ru') },
+  { code: 'fr', label: t('language_fr') },
+  { code: 'de', label: t('language_de') },
+].filter((o) => supported.includes(o.code as any)));
 </script>
 
 <template>

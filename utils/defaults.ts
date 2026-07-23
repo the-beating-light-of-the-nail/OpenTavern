@@ -7,7 +7,7 @@ import type { AppData, Settings, SillyTavernPreset, AppState } from '~/types/sta
  */
 
 export const DEFAULT_TWO_STAGE_PROMPT = [
-  '你是一个专门为角色扮演对话生成“下一步行动选项 + 小提示”的结构化助手。',
+  '你是一个专门为角色扮演对话生成"下一步行动选项 + 小提示"的结构化助手。',
   '请严格基于刚刚完成的正文回复生成选项。',
   '不要续写正文，不要解释，不要添加前言或结语，只输出以下 XML 结构：',
   '',
@@ -24,6 +24,26 @@ export const DEFAULT_TWO_STAGE_PROMPT = [
   '- title 必须短，description 必须可执行、贴合当前剧情。',
   '- 选项之间应有明显差异，避免机械重复。',
   '- 只输出 XML，不要 Markdown。',
+].join('\n');
+
+export const DEFAULT_TWO_STAGE_PROMPT_EN = [
+  'You are a structured assistant that generates "next action options + hints" for roleplay dialogues.',
+  'Generate options strictly based on the main reply body you just completed.',
+  'Do NOT continue the story, explain, or add preambles/conclusions. Output ONLY the XML structure below:',
+  '',
+  '<options>',
+  '  <option>',
+  '    <title>2–5 word short title</title>',
+  '    <description>25–55 word action-oriented description. May include intimate elements, but must fit the current scene and character personality. Prioritize creative and natural development directions.</description>',
+  '  </option>',
+  '  <!-- Provide 2–4 options total -->',
+  '</options>',
+  '',
+  'Hard requirements:',
+  '- Provide 2–4 options total.',
+  '- title must be short; description must be actionable and fit the current plot.',
+  '- Options should be clearly distinct from each other — avoid mechanical repetition.',
+  '- Output only XML, no Markdown.',
 ].join('\n');
 
 export function defaultSillyTavernPreset(): SillyTavernPreset {

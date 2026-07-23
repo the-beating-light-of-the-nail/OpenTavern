@@ -8,9 +8,15 @@ const ui = useUiStore();
 const { setLocale, supported } = useLocale();
 
 const langOptions = [
-  { code: 'en', label: 'EN' },
-  { code: 'zh-CN', label: '简' },
-  { code: 'zh-TW', label: '繁' },
+  { code: 'en', label: t('lang_en_short') },
+  { code: 'zh-CN', label: t('lang_zh_cn_short') },
+  { code: 'zh-TW', label: t('lang_zh_tw_short') },
+  { code: 'es', label: t('lang_es_short') },
+  { code: 'ar', label: t('lang_ar_short') },
+  { code: 'pt', label: t('lang_pt_short') },
+  { code: 'ru', label: t('lang_ru_short') },
+  { code: 'fr', label: t('lang_fr_short') },
+  { code: 'de', label: t('lang_de_short') },
 ].filter((o) => supported.includes(o.code as any));
 
 function onLangChange(e: Event) {

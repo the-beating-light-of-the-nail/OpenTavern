@@ -78,7 +78,7 @@ function startNoCharacter() {
       >
         <div v-if="isSelected(c)" class="absolute top-1.5 right-1.5 w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center" style="background:var(--color-primary);color:var(--color-on-primary)">&#10003;</div>
         <div class="w-full aspect-square rounded-lg ot-avatar-fill flex items-center justify-center text-[var(--color-on-primary)] font-bold mb-1.5">{{ (c.data?.name || '?').charAt(0) }}</div>
-        <p class="text-xs font-medium truncate" style="color:var(--color-text)">{{ c.data?.name || 'Untitled' }}</p>
+        <p class="text-xs font-medium truncate" style="color:var(--color-text)">{{ c.data?.name || t('default_untitled') }}</p>
       </div>
     </div>
 

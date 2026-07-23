@@ -6,7 +6,7 @@ import { useWorldInfo } from '~/composables/useWorldInfo';
 import { useSummarization } from '~/composables/useSummarization';
 import { useGroupMention } from '~/composables/useGroupMention';
 import { BASE_SYSTEM_PROMPT, BASE_SYSTEM_PROMPT_EN } from '~/utils/prompts';
-import { DEFAULT_TWO_STAGE_PROMPT } from '~/utils/defaults';
+import { DEFAULT_TWO_STAGE_PROMPT, DEFAULT_TWO_STAGE_PROMPT_EN } from '~/utils/defaults';
 import { replacePlaceholders, makeId } from '~/utils/chat-helpers';
 import {
   isGroupChat,
@@ -323,7 +323,8 @@ export function useChat() {
     const charName = getCharName();
     const userName = store.settings.userName || 'User';
 
-    const secondSysPrompt = store.settings.twoStageSystemPrompt || DEFAULT_TWO_STAGE_PROMPT;
+    const defaultTwoStage = store.settings.lang === 'en' ? DEFAULT_TWO_STAGE_PROMPT_EN : DEFAULT_TWO_STAGE_PROMPT;
+    const secondSysPrompt = store.settings.twoStageSystemPrompt || defaultTwoStage;
     const messages: ApiMessage[] = [
       { role: 'system', content: replacePlaceholders(secondSysPrompt, charName, userName) },
       { role: 'user', content: replacePlaceholders(firstStageMsg.content || '', charName, userName) },

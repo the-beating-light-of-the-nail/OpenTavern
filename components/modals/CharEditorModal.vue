@@ -118,34 +118,34 @@ function onCancel() {
         </div>
         <div>
           <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('char_editor_role_type') }}</label>
-          <input v-model="form.roleType" type="text" class="ui-input mt-1" placeholder="e.g. Cold Doctor, Vampire Prince">
+          <input v-model="form.roleType" type="text" class="ui-input mt-1" :placeholder="t('char_editor_placeholder_role_type')">
         </div>
       </div>
 
       <!-- Description -->
       <div>
         <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('char_editor_description') }} <span style="color:var(--color-danger)">*</span></label>
-        <textarea v-model="form.description" rows="5" class="ui-input mt-1 resize-none" placeholder="Who is this character? Their backstory, appearance, what makes them unique..." />
+        <textarea v-model="form.description" rows="5" class="ui-input mt-1 resize-none" :placeholder="t('char_editor_placeholder_description')" />
         <p v-if="errors.description" class="text-[11px] mt-1" style="color:var(--color-danger)">{{ errors.description }}</p>
       </div>
 
       <!-- Personality -->
       <div>
         <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('char_editor_personality') }} <span style="color:var(--color-danger)">*</span></label>
-        <textarea v-model="form.personality" rows="3" class="ui-input mt-1 resize-none" placeholder="How do they behave? Cold but caring, sarcastic, gentle..." />
+        <textarea v-model="form.personality" rows="3" class="ui-input mt-1 resize-none" :placeholder="t('char_editor_placeholder_personality')" />
         <p v-if="errors.personality" class="text-[11px] mt-1" style="color:var(--color-danger)">{{ errors.personality }}</p>
       </div>
 
       <!-- Relationship / How you meet -->
       <div>
         <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('char_editor_relationship') }}</label>
-        <textarea v-model="form.relationship" rows="3" class="ui-input mt-1 resize-none" placeholder="How does the user meet this character? What's the initial dynamic?" />
+        <textarea v-model="form.relationship" rows="3" class="ui-input mt-1 resize-none" :placeholder="t('char_editor_placeholder_relationship')" />
       </div>
 
       <!-- Opening Message -->
       <div>
         <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('char_editor_opening_message') }} <span style="color:var(--color-danger)">*</span></label>
-        <textarea v-model="form.first_mes" rows="4" class="ui-input mt-1 resize-none" placeholder="The first message the character sends to start the conversation..." />
+        <textarea v-model="form.first_mes" rows="4" class="ui-input mt-1 resize-none" :placeholder="t('char_editor_placeholder_first_mes')" />
         <p v-if="errors.first_mes" class="text-[11px] mt-1" style="color:var(--color-danger)">{{ errors.first_mes }}</p>
       </div>
 
@@ -158,15 +158,15 @@ function onCancel() {
         <div class="mt-3 space-y-3">
           <div>
             <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('char_editor_system_prompt') }}</label>
-            <textarea v-model="form.system_prompt" rows="2" class="ui-input mt-1 resize-none" placeholder="Optional custom system-level instructions..." />
+            <textarea v-model="form.system_prompt" rows="2" class="ui-input mt-1 resize-none" :placeholder="t('char_editor_placeholder_system_prompt')" />
           </div>
           <div>
             <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('char_editor_post_history') }}</label>
-            <textarea v-model="form.post_history_instructions" rows="2" class="ui-input mt-1 resize-none" placeholder="Optional instructions injected after chat history..." />
+            <textarea v-model="form.post_history_instructions" rows="2" class="ui-input mt-1 resize-none" :placeholder="t('char_editor_placeholder_post_history')" />
           </div>
           <div>
             <label class="text-[11px] font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">{{ t('char_editor_mes_example') }}</label>
-            <textarea v-model="form.mes_example" rows="3" class="ui-input mt-1 resize-none" placeholder="Example dialogue to guide the AI's style..." />
+            <textarea v-model="form.mes_example" rows="3" class="ui-input mt-1 resize-none" :placeholder="t('char_editor_placeholder_mes_example')" />
           </div>
         </div>
       </details>

@@ -301,7 +301,7 @@ function removeSecKey(idx: number) {
               </span>
             </div>
             <div class="flex gap-2 mt-1.5">
-              <input v-model="keyInput" type="text" class="flex-1 ui-input" placeholder="Add key..." @keydown.enter.prevent="addKey">
+              <input v-model="keyInput" type="text" class="flex-1 ui-input" :placeholder="t('world_book_placeholder_add_key')" @keydown.enter.prevent="addKey">
               <button class="ui-button" @click="addKey">{{ t('add') }}</button>
             </div>
             <div class="text-[10px] mt-0.5" style="color:var(--color-text-muted)">{{ t('wi_keys_hint') }}</div>
