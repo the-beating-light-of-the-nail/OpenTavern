@@ -120,14 +120,14 @@ function onComfyGenerate() {
       <div class="flex items-center gap-2 flex-shrink-0 topbar-actions">
         <NuxtLink v-if="currentSlug" :to="`/characters/${currentSlug}`" class="ui-button ui-button-sm" :title="t('profile')">
           <span class="hidden sm:inline">{{ t('profile') }}</span>
-          <span class="sm:hidden text-[10px] font-semibold uppercase leading-none">Pr</span>
+          <span class="sm:hidden text-[10px] font-semibold uppercase leading-none">{{ t('profile_short') }}</span>
         </NuxtLink>
         <button id="summarizeBtn" class="ui-button ui-button-sm" @click="ui.open('summaryManager')">
           <span class="hidden sm:inline">{{ t('summary_btn') }}</span>
           <span class="sm:hidden text-[10px] font-semibold uppercase leading-none">{{ t('summary_short') }}</span>
         </button>
-        <button id="topConnectBtn" class="ui-button ui-button-icon-sm text-[10px] font-bold" :title="t('connect_your_ai')" @click="ui.open('settings')">AI</button>
-        <button id="topClearChatBtn" v-if="hasActiveConv" class="ui-button ui-button-icon-sm text-[10px]" :title="t('clear_chat')" @click="confirmClear">Clr</button>
+        <button id="topConnectBtn" class="ui-button ui-button-icon-sm text-[10px] font-bold" :title="t('connect_your_ai')" @click="ui.open('settings')">{{ t('ai_short') }}</button>
+        <button id="topClearChatBtn" v-if="hasActiveConv" class="ui-button ui-button-icon-sm text-[10px]" :title="t('clear_chat')" @click="confirmClear">{{ t('clear_short') }}</button>
 
       </div>
     </div>
