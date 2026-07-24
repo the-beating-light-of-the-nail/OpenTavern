@@ -1,18 +1,17 @@
 <script setup lang="ts">
-import { characters } from '~/data/characters';
+import { useCharacters } from '~/data';
 const { t } = useI18n();
 
 useSeoMeta({
-  title: 'Open Tavern · RoleChat AI — Private AI Character Roleplay',
-  description:
-    'Open Tavern (also known as RoleChat AI) is an easy private AI roleplay platform. Chat with original romance and fantasy characters in seconds. No installation. No complicated setup. Bring your own AI key.',
-  ogTitle: 'Open Tavern · RoleChat AI — Private AI Character Roleplay',
-  ogDescription:
-    'Open Tavern (also known as RoleChat AI) is an easy private AI roleplay platform. Chat with original romance and fantasy characters in seconds. No installation. No complicated setup. Bring your own AI key.',
+  title: () => t('home_seo_title'),
+  description: () => t('home_seo_desc'),
+  ogTitle: () => t('home_seo_title'),
+  ogDescription: () => t('home_seo_desc'),
 });
 
 // 首页展示前 6 个原创角色（链接到真实角色页）
-const featured = characters.slice(0, 6);
+const characters = useCharacters();
+const featured = computed(() => characters.value.slice(0, 6));
 
 
 const howSteps = computed(() => [

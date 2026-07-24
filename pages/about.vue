@@ -1,29 +1,27 @@
 <script setup lang="ts">
 const { t } = useI18n();
+const { $i18n } = useNuxtApp();
 
 useSeoMeta({
-  title: 'About Open Tavern · RoleChat AI',
-  description:
-    'Open Tavern (RoleChat AI) is an independent, privacy-first AI roleplay platform. Learn who builds it, why it is bring-your-own-key, and how it keeps your conversations private.',
-  ogTitle: 'About Open Tavern · RoleChat AI',
-  ogDescription:
-    'An independent, privacy-first AI roleplay platform — who builds it and why bring-your-own-key keeps your conversations private.',
+  title: () => t('about_seo_title'),
+  description: () => t('about_seo_desc'),
+  ogTitle: () => t('about_seo_title'),
+  ogDescription: () => t('about_seo_desc'),
 });
 
-useHead({
-  script: [
-    {
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'AboutPage',
-        name: 'About Open Tavern · RoleChat AI',
-        url: absUrl('/about'),
-        inLanguage: 'en',
-      }),
-    },
-  ],
-});
+const jsonLd = computed(() => [
+  {
+    type: 'application/ld+json',
+    innerHTML: JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'AboutPage',
+      name: t('about_seo_title'),
+      url: absUrl('/about'),
+      inLanguage: $i18n.locale.value,
+    }),
+  },
+]);
+useHead({ script: jsonLd });
 </script>
 
 <template>

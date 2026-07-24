@@ -1,29 +1,33 @@
 <script setup lang="ts">
-import { characters } from '~/data/characters';
-import { collections } from '~/data/collections';
+import { useCharacters, useCollections } from '~/data';
 import type { CharacterSeo, CharacterCategory } from '~/types/seo';
 const { t } = useI18n();
 
 useSeoMeta({
-  title: 'Characters — RoleChat AI',
-  description:
-    'Browse 20 original romance and fantasy AI characters on RoleChat AI. Cold doctors, CEOs, brooding vampires, dragon princes and more. Private roleplay with your own AI key.',
-  ogTitle: 'Characters — RoleChat AI',
-  ogDescription:
-    'Browse original romance and fantasy AI characters on RoleChat AI. Chat in seconds with your own AI key.',
+  title: () => t('characters_seo_title'),
+  description: () => t('characters_seo_desc'),
+  ogTitle: () => t('characters_seo_title'),
+  ogDescription: () => t('characters_seo_desc'),
 });
 
 // 大类（固定顺序，用于 category 筛选）；'All' 为筛选占位，渲染时走 i18n
 const categories: (CharacterCategory | 'All')[] = ['All', 'Modern', 'Fantasy', 'Sci-Fi'];
 const activeCategory = ref<CharacterCategory | 'All'>('All');
+/** 分类标签本地化：'All' 走 filter_all；具体分类走 category_<key>（en 下与原值一致） */
 function catLabel(cat: CharacterCategory | 'All'): string {
-  return cat === 'All' ? t('filter_all') : cat;
+  if (cat === 'All') return t('filter_all');
+  const key = cat.toLowerCase().replace('-', '_');
+  return t(`category_${key}`);
 }
+
+// 数据随当前 locale 响应式切换
+const characters = useCharacters();
+const collections = useCollections();
 
 // 标签筛选（纯前端，数据已 SSR 进 HTML）
 const allTags = computed(() => {
   const set = new Set<string>();
-  for (const c of characters) for (const tg of c.tags) set.add(tg);
+  for (const c of characters.value) for (const tg of c.tags) set.add(tg);
   return [...set].sort();
 });
 
@@ -32,7 +36,7 @@ const search = ref('');
 
 const filtered = computed<CharacterSeo[]>(() => {
   const q = search.value.trim().toLowerCase();
-  return characters.filter((c) => {
+  return characters.value.filter((c) => {
     if (activeCategory.value !== 'All' && c.category !== activeCategory.value) return false;
     if (activeTag.value && !c.tags.includes(activeTag.value)) return false;
     if (!q) return true;

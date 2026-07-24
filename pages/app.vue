@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { useAppStore } from '~/stores/app';
-import { getCharacterBySlug } from '~/data/characters';
+import { getCharacterBySlug } from '~/data';
 import { seoCharacterToCardEntry, findExistingConvForCharacter } from '~/utils/seo-to-card';
 
 const store = useAppStore();
 const route = useRoute();
 const router = useRouter();
+const { $i18n } = useNuxtApp();
 
 // 主题 / 效能模式应用（客户端，响应式跟随 settings）
 const { watch: watchTheme } = useTheme();
@@ -22,7 +23,7 @@ watch(
     if (!ready) return;
     const slug = route.query.character;
     if (!slug || typeof slug !== 'string') return;
-    const seo = getCharacterBySlug(slug);
+    const seo = getCharacterBySlug(slug, $i18n.locale.value);
     if (!seo) {
       router.replace({ query: { ...route.query, character: undefined } });
       return;

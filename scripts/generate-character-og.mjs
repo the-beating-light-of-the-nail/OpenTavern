@@ -7,7 +7,8 @@
  * 依赖项目已装的 sharp（devDep）。用法：npm run og:image:characters
  * 输出：public/og/characters/<slug>.png
  *
- * 数据源 data/characters.ts：字段名在文件中唯一，按出现顺序对齐抽取，无需 TS 编译。
+ * 数据源 data/characters/en.ts：字段名在文件中唯一，按出现顺序对齐抽取，无需 TS 编译。
+ * (i18n 数据层按 locale 拆分后，OG 图只基于 en 生成 —— slug 跨 locale 一致，产物路径不变。)
  */
 import sharp from 'sharp';
 import { readFile, mkdir } from 'node:fs/promises';
@@ -16,7 +17,7 @@ import { dirname, resolve } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
-const SRC = resolve(ROOT, 'data/characters.ts');
+const SRC = resolve(ROOT, 'data/characters/en.ts');
 const OUT_DIR = resolve(ROOT, 'public/og/characters');
 
 const C = {

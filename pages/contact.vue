@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const SUPPORT_EMAIL = 'r3fbilgebasaran@gmail.com';
 const { t } = useI18n();
+const { $i18n } = useNuxtApp();
 
 const seoTitle = computed(() => t('contact_title') + ' · ' + 'Open Tavern · RoleChat AI');
 const seoDesc = computed(() => t('contact_subtitle'));
@@ -12,26 +13,25 @@ useSeoMeta({
   ogDescription: seoDesc,
 });
 
-useHead({
-  script: [
-    {
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'ContactPage',
-        name: seoTitle.value,
-        url: absUrl('/contact'),
-        inLanguage: 'en',
-        mainEntity: {
-          '@type': 'Organization',
-          name: 'Open Tavern',
-          email: `mailto:${SUPPORT_EMAIL}`,
-          url: absUrl('/'),
-        },
-      }),
-    },
-  ],
-});
+const jsonLd = computed(() => [
+  {
+    type: 'application/ld+json',
+    innerHTML: JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'ContactPage',
+      name: seoTitle.value,
+      url: absUrl('/contact'),
+      inLanguage: $i18n.locale.value,
+      mainEntity: {
+        '@type': 'Organization',
+        name: 'Open Tavern',
+        email: `mailto:${SUPPORT_EMAIL}`,
+        url: absUrl('/'),
+      },
+    }),
+  },
+]);
+useHead({ script: jsonLd });
 </script>
 
 <template>

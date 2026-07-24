@@ -24,7 +24,3 @@ export const collections: CollectionSeo[] = [
     characterSlugs: ['the-brooding-vampire-lord', 'the-exiled-knight', 'the-gentle-librarian'],
   },
 ];
-
-export function getCollectionBySlug(slug: string): CollectionSeo | undefined {
-  return collections.find((c) => c.slug === slug);
-}

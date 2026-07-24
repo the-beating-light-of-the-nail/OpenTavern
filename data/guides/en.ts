@@ -408,7 +408,3 @@ export const guides: GuideSeo[] = [
     ],
   },
 ];
-
-export function getGuideBySlug(slug: string): GuideSeo | undefined {
-  return guides.find((g) => g.slug === slug);
-}

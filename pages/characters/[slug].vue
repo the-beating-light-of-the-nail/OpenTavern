@@ -1,59 +1,60 @@
 <script setup lang="ts">
-import { getCharacterBySlug, characters } from '~/data/characters';
+import { getCharacterBySlug } from '~/data';
 const { t } = useI18n();
+const { $i18n } = useNuxtApp();
 
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
-const character = computed(() => getCharacterBySlug(slug.value));
+// 按当前 locale 取角色数据（locale 切换时自动重算）
+const character = computed(() => getCharacterBySlug(slug.value, $i18n.locale.value));
 
 // 未知 slug → 404（prerender 时会为已知 slug 生成静态页，未知走此抛错）
 if (!character.value) {
   throw createError({ statusCode: 404, statusMessage: 'Character not found', fatal: true });
 }
 
-const c = character.value;
+const c = computed(() => character.value!);
 
 useSeoMeta({
-  title: c.seoTitle,
-  description: c.seoDescription,
-  ogTitle: c.seoTitle,
-  ogDescription: c.seoDescription,
+  title: () => c.value.seoTitle,
+  description: () => c.value.seoDescription,
+  ogTitle: () => c.value.seoTitle,
+  ogDescription: () => c.value.seoDescription,
   // 每角色专属分享图（scripts/generate-character-og.mjs 生成）
-  ogImage: absUrl(`/og/characters/${c.slug}.png`),
-  twitterImage: absUrl(`/og/characters/${c.slug}.png`),
+  ogImage: absUrl(`/og/characters/${c.value.slug}.png`),
+  twitterImage: absUrl(`/og/characters/${c.value.slug}.png`),
 });
 
 // 结构化数据：WebPage（角色实体信号）+ BreadcrumbList（面包屑富结果）
-const charUrl = absUrl(`/characters/${c.slug}`);
-useHead({
-  script: [
-    {
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'WebPage',
-        name: c.name,
-        description: c.seoDescription,
-        url: charUrl,
-        inLanguage: 'en',
-      }),
-    },
-    {
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify(
-        breadcrumbSchema([
-          { name: 'Home', path: '/' },
-          { name: 'Characters', path: '/characters' },
-          { name: c.name, path: `/characters/${c.slug}` },
-        ]),
-      ),
-    },
-  ],
-});
+const charUrl = computed(() => absUrl(`/characters/${c.value.slug}`));
+const jsonLd = computed(() => [
+  {
+    type: 'application/ld+json',
+    innerHTML: JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: c.value.name,
+      description: c.value.seoDescription,
+      url: charUrl.value,
+      inLanguage: $i18n.locale.value,
+    }),
+  },
+  {
+    type: 'application/ld+json',
+    innerHTML: JSON.stringify(
+      breadcrumbSchema([
+        { name: t('breadcrumb_home'), path: '/' },
+        { name: t('nav_characters'), path: '/characters' },
+        { name: c.value.name, path: `/characters/${c.value.slug}` },
+      ]),
+    ),
+  },
+]);
+useHead({ script: jsonLd });
 
 const related = computed(() =>
-  c.relatedSlugs
-    .map((s) => getCharacterBySlug(s))
+  c.value.relatedSlugs
+    .map((s) => getCharacterBySlug(s, $i18n.locale.value))
     .filter((x): x is NonNullable<typeof x> => !!x),
 );
 </script>

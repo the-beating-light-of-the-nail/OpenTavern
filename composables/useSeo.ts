@@ -2,7 +2,8 @@
 // SITE_URL 与 nuxt.config 的 site.url 保持一致；换域名时只改这里 + nuxt.config
 
 export const SITE_URL = 'https://open-tavern.vercel.app';
-export const LOCALES = ['en', 'zh-CN', 'zh-TW'] as const;
+// 全部支持的 locale —— hreflang 必须覆盖所有语言，否则非中英文 locale 的 alternate 链断裂
+export const LOCALES = ['en', 'zh-CN', 'zh-TW', 'es', 'ar', 'pt', 'ru', 'fr', 'de'] as const;
 
 /** 规范化站内路径为绝对 URL（用于 canonical / og:url / schema） */
 export function absUrl(path = ''): string {
@@ -31,12 +32,12 @@ export function useHreflang() {
     // 补全斜杠
     if (!basePath.startsWith('/')) basePath = `/${basePath}`;
 
-    return LOCALES.map((loc) => {
+    const links: { rel: string; hreflang: string; href: string }[] = LOCALES.map((loc) => {
       const url = loc === 'en' ? absUrl(basePath) : absUrl(`/${loc}${basePath === '/' ? '' : basePath}`);
       return { rel: 'alternate', hreflang: loc, href: url };
-    }).concat([
-      { rel: 'alternate', hreflang: 'x-default', href: absUrl(basePath) },
-    ]);
+    });
+    links.push({ rel: 'alternate', hreflang: 'x-default', href: absUrl(basePath) });
+    return links;
   });
 }
 

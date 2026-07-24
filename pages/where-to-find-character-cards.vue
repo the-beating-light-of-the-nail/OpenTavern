@@ -8,45 +8,23 @@ useSeoMeta({
   ogDescription: () => t('wfc_subtitle'),
 });
 
+// 资源站点：name 为专有名词（保持英文不译），desc 走 i18n。
+// id 用于拼 i18n key：wfc_res_<id>_desc
 const collections = [
-  {
-    name: 'Chatbots Webring',
-    desc: 'A collection of character cards gathered from multiple platforms.',
-  },
-  {
-    name: 'AICharacterCards.com',
-    desc: 'A large collection of SillyTavern cards, plus several beginner-friendly guides for using SillyTavern. Also has a fun roulette feature that gives you a random character card.',
-  },
-  {
-    name: 'Character Tavern',
-    desc: 'A collection of cards from the SillyTavern community.',
-  },
-  {
-    name: 'realm.risuai.net',
-    desc: 'A collection of character cards from RisuAI.',
-  },
-  {
-    name: 'Janny AI',
-    desc: 'A collection of character cards from Janitor AI.',
-  },
+  { name: 'Chatbots Webring', descKey: 'wfc_res_chatbots_webring_desc' },
+  { name: 'AICharacterCards.com', descKey: 'wfc_res_aicharactercards_desc' },
+  { name: 'Character Tavern', descKey: 'wfc_res_character_tavern_desc' },
+  { name: 'realm.risuai.net', descKey: 'wfc_res_risuai_desc' },
+  { name: 'Janny AI', descKey: 'wfc_res_janny_ai_desc' },
 ];
 
 const cardsAndLorebooks = [
-  {
-    name: 'BotBooru',
-    desc: 'Character cards gathered from multiple websites, along with lorebooks.',
-  },
-  {
-    name: 'DataCat',
-    desc: 'Lets you search for character cards and, in some cases, upload or download your own.',
-  },
+  { name: 'BotBooru', descKey: 'wfc_res_botbooru_desc' },
+  { name: 'DataCat', descKey: 'wfc_res_datacat_desc' },
 ];
 
 const individual = [
-  {
-    name: 'Wyvern.chat',
-    desc: 'Popular among former Janitor AI users and also allows you to download character cards.',
-  },
+  { name: 'Wyvern.chat', descKey: 'wfc_res_wyvern_chat_desc' },
 ];
 </script>
 
@@ -81,7 +59,7 @@ const individual = [
         <div class="mt-4 grid grid-cols-1 gap-3">
           <div v-for="r in collections" :key="r.name" class="rc-card p-5">
             <h3 class="font-display text-lg font-semibold tracking-wide">{{ r.name }}</h3>
-            <p class="mt-2 text-sm leading-relaxed text-plum-muted">{{ r.desc }}</p>
+            <p class="mt-2 text-sm leading-relaxed text-plum-muted">{{ t(r.descKey) }}</p>
           </div>
         </div>
       </section>
@@ -92,7 +70,7 @@ const individual = [
         <div class="mt-4 grid grid-cols-1 gap-3">
           <div v-for="r in cardsAndLorebooks" :key="r.name" class="rc-card p-5">
             <h3 class="font-display text-lg font-semibold tracking-wide">{{ r.name }}</h3>
-            <p class="mt-2 text-sm leading-relaxed text-plum-muted">{{ r.desc }}</p>
+            <p class="mt-2 text-sm leading-relaxed text-plum-muted">{{ t(r.descKey) }}</p>
           </div>
         </div>
       </section>
@@ -103,7 +81,7 @@ const individual = [
         <div class="mt-4 grid grid-cols-1 gap-3">
           <div v-for="r in individual" :key="r.name" class="rc-card p-5">
             <h3 class="font-display text-lg font-semibold tracking-wide">{{ r.name }}</h3>
-            <p class="mt-2 text-sm leading-relaxed text-plum-muted">{{ r.desc }}</p>
+            <p class="mt-2 text-sm leading-relaxed text-plum-muted">{{ t(r.descKey) }}</p>
           </div>
         </div>
       </section>

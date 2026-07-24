@@ -1,28 +1,28 @@
 <script setup lang="ts">
-import { getCollectionBySlug } from '~/data/collections';
-import { getCharacterBySlug } from '~/data/characters';
+import { getCollectionBySlug, getCharacterBySlug } from '~/data';
 const { t } = useI18n();
+const { $i18n } = useNuxtApp();
 
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
-const collection = computed(() => getCollectionBySlug(slug.value));
+const collection = computed(() => getCollectionBySlug(slug.value, $i18n.locale.value));
 
 if (!collection.value) {
   throw createError({ statusCode: 404, statusMessage: 'Collection not found', fatal: true });
 }
 
-const col = collection.value;
+const col = computed(() => collection.value!);
 
 useSeoMeta({
-  title: `${col.title} | RoleChat AI`,
-  description: col.seoDescription,
-  ogTitle: `${col.title} | RoleChat AI`,
-  ogDescription: col.seoDescription,
+  title: () => `${col.value.title} | RoleChat AI`,
+  description: () => col.value.seoDescription,
+  ogTitle: () => `${col.value.title} | RoleChat AI`,
+  ogDescription: () => col.value.seoDescription,
 });
 
 const members = computed(() =>
-  col.characterSlugs
-    .map((s) => getCharacterBySlug(s))
+  col.value.characterSlugs
+    .map((s) => getCharacterBySlug(s, $i18n.locale.value))
     .filter((x): x is NonNullable<typeof x> => !!x),
 );
 </script>

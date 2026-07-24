@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { guides } from '~/data/guides';
+import { useGuides } from '~/data';
 const { t } = useI18n();
 
 useSeoMeta({
-  title: 'Guides — RoleChat AI',
-  description:
-    'Beginner-friendly guides to AI roleplay on RoleChat AI. Learn how to start your first chat, get an AI key, and make characters feel more alive.',
-  ogTitle: 'Guides — RoleChat AI',
-  ogDescription:
-    'Beginner-friendly guides to AI roleplay on RoleChat AI. Start chatting in minutes.',
+  title: () => t('guides_seo_title'),
+  description: () => t('guides_seo_desc'),
+  ogTitle: () => t('guides_seo_title'),
+  ogDescription: () => t('guides_seo_desc'),
 });
+
+const guides = useGuides();
 </script>
 
 <template>

@@ -1,56 +1,55 @@
 <script setup lang="ts">
-import { getGuideBySlug } from '~/data/guides';
+import { getGuideBySlug } from '~/data';
 const { t } = useI18n();
+const { $i18n } = useNuxtApp();
 
 const route = useRoute();
 const slug = computed(() => String(route.params.slug));
-const guide = computed(() => getGuideBySlug(slug.value));
+const guide = computed(() => getGuideBySlug(slug.value, $i18n.locale.value));
 
 if (!guide.value) {
   throw createError({ statusCode: 404, statusMessage: 'Guide not found', fatal: true });
 }
 
-const g = guide.value;
+const g = computed(() => guide.value!);
 
 useSeoMeta({
-  title: `${g.title} | RoleChat AI`,
-  description: g.description,
-  ogTitle: `${g.title} | RoleChat AI`,
-  ogDescription: g.description,
+  title: () => `${g.value.title} | RoleChat AI`,
+  description: () => g.value.description,
+  ogTitle: () => `${g.value.title} | RoleChat AI`,
+  ogDescription: () => g.value.description,
 });
 
 // 结构化数据：Article（指南正文实体）+ BreadcrumbList（面包屑富结果）
-// datePublished 取自 guides.ts；如需 Person 作者以增强 E-E-A-T，可加 author 字段
-const guideUrl = absUrl(`/guides/${g.slug}`);
-useHead({
-  script: [
-    {
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'Article',
-        headline: g.title,
-        description: g.description,
-        url: guideUrl,
-        inLanguage: 'en',
-        datePublished: g.datePublished,
-        dateModified: g.datePublished,
-        author: { '@type': 'Organization', name: 'Open Tavern' },
-        publisher: { '@type': 'Organization', name: 'Open Tavern' },
-      }),
-    },
-    {
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify(
-        breadcrumbSchema([
-          { name: 'Home', path: '/' },
-          { name: 'Guides', path: '/guides' },
-          { name: g.title, path: `/guides/${g.slug}` },
-        ]),
-      ),
-    },
-  ],
-});
+const guideUrl = computed(() => absUrl(`/guides/${g.value.slug}`));
+const jsonLd = computed(() => [
+  {
+    type: 'application/ld+json',
+    innerHTML: JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: g.value.title,
+      description: g.value.description,
+      url: guideUrl.value,
+      inLanguage: $i18n.locale.value,
+      datePublished: g.value.datePublished,
+      dateModified: g.value.datePublished,
+      author: { '@type': 'Organization', name: 'Open Tavern' },
+      publisher: { '@type': 'Organization', name: 'Open Tavern' },
+    }),
+  },
+  {
+    type: 'application/ld+json',
+    innerHTML: JSON.stringify(
+      breadcrumbSchema([
+        { name: t('breadcrumb_home'), path: '/' },
+        { name: t('nav_guides'), path: '/guides' },
+        { name: g.value.title, path: `/guides/${g.value.slug}` },
+      ]),
+    ),
+  },
+]);
+useHead({ script: jsonLd });
 </script>
 
 <template>

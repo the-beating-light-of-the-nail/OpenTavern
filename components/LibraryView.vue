@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAppStore } from '~/stores/app';
-import { characters } from '~/data/characters';
+import { useCharacters } from '~/data';
 import type { CharacterSeo } from '~/types/seo';
 
 const store = useAppStore();
@@ -10,11 +10,20 @@ const { t } = useI18n();
 const activeTab = ref<'public' | 'my'>('public');
 const search = ref('');
 
-// 乙女向筛选标签（灵活匹配 archetype/category/tags/personalityTags/tagline）
-const otomeChips = [
-  'Boyfriend', 'CEO', 'Doctor', 'Bodyguard', 'Vampire',
-  'Fantasy', 'Slow Burn', 'Gentle', 'Possessive', 'Enemies to Lovers',
-];
+// 乙女向筛选标签：展示文案走 i18n，匹配逻辑用 norm() 归一化后包含匹配，
+// 因此中文/英文任意 locale 下都能正确命中角色数据。
+const otomeChips = computed(() => [
+  { label: t('otome_chip_boyfriend'), needle: 'Boyfriend' },
+  { label: t('otome_chip_ceo'), needle: 'CEO' },
+  { label: t('otome_chip_doctor'), needle: 'Doctor' },
+  { label: t('otome_chip_bodyguard'), needle: 'Bodyguard' },
+  { label: t('otome_chip_vampire'), needle: 'Vampire' },
+  { label: t('otome_chip_fantasy'), needle: 'Fantasy' },
+  { label: t('otome_chip_slow_burn'), needle: 'Slow Burn' },
+  { label: t('otome_chip_gentle'), needle: 'Gentle' },
+  { label: t('otome_chip_possessive'), needle: 'Possessive' },
+  { label: t('otome_chip_enemies_to_lovers'), needle: 'Enemies to Lovers' },
+]);
 const activeChip = ref<string | null>(null);
 
 /** 规范化：去标点、小写，用于 chip 包含匹配（如 'Enemies-to-Lovers' ↔ 'Enemies to Lovers'） */
@@ -33,10 +42,11 @@ function matchesChip(c: CharacterSeo, chip: string): boolean {
   return haystack.some((h) => h.includes(needle));
 }
 
-// ---- Public（静态 SEO 角色）----
+// ---- Public（静态 SEO 角色，随当前 locale 响应式切换）----
+const allCharacters = useCharacters();
 const publicCards = computed<CharacterSeo[]>(() => {
   const q = search.value.trim().toLowerCase();
-  return characters.filter((c) => {
+  return allCharacters.value.filter((c) => {
     if (activeChip.value && !matchesChip(c, activeChip.value)) return false;
     if (!q) return true;
     return (
@@ -107,11 +117,11 @@ function onSelectMyCard(cardVm: CardVM) {
         >{{ t('filter_all') }}</button>
         <button
           v-for="chip in otomeChips"
-          :key="chip"
+          :key="chip.needle"
           class="filter-btn ui-chip ui-chip-sm transition-all"
-          :class="activeChip === chip ? 'active' : ''"
-          @click="activeChip = activeChip === chip ? null : chip"
-        >{{ chip }}</button>
+          :class="activeChip === chip.needle ? 'active' : ''"
+          @click="activeChip = activeChip === chip.needle ? null : chip.needle"
+        >{{ chip.label }}</button>
       </div>
     </div>
 

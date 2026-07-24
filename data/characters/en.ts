@@ -693,7 +693,3 @@ export const characters: CharacterSeo[] = [
     seoDescription: 'Chat with Ezra, the time traveler who has searched a thousand lifetimes for you. A soulmate SFW slow-burn comfort romance.',
   },
 ];
-
-export function getCharacterBySlug(slug: string): CharacterSeo | undefined {
-  return characters.find((c) => c.slug === slug);
-}
