@@ -22,3 +22,6 @@ npm-debug.log*
 .idea
 .vscode/*
 !.vscode/extensions.json
+
+# i18n content-generation work dir (manifests + native-rewrite outputs)
+.i18n-work/

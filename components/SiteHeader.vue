@@ -17,6 +17,22 @@ const langOptions = [
   { code: 'ru', label: t('lang_ru_short') },
   { code: 'fr', label: t('lang_fr_short') },
   { code: 'de', label: t('lang_de_short') },
+  { code: 'ja', label: t('lang_ja_short') },
+  { code: 'ko', label: t('lang_ko_short') },
+  { code: 'it', label: t('lang_it_short') },
+  { code: 'nl', label: t('lang_nl_short') },
+  { code: 'sv', label: t('lang_sv_short') },
+  { code: 'no', label: t('lang_no_short') },
+  { code: 'da', label: t('lang_da_short') },
+  { code: 'fi', label: t('lang_fi_short') },
+  { code: 'pl', label: t('lang_pl_short') },
+  { code: 'tr', label: t('lang_tr_short') },
+  { code: 'hi', label: t('lang_hi_short') },
+  { code: 'id', label: t('lang_id_short') },
+  { code: 'vi', label: t('lang_vi_short') },
+  { code: 'th', label: t('lang_th_short') },
+  { code: 'ms', label: t('lang_ms_short') },
+  { code: 'tl', label: t('lang_tl_short') },
 ].filter((o) => supported.includes(o.code as any));
 
 function onLangChange(e: Event) {

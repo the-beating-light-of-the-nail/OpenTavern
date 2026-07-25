@@ -28,22 +28,120 @@ import { guides as zhTWGuides } from './guides/zh-TW';
 import { collections as zhTWCollections } from './collections/zh-TW';
 import { characters as zhTWCharacters } from './characters/zh-TW';
 
+// 新增语种内容（由原生重写生成，2026-07；AST 外科式注入自 en.ts）
+import { characters as jaCharacters } from './characters/ja';
+import { guides as jaGuides } from './guides/ja';
+import { collections as jaCollections } from './collections/ja';
+import { characters as koCharacters } from './characters/ko';
+import { guides as koGuides } from './guides/ko';
+import { collections as koCollections } from './collections/ko';
+import { characters as itCharacters } from './characters/it';
+import { guides as itGuides } from './guides/it';
+import { collections as itCollections } from './collections/it';
+import { characters as nlCharacters } from './characters/nl';
+import { guides as nlGuides } from './guides/nl';
+import { collections as nlCollections } from './collections/nl';
+import { characters as svCharacters } from './characters/sv';
+import { guides as svGuides } from './guides/sv';
+import { collections as svCollections } from './collections/sv';
+import { characters as noCharacters } from './characters/no';
+import { guides as noGuides } from './guides/no';
+import { collections as noCollections } from './collections/no';
+import { characters as daCharacters } from './characters/da';
+import { guides as daGuides } from './guides/da';
+import { collections as daCollections } from './collections/da';
+import { characters as fiCharacters } from './characters/fi';
+import { guides as fiGuides } from './guides/fi';
+import { collections as fiCollections } from './collections/fi';
+import { characters as plCharacters } from './characters/pl';
+import { guides as plGuides } from './guides/pl';
+import { collections as plCollections } from './collections/pl';
+import { characters as trCharacters } from './characters/tr';
+import { guides as trGuides } from './guides/tr';
+import { collections as trCollections } from './collections/tr';
+import { characters as hiCharacters } from './characters/hi';
+import { guides as hiGuides } from './guides/hi';
+import { collections as hiCollections } from './collections/hi';
+import { characters as idCharacters } from './characters/id';
+import { guides as idGuides } from './guides/id';
+import { collections as idCollections } from './collections/id';
+import { characters as viCharacters } from './characters/vi';
+import { guides as viGuides } from './guides/vi';
+import { collections as viCollections } from './collections/vi';
+import { characters as thCharacters } from './characters/th';
+import { guides as thGuides } from './guides/th';
+import { collections as thCollections } from './collections/th';
+import { characters as msCharacters } from './characters/ms';
+import { guides as msGuides } from './guides/ms';
+import { collections as msCollections } from './collections/ms';
+import { characters as tlCharacters } from './characters/tl';
+import { guides as tlGuides } from './guides/tl';
+import { collections as tlCollections } from './collections/tl';
+
 const CHARACTER_MAP: Record<string, CharacterSeo[]> = {
   en: enCharacters,
   'zh-CN': zhCNCharacters,
   'zh-TW': zhTWCharacters,
+  ja: jaCharacters,
+  ko: koCharacters,
+  it: itCharacters,
+  nl: nlCharacters,
+  sv: svCharacters,
+  no: noCharacters,
+  da: daCharacters,
+  fi: fiCharacters,
+  pl: plCharacters,
+  tr: trCharacters,
+  hi: hiCharacters,
+  id: idCharacters,
+  vi: viCharacters,
+  th: thCharacters,
+  ms: msCharacters,
+  tl: tlCharacters,
 };
 
 const GUIDE_MAP: Record<string, GuideSeo[]> = {
   en: enGuides,
   'zh-CN': zhCNGuides,
   'zh-TW': zhTWGuides,
+  ja: jaGuides,
+  ko: koGuides,
+  it: itGuides,
+  nl: nlGuides,
+  sv: svGuides,
+  no: noGuides,
+  da: daGuides,
+  fi: fiGuides,
+  pl: plGuides,
+  tr: trGuides,
+  hi: hiGuides,
+  id: idGuides,
+  vi: viGuides,
+  th: thGuides,
+  ms: msGuides,
+  tl: tlGuides,
 };
 
 const COLLECTION_MAP: Record<string, CollectionSeo[]> = {
   en: enCollections,
   'zh-CN': zhCNCollections,
   'zh-TW': zhTWCollections,
+  ja: jaCollections,
+  ko: koCollections,
+  it: itCollections,
+  nl: nlCollections,
+  sv: svCollections,
+  no: noCollections,
+  da: daCollections,
+  fi: fiCollections,
+  pl: plCollections,
+  tr: trCollections,
+  hi: hiCollections,
+  id: idCollections,
+  vi: viCollections,
+  th: thCollections,
+  ms: msCollections,
+  tl: tlCollections,
 };
 
 /** 取 map 中对应 locale 的数据;locale 未命中时显式 fallback 到 en */

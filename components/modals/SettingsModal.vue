@@ -69,6 +69,22 @@ const langOptions = computed(() => [
   { code: 'ru', label: t('language_ru') },
   { code: 'fr', label: t('language_fr') },
   { code: 'de', label: t('language_de') },
+  { code: 'ja', label: t('language_ja') },
+  { code: 'ko', label: t('language_ko') },
+  { code: 'it', label: t('language_it') },
+  { code: 'nl', label: t('language_nl') },
+  { code: 'sv', label: t('language_sv') },
+  { code: 'no', label: t('language_no') },
+  { code: 'da', label: t('language_da') },
+  { code: 'fi', label: t('language_fi') },
+  { code: 'pl', label: t('language_pl') },
+  { code: 'tr', label: t('language_tr') },
+  { code: 'hi', label: t('language_hi') },
+  { code: 'id', label: t('language_id') },
+  { code: 'vi', label: t('language_vi') },
+  { code: 'th', label: t('language_th') },
+  { code: 'ms', label: t('language_ms') },
+  { code: 'tl', label: t('language_tl') },
 ].filter((o) => supported.includes(o.code as any)));
 </script>
 

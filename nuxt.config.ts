@@ -57,7 +57,7 @@ export default defineNuxtConfig({
     preset: 'vercel',
     prerender: {
       crawlLinks: true,
-      routes: ['/sitemap.xml', '/zh-CN/sitemap.xml', '/zh-TW/sitemap.xml', '/es/sitemap.xml', '/ar/sitemap.xml', '/pt/sitemap.xml', '/ru/sitemap.xml', '/fr/sitemap.xml', '/de/sitemap.xml'],
+      routes: ['/sitemap.xml', '/zh-CN/sitemap.xml', '/zh-TW/sitemap.xml', '/es/sitemap.xml', '/ar/sitemap.xml', '/pt/sitemap.xml', '/ru/sitemap.xml', '/fr/sitemap.xml', '/de/sitemap.xml', '/ja/sitemap.xml', '/ko/sitemap.xml', '/it/sitemap.xml', '/nl/sitemap.xml', '/sv/sitemap.xml', '/no/sitemap.xml', '/da/sitemap.xml', '/fi/sitemap.xml', '/pl/sitemap.xml', '/tr/sitemap.xml', '/hi/sitemap.xml', '/id/sitemap.xml', '/vi/sitemap.xml', '/th/sitemap.xml', '/ms/sitemap.xml', '/tl/sitemap.xml'],
     },
   },
 
@@ -109,6 +109,22 @@ export default defineNuxtConfig({
       { code: 'ru', language: 'ru-RU', name: 'Русский', file: 'ru.json' },
       { code: 'fr', language: 'fr-FR', name: 'Français', file: 'fr.json' },
       { code: 'de', language: 'de-DE', name: 'Deutsch', file: 'de.json' },
+      { code: 'ja', language: 'ja-JP', name: '日本語', file: 'ja.json' },
+      { code: 'ko', language: 'ko-KR', name: '한국어', file: 'ko.json' },
+      { code: 'it', language: 'it-IT', name: 'Italiano', file: 'it.json' },
+      { code: 'nl', language: 'nl-NL', name: 'Nederlands', file: 'nl.json' },
+      { code: 'sv', language: 'sv-SE', name: 'Svenska', file: 'sv.json' },
+      { code: 'no', language: 'nb-NO', name: 'Norsk', file: 'no.json' },
+      { code: 'da', language: 'da-DK', name: 'Dansk', file: 'da.json' },
+      { code: 'fi', language: 'fi-FI', name: 'Suomi', file: 'fi.json' },
+      { code: 'pl', language: 'pl-PL', name: 'Polski', file: 'pl.json' },
+      { code: 'tr', language: 'tr-TR', name: 'Türkçe', file: 'tr.json' },
+      { code: 'hi', language: 'hi-IN', name: 'हिन्दी', file: 'hi.json' },
+      { code: 'id', language: 'id-ID', name: 'Bahasa Indonesia', file: 'id.json' },
+      { code: 'vi', language: 'vi-VN', name: 'Tiếng Việt', file: 'vi.json' },
+      { code: 'th', language: 'th-TH', name: 'ไทย', file: 'th.json' },
+      { code: 'ms', language: 'ms-MY', name: 'Bahasa Melayu', file: 'ms.json' },
+      { code: 'tl', language: 'tl-PH', name: 'Filipino', file: 'tl.json' },
     ],
     customRoutes: 'config',
     pages: {},
@@ -121,7 +137,7 @@ export default defineNuxtConfig({
 
   sitemap: {
     // /app 是纯客户端 SPA，不索引；其余预渲染路由由模块从 nitro prerender 自动发现
-    exclude: ['/app/**', '/app', '/zh-CN/app', '/zh-TW/app', '/es/app', '/ar/app', '/pt/app', '/ru/app', '/fr/app', '/de/app'],
+    exclude: ['/app/**', '/app', '/zh-CN/app', '/zh-TW/app', '/es/app', '/ar/app', '/pt/app', '/ru/app', '/fr/app', '/de/app', '/ja/app', '/ko/app', '/it/app', '/nl/app', '/sv/app', '/no/app', '/da/app', '/fi/app', '/pl/app', '/tr/app', '/hi/app', '/id/app', '/vi/app', '/th/app', '/ms/app', '/tl/app'],
     // 与 i18n 集成：自动生成 <xhtml:link rel="alternate" hreflang="..."> 备选语言链接
     autoLastmod: true,
     i18n: true,
