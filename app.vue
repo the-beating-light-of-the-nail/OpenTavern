@@ -5,6 +5,7 @@
 <script setup lang="ts">
 // 站点级 SEO 默认值（所有页面生效；页面内 useSeoMeta 可按需覆盖）
 // 解决审计发现的全站缺失项：canonical、OG/Twitter、Organization/WebSite JSON-LD
+import { ACTIVE_AD, ADS } from '~/utils/ads';
 // SITE_URL / 绝对 URL 统一来自 composables/useSeo.ts（单一来源）
 const canonicalUrl = useCanonicalUrl();
 const hreflangLinks = useHreflang();
