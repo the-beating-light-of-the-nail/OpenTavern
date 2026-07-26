@@ -20,6 +20,8 @@ const { t } = useI18n();
         <NuxtLink to="/guides" class="hover:text-plum-light">{{ t('nav_guides') }}</NuxtLink>
         <NuxtLink to="/about" class="hover:text-plum-light">{{ t('nav_about') }}</NuxtLink>
         <NuxtLink to="/contact" class="hover:text-plum-light">{{ t('nav_contact') }}</NuxtLink>
+        <NuxtLink to="/privacy" class="hover:text-plum-light">{{ t('nav_privacy') }}</NuxtLink>
+        <NuxtLink to="/terms" class="hover:text-plum-light">{{ t('nav_terms') }}</NuxtLink>
         <NuxtLink to="/app" class="hover:text-plum-light">{{ t('nav_open_app') }}</NuxtLink>
       </nav>
       <p class="text-xs text-plum-faint">{{ t('home_footer_tagline') }}</p>

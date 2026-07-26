@@ -13,6 +13,8 @@ export default defineNuxtConfig({
     '/guides/**': { prerender: true },
     '/about': { prerender: true },
     '/contact': { prerender: true },
+    '/privacy': { prerender: true },
+    '/terms': { prerender: true },
     '/app': { ssr: false, headers: { 'X-Robots-Tag': 'noindex' } },
     // 全站安全响应头（审计 Phase 2）；CSP 留待渲染回归测试后再加，避免误伤内联 hydration 脚本
     '/**': {
