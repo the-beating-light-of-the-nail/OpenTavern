@@ -55,4 +55,12 @@ useHead({
     },
   ],
 });
+
+// ── 广告测试：全站型广告脚本（popunder / social-bar），按 utils/ads.ts 的 ACTIVE_AD 开关注入 ──
+// 仅浏览器端执行；prerender 只输出 <script> 标签，不运行外部脚本。
+// 换 AdSense 前把 ACTIVE_AD 设为 'none' 即可彻底移除。
+if (ACTIVE_AD === 'popunder' || ACTIVE_AD === 'social-bar') {
+  const adSrc = ACTIVE_AD === 'popunder' ? ADS.popunder : ADS.socialBar;
+  useHead({ script: [{ src: adSrc, async: true, body: true }] });
+}
 </script>
