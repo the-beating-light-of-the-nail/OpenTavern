@@ -792,5 +792,8 @@
   "terms_contact_title": "Contact",
   "terms_contact_body": "Questions about these terms? Email us at",
   "terms_seo_title": "Terms of Service · Open Tavern · RoleChat AI",
-  "terms_seo_desc": "Open Tavern is a neutral client-side creative tool: bring your own AI key, and you are responsible for what you create. Read the full terms of service."
+  "terms_seo_desc": "Open Tavern is a neutral client-side creative tool: bring your own AI key, and you are responsible for what you create. Read the full terms of service.",
+  "cookie_message": "Vi bruker informasjonskapsler for å måle trafikk og forbedre opplevelsen din.",
+  "cookie_accept": "Godta",
+  "cookie_reject": "Avvis"
 }

@@ -85,6 +85,25 @@ export default defineNuxtConfig({
           href: 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Serif+SC:wght@600;700&display=swap',
         },
       ],
+      // Google Analytics 4 (gtag.js) —— 直接写入 <head>，随 SSR/预渲染进入静态 HTML，
+      // 爬虫 / Tag Assistant / view-source 均可见（旧版 plugins/gtag.client.ts 运行时注入
+      // 不会进静态页，导致 GA 校验/首屏抓取检测不到）。
+      script: [
+        // 1) Consent Mode v2 默认拒绝（同步 inline，在 gtag.js 执行前设好）—— EEA 合规。
+        //    gtag.js（步骤2）为 async，必定晚于此段执行，因此总能读到 denied 默认。
+        {
+          innerHTML:
+            "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});",
+        },
+        // 2) 异步加载 gtag.js（GA4 测量 ID G-9P6PL73E94）。
+        { src: 'https://www.googletagmanager.com/gtag/js?id=G-9P6PL73E94', async: true },
+        // 3) page_view 配置；仅入队 dataLayer，待 gtag.js 到达后处理。用户在 CookieConsent
+        //    接受后由 gtag('consent','update',...) 放开 storage。
+        {
+          innerHTML:
+            "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-9P6PL73E94');",
+        },
+      ],
     },
   },
 

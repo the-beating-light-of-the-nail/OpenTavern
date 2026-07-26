@@ -792,5 +792,8 @@
   "terms_contact_title": "联系我们",
   "terms_contact_body": "对条款有疑问？请发邮件至",
   "terms_seo_title": "服务条款 · Open Tavern · RoleChat AI",
-  "terms_seo_desc": "Open Tavern 是中性的客户端创作工具：自带 AI 密钥，内容由你自负。阅读完整服务条款。"
+  "terms_seo_desc": "Open Tavern 是中性的客户端创作工具：自带 AI 密钥，内容由你自负。阅读完整服务条款。",
+  "cookie_message": "我们使用 Cookie 来统计流量并改善您的体验。",
+  "cookie_accept": "接受",
+  "cookie_reject": "拒绝"
 }
