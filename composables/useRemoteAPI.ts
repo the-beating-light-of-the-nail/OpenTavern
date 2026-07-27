@@ -1,7 +1,6 @@
 import { ref } from 'vue';
 import type { Settings } from '~/types/state';
 import { useAppStore } from '~/stores/app';
-import { useUiStore } from '~/stores/ui';
 import {
   normalizeApiEndpoint,
   shouldUseOllamaCompat,
@@ -29,8 +28,21 @@ export interface RequestOptions {
 export function useRemoteAPI() {
   const { t } = useI18n();
   const store = useAppStore();
-  const ui = useUiStore();
   const isTesting = ref(false);
+
+  /** API 测试结果（供设置面板内联展示；移植自原版 testMainApiConnection） */
+  interface ApiTestState {
+    status: 'idle' | 'testing' | 'need' | 'success' | 'error';
+    models: string[];
+    total: number;
+    detail: string;
+    testedUrls: string[];
+    suggestions: string[];
+  }
+  const apiTest = ref<ApiTestState>({
+    status: 'idle', models: [], total: 0, detail: '', testedUrls: [], suggestions: [],
+  });
+
   async function streamChat(
     messages: any[],
     settings: Settings,
@@ -150,144 +162,130 @@ export function useRemoteAPI() {
   }
 
   /**
-   * 测试远程 API 连接（用于设置面板的“测试 API 连接”按钮）。
-   * 优先 GET {base}/models（OpenAI 兼容 /v1/models），失败则回退到非流式 chat/completions。
-   * 所有反馈文案对接已就绪的 api_test_* i18n 键。
+   * 测试远程 API 连接（忠实移植自原版 testMainApiConnection，archive/index.html:6419）。
+   * 结果写入 apiTest 响应式状态，由设置面板内联渲染（绿=成功 / 红=失败），不依赖弹窗。
+   * 流程：首选 GET {派生}/models → 成功即返回模型列表；失败则跑极简非流式 chat 做诊断，
+   * 最终给出失败报告（详情 + 测试地址 + 针对性建议）。
    */
+
+  /** 派生 /v1/models 测试地址（兼容 /v1、/openai/v1、/paas/v4，及 DeepSeek 等无版本输入） */
+  function deriveModelsEndpoint(raw: string): string {
+    let u = String(raw || '').trim().replace(/\/+$/, '').replace(/\/chat\/completions$/i, '');
+    if (/\/(v[0-9]+|openai\/v1|paas\/v[0-9]+)$/.test(u)) return u + '/models';
+    if (!/\/v[0-9]/.test(u) && !u.includes('/paas/')) u += '/v1';
+    return u + '/models';
+  }
+
   async function testApiConnection(): Promise<void> {
     const rawEndpoint = String(store.settings.apiEndpoint || '').trim();
     if (!rawEndpoint) {
-      ui.showDialog({ message: t('api_test_need_endpoint'), showCancel: false });
+      apiTest.value = { status: 'need', models: [], total: 0, detail: '', testedUrls: [], suggestions: [] };
       return;
     }
-    const key = String(store.settings.apiKey || '').trim();
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (key) headers['Authorization'] = 'Bearer ' + key;
-
-    // 规范化基址：去尾斜杠 + 去掉可能已带的 /chat/completions
-    const base = rawEndpoint.replace(/\/+$/, '').replace(/\/chat\/completions$/i, '');
+    const apiKey = String(store.settings.apiKey || '').trim();
+    const model = String(store.settings.model || '').trim() || 'gpt-3.5-turbo';
+    const modelsUrl = deriveModelsEndpoint(rawEndpoint);
+    const chatUrl = normalizeApiEndpoint(rawEndpoint);
     const testedUrls: string[] = [];
-    const TIMEOUT_S = 15;
+    const TIMEOUT_MS = 15000;
 
     const fetchWithTimeout = (url: string, init: RequestInit): Promise<Response> => {
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), TIMEOUT_S * 1000);
+      const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
       return fetch(url, { ...init, signal: controller.signal }).finally(() => clearTimeout(timer));
     };
-
-    const errToString = (e: any): string => {
-      if (!e) return t('api_test_unknown_error');
-      if (e?.name === 'AbortError') return t('api_test_timeout_msg', { s: TIMEOUT_S });
-      const msg = String(e?.message || e);
-      if (e instanceof TypeError) {
-        return t('api_test_typeerror_prefix') + msg + '\n' + t('api_test_typeerror_cors_note');
-      }
-      return msg;
+    const authHeaders = (extra: Record<string, string> = {}): Record<string, string> => {
+      const h: Record<string, string> = { ...extra };
+      if (apiKey) h['Authorization'] = 'Bearer ' + apiKey;
+      return h;
     };
 
     isTesting.value = true;
+    apiTest.value = { status: 'testing', models: [], total: 0, detail: '', testedUrls: [], suggestions: [] };
     try {
-      // 1) 首选：GET {base}/models
-      const modelsUrl = base + '/models';
-      testedUrls.push(modelsUrl);
-      const modelsResult: { ok: boolean; note: string } = { ok: false, note: '' };
+      // ===== 1) 首选：GET /v1/models =====
+      let modelsErrInfo = '';
       try {
-        const res = await fetchWithTimeout(modelsUrl, { method: 'GET', headers });
-        if (!res.ok) {
-          modelsResult.note = 'HTTP ' + res.status;
-        } else {
-          const json: any = await res.json().catch(() => null);
-          const arr: any[] | null = Array.isArray(json?.data) ? json.data
-            : Array.isArray(json?.models) ? json.models : null;
-          if (arr) {
-            modelsResult.ok = true;
-            if (arr.length === 0) {
-              modelsResult.note = t('api_test_models_empty_note');
-            } else {
-              const ids = arr
-                .map((m: any) => (typeof m === 'string' ? m : (m?.id || m?.name || '')))
-                .filter(Boolean);
-              const shown = ids.slice(0, 10);
-              let note = t('api_test_models_prefix') + shown.length + t('api_test_models_mid') + '\n';
-              note += shown.join('\n');
-              note += t('api_test_models_total') + ids.length;
-              if (ids.length > shown.length) note += '\n' + t('api_test_more_omitted');
-              modelsResult.note = note;
-            }
-          } else {
-            modelsResult.note = t('api_test_models_empty_note');
+        testedUrls.push('GET ' + modelsUrl);
+        const resp = await fetchWithTimeout(modelsUrl, { method: 'GET', headers: authHeaders() });
+        if (resp.ok) {
+          const data: any = await resp.json().catch(() => ({}));
+          let modelsList: string[] = [];
+          if (data && Array.isArray(data.data)) {
+            modelsList = data.data.map((m: any) => (m && (m.id || m.name)) || String(m)).filter(Boolean);
+          } else if (Array.isArray(data)) {
+            modelsList = data.map((m: any) => (m && (m.id || m.name)) || String(m)).filter(Boolean);
           }
-        }
-      } catch (e: any) {
-        modelsResult.note = errToString(e);
-      }
-
-      if (modelsResult.ok) {
-        ui.showDialog({ title: t('api_test_success_title'), message: modelsResult.note, showCancel: false });
-        return;
-      }
-
-      // 2) 回退：非流式 chat/completions（stream:false）
-      const chatUrl = normalizeApiEndpoint(base);
-      testedUrls.push(chatUrl);
-      const fallbackResult: { ok: boolean; note: string } = { ok: false, note: '' };
-      try {
-        const res = await fetchWithTimeout(chatUrl, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({
-            model: store.settings.model || 'gpt-3.5-turbo',
-            messages: [{ role: 'user', content: 'Hi' }],
-            max_tokens: 16,
-            stream: false,
-          }),
-        });
-        if (!res.ok) {
-          fallbackResult.note = 'HTTP ' + res.status;
+          apiTest.value = {
+            status: 'success',
+            models: modelsList.slice(0, 12),
+            total: modelsList.length,
+            detail: '', testedUrls: [], suggestions: [],
+          };
+          return; // 成功即结束，不再跑备选
         } else {
-          const json: any = await res.json().catch(() => null);
-          const hasChoices = !!json?.choices?.length;
-          fallbackResult.ok = true;
-          fallbackResult.note = t('api_test_fallback_success')
-            + (hasChoices ? t('api_test_fallback_success_choice') : t('api_test_fallback_success_ok'));
+          const text = await resp.text().catch(() => '');
+          let errMsg = 'HTTP ' + resp.status;
+          try {
+            const j = JSON.parse(text);
+            if (j.error?.message) errMsg += ' — ' + j.error.message;
+            else if (j.message) errMsg += ' — ' + j.message;
+          } catch {
+            if (text) errMsg += ' — ' + text.slice(0, 300);
+          }
+          modelsErrInfo = errMsg;
         }
       } catch (e: any) {
-        fallbackResult.note = errToString(e);
+        if (e?.name === 'AbortError') modelsErrInfo = t('api_test_timeout_msg', { s: TIMEOUT_MS / 1000 });
+        else if (e instanceof TypeError) modelsErrInfo = t('api_test_typeerror_prefix') + (e.message || 'Failed to fetch');
+        else modelsErrInfo = (e?.message || String(e));
       }
 
-      if (fallbackResult.ok) {
-        ui.showDialog({ title: t('api_test_success_title'), message: fallbackResult.note, showCancel: false });
-        return;
+      // ===== 2) 备选/进阶：极简非流式 chat（仅作诊断，最终仍按失败报告呈现） =====
+      let chatResult = '';
+      try {
+        testedUrls.push('POST ' + chatUrl + ' (stream:false)');
+        const resp = await fetchWithTimeout(chatUrl, {
+          method: 'POST',
+          headers: authHeaders({ 'Content-Type': 'application/json' }),
+          body: JSON.stringify({ model, messages: [{ role: 'user', content: 'hi' }], max_tokens: 1, temperature: 0, stream: false }),
+        });
+        if (resp.ok) {
+          const data: any = await resp.json().catch(() => ({}));
+          const hasChoice = !!(data && data.choices && data.choices[0]);
+          chatResult = t('api_test_fallback_success') + (hasChoice ? t('api_test_fallback_success_choice') : t('api_test_fallback_success_ok'));
+        } else {
+          const text = await resp.text().catch(() => '');
+          let cmsg = 'HTTP ' + resp.status;
+          try { const j = JSON.parse(text); if (j.error?.message) cmsg += ' — ' + j.error.message; } catch { /* noop */ }
+          chatResult = t('api_test_fallback_failed_prefix') + cmsg;
+        }
+      } catch (e: any) {
+        let c2 = '';
+        if (e?.name === 'AbortError') c2 = t('api_test_timeout_short');
+        else if (e instanceof TypeError) c2 = t('api_test_typeerror_cors_note');
+        else c2 = (e?.message || String(e));
+        chatResult = t('api_test_fallback_failed_prefix') + c2;
       }
 
-      // 3) 均失败 → 汇总诊断 + 针对性建议
-      const combined = modelsResult.note + '\n' + fallbackResult.note;
+      // ===== 3) 失败报告：详情 + 测试地址 + 针对性建议 =====
       const suggestions: string[] = [];
-      if (/localhost|127\.0\.0\.1/.test(base.toLowerCase())) suggestions.push(t('api_test_suggest_localhost'));
-      if (/typeerror|failed to fetch|cors/i.test(combined)) suggestions.push(t('api_test_suggest_cors'));
-      if (/50[234]/.test(combined)) suggestions.push(t('api_test_suggest_gateway'));
-      if (!/\/v[0-9]/.test(base)) suggestions.push(t('api_test_suggest_endpoint_path'));
+      const rawLower = rawEndpoint.toLowerCase();
+      if (rawLower.includes('localhost') || rawLower.includes('127.0.0.1')) suggestions.push(t('api_test_suggest_localhost'));
+      suggestions.push(t('api_test_suggest_cors'));
+      suggestions.push(t('api_test_suggest_endpoint_path'));
       suggestions.push(t('api_test_suggest_apikey'));
       suggestions.push(t('api_test_suggest_stream'));
+      suggestions.push(t('api_test_suggest_gateway'));
 
-      const lines: string[] = [
-        t('api_test_models_failed_prefix') + (modelsResult.note || t('api_test_unknown_error')),
-        t('api_test_fallback_failed_prefix') + (fallbackResult.note || t('api_test_unknown_error')),
-        t('api_test_tested_urls_label'),
-        ...testedUrls.map((u) => '• ' + u),
-        t('api_test_suggest_title'),
-        ...suggestions.map((s) => '• ' + s),
-      ];
-      ui.showDialog({
-        title: t('api_test_failed_title'),
-        message: lines.join('\n\n'),
-        showCancel: false,
-        danger: true,
-      });
+      let detail = t('api_test_models_failed_prefix') + (modelsErrInfo || t('api_test_unknown_error'));
+      if (chatResult) detail += '\n' + chatResult;
+
+      apiTest.value = { status: 'error', models: [], total: 0, detail, testedUrls, suggestions };
     } finally {
       isTesting.value = false;
     }
   }
 
-  return { streamChat, testApiConnection, isTesting };
+  return { streamChat, testApiConnection, isTesting, apiTest };
 }

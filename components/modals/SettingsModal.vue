@@ -10,12 +10,27 @@ const ui = useUiStore();
 const { t } = useI18n();
 const webllm = useWebLLM();
 const comfy = useComfy();
-const { testApiConnection, isTesting: apiTesting } = useRemoteAPI();
+const { testApiConnection, isTesting: apiTesting, apiTest } = useRemoteAPI();
 const { setLocale, supported } = useLocale();
 
 const s = computed(() => store.settings);
 const isWebLLM = computed(() => s.value.inferenceBackend === 'webllm');
 function persist() { store.persist(); }
+
+// API 测试结果（内联展示，移植自原版 #apiTestResult）
+const apiTestLabel = computed(() => {
+  const r = apiTest.value;
+  if (r.status !== 'success') return '';
+  const shown = r.models.length;
+  if (r.total > shown) return t('api_test_models_prefix') + shown + t('api_test_models_total') + r.total + t('api_test_models_mid');
+  return t('api_test_models_prefix') + shown + t('api_test_models_mid');
+});
+const apiTestBoxStyle = computed(() => {
+  const st = apiTest.value.status;
+  if (st === 'success') return { background: 'color-mix(in srgb,var(--color-success) 10%,transparent)', borderColor: 'color-mix(in srgb,var(--color-success) 35%,transparent)', color: 'var(--color-success)' };
+  if (st === 'error') return { background: 'color-mix(in srgb,var(--color-danger) 10%,transparent)', borderColor: 'color-mix(in srgb,var(--color-danger) 35%,transparent)', color: 'var(--color-danger)' };
+  return { background: 'var(--color-surface-soft)', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' };
+});
 
 const prevBackend = ref(s.value.inferenceBackend || 'remote-api');
 watch(() => ui.isOpen('webllmConfirm'), (open) => {
@@ -142,6 +157,37 @@ const langOptions = computed(() => [
               <button type="button" class="ui-button ui-button-sm" :disabled="apiTesting" @click="testApiConnection">
                 {{ apiTesting ? t('api_test_testing') : t('api_test_button') }}
               </button>
+            </div>
+
+            <!-- API 测试结果（内联，移植自原版 #apiTestResult） -->
+            <div v-if="apiTest.status !== 'idle'"
+                 class="mt-1.5 text-xs rounded-xl p-2 border leading-relaxed"
+                 :style="apiTestBoxStyle">
+              <template v-if="apiTest.status === 'testing'">{{ t('api_test_testing') }}</template>
+              <template v-else-if="apiTest.status === 'need'">{{ t('api_test_need_endpoint') }}</template>
+              <div v-else-if="apiTest.status === 'success'">
+                <div class="font-semibold">{{ t('api_test_success_title') }}</div>
+                <template v-if="apiTest.models.length">
+                  <div class="mt-1 opacity-90">{{ apiTestLabel }}</div>
+                  <div class="mt-0.5 break-all font-mono opacity-80">{{ apiTest.models.join(', ') }}</div>
+                  <div v-if="apiTest.total > apiTest.models.length" class="mt-0.5 opacity-70">{{ t('api_test_more_omitted') }}</div>
+                </template>
+                <div v-else class="mt-1 opacity-80">{{ t('api_test_models_empty_note') }}</div>
+              </div>
+              <div v-else>
+                <div class="font-semibold">{{ t('api_test_failed_title') }}</div>
+                <div class="mt-1 whitespace-pre-wrap">{{ apiTest.detail }}</div>
+                <div v-if="apiTest.testedUrls.length" class="mt-1 opacity-80">
+                  {{ t('api_test_tested_urls_label') }}
+                  <div v-for="u in apiTest.testedUrls" :key="u">• {{ u }}</div>
+                </div>
+                <div v-if="apiTest.suggestions.length" class="mt-1.5">
+                  <div class="font-medium opacity-90">{{ t('api_test_suggest_title') }}</div>
+                  <ul class="list-disc ml-4 opacity-80">
+                    <li v-for="(sg, i) in apiTest.suggestions" :key="i">{{ sg }}</li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
 
