@@ -4,11 +4,13 @@ import { useUiStore } from '~/stores/ui';
 import { useWebLLM } from '~/composables/useWebLLM';
 import { useComfy } from '~/composables/useComfy';
 import { useLocale } from '~/composables/useLocale';
+import { useRemoteAPI } from '~/composables/useRemoteAPI';
 const store = useAppStore();
 const ui = useUiStore();
 const { t } = useI18n();
 const webllm = useWebLLM();
 const comfy = useComfy();
+const { testApiConnection, isTesting: apiTesting } = useRemoteAPI();
 const { setLocale, supported } = useLocale();
 
 const s = computed(() => store.settings);
@@ -137,7 +139,9 @@ const langOptions = computed(() => [
             <input v-model="s.apiEndpoint" type="text" class="ui-input mt-1.5" placeholder="https://api.openai.com/v1" @change="persist">
             <div class="mt-1.5 flex flex-wrap gap-1.5">
               <button type="button" class="ui-button ui-button-sm" @click="fillProvider(quickProviders[0])">{{ t('provider_openrouter') }}</button>
-              <button type="button" class="ui-button ui-button-sm">{{ t('api_test_button') }}</button>
+              <button type="button" class="ui-button ui-button-sm" :disabled="apiTesting" @click="testApiConnection">
+                {{ apiTesting ? t('api_test_testing') : t('api_test_button') }}
+              </button>
             </div>
           </div>
 
