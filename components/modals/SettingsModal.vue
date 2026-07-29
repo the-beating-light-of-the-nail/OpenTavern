@@ -125,6 +125,12 @@ const langOptions = computed(() => [
         </div>
       </div>
 
+      <!-- API Endpoint -->
+      <div>
+        <label class="label-base">{{ t('settings_api_endpoint') }}</label>
+        <input v-model="s.apiEndpoint" type="text" class="ui-input mt-1.5" placeholder="https://api.openai.com/v1" @change="persist">
+      </div>
+
       <!-- API Key -->
       <div>
         <label class="label-base">{{ t('settings_api_key') }}</label>
@@ -141,6 +147,44 @@ const langOptions = computed(() => [
         <input v-model="s.model" type="text" class="ui-input mt-1.5" @change="persist">
       </div>
 
+      <!-- Test API Connection -->
+      <div>
+        <button type="button" class="ui-button ui-button-primary ui-button-sm" :disabled="apiTesting" @click="testApiConnection">
+          {{ apiTesting ? t('api_test_testing') : t('api_test_button') }}
+        </button>
+
+        <!-- API 测试结果（内联，移植自原版 #apiTestResult） -->
+        <div v-if="apiTest.status !== 'idle'"
+             class="mt-2 text-xs rounded-xl p-2 border leading-relaxed"
+             :style="apiTestBoxStyle">
+          <template v-if="apiTest.status === 'testing'">{{ t('api_test_testing') }}</template>
+          <template v-else-if="apiTest.status === 'need'">{{ t('api_test_need_endpoint') }}</template>
+          <div v-else-if="apiTest.status === 'success'">
+            <div class="font-semibold">{{ t('api_test_success_title') }}</div>
+            <template v-if="apiTest.models.length">
+              <div class="mt-1 opacity-90">{{ apiTestLabel }}</div>
+              <div class="mt-0.5 break-all font-mono opacity-80">{{ apiTest.models.join(', ') }}</div>
+              <div v-if="apiTest.total > apiTest.models.length" class="mt-0.5 opacity-70">{{ t('api_test_more_omitted') }}</div>
+            </template>
+            <div v-else class="mt-1 opacity-80">{{ t('api_test_models_empty_note') }}</div>
+          </div>
+          <div v-else>
+            <div class="font-semibold">{{ t('api_test_failed_title') }}</div>
+            <div class="mt-1 whitespace-pre-wrap">{{ apiTest.detail }}</div>
+            <div v-if="apiTest.testedUrls.length" class="mt-1 opacity-80">
+              {{ t('api_test_tested_urls_label') }}
+              <div v-for="u in apiTest.testedUrls" :key="u">• {{ u }}</div>
+            </div>
+            <div v-if="apiTest.suggestions.length" class="mt-1.5">
+              <div class="font-medium opacity-90">{{ t('api_test_suggest_title') }}</div>
+              <ul class="list-disc ml-4 opacity-80">
+                <li v-for="(sg, i) in apiTest.suggestions" :key="i">{{ sg }}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Advanced Settings (折叠) -->
       <details class="group mt-4 border-t pt-4" style="border-color:var(--color-border)">
         <summary class="cursor-pointer text-xs font-semibold uppercase tracking-wider transition-colors select-none list-none flex items-center gap-1" style="color:var(--color-text-muted)">
@@ -148,51 +192,6 @@ const langOptions = computed(() => [
           <span class="ml-auto transition-transform group-open:rotate-90">→</span>
         </summary>
         <div class="settings-advanced mt-4 space-y-5">
-          <!-- Raw API Endpoint -->
-          <div>
-            <label class="label-base">{{ t('settings_api_endpoint') }}</label>
-            <input v-model="s.apiEndpoint" type="text" class="ui-input mt-1.5" placeholder="https://api.openai.com/v1" @change="persist">
-            <div class="mt-1.5 flex flex-wrap gap-1.5">
-              <button type="button" class="ui-button ui-button-sm" @click="fillProvider(quickProviders[0])">{{ t('provider_openrouter') }}</button>
-              <button type="button" class="ui-button ui-button-sm" :disabled="apiTesting" @click="testApiConnection">
-                {{ apiTesting ? t('api_test_testing') : t('api_test_button') }}
-              </button>
-            </div>
-
-            <!-- API 测试结果（内联，移植自原版 #apiTestResult） -->
-            <div v-if="apiTest.status !== 'idle'"
-                 class="mt-1.5 text-xs rounded-xl p-2 border leading-relaxed"
-                 :style="apiTestBoxStyle">
-              <template v-if="apiTest.status === 'testing'">{{ t('api_test_testing') }}</template>
-              <template v-else-if="apiTest.status === 'need'">{{ t('api_test_need_endpoint') }}</template>
-              <div v-else-if="apiTest.status === 'success'">
-                <div class="font-semibold">{{ t('api_test_success_title') }}</div>
-                <template v-if="apiTest.models.length">
-                  <div class="mt-1 opacity-90">{{ apiTestLabel }}</div>
-                  <div class="mt-0.5 break-all font-mono opacity-80">{{ apiTest.models.join(', ') }}</div>
-                  <div v-if="apiTest.total > apiTest.models.length" class="mt-0.5 opacity-70">{{ t('api_test_more_omitted') }}</div>
-                </template>
-                <div v-else class="mt-1 opacity-80">{{ t('api_test_models_empty_note') }}</div>
-              </div>
-              <div v-else>
-                <div class="font-semibold">{{ t('api_test_failed_title') }}</div>
-                <div class="mt-1 whitespace-pre-wrap">{{ apiTest.detail }}</div>
-                <div v-if="apiTest.testedUrls.length" class="mt-1 opacity-80">
-                  {{ t('api_test_tested_urls_label') }}
-                  <div v-for="u in apiTest.testedUrls" :key="u">• {{ u }}</div>
-                </div>
-                <div v-if="apiTest.suggestions.length" class="mt-1.5">
-                  <div class="font-medium opacity-90">{{ t('api_test_suggest_title') }}</div>
-                  <ul class="list-disc ml-4 opacity-80">
-                    <li v-for="(sg, i) in apiTest.suggestions" :key="i">{{ sg }}</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <hr style="border-color:var(--color-border)">
-
           <!-- Inference backend -->
           <div>
             <label class="label-base">{{ t('settings_inference_backend') }}</label>
