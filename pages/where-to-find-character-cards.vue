@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { t } = useI18n();
+const localePath = useLocalePath();
 
 useSeoMeta({
   title: () => t('wfc_title') + ' — Open Tavern',
@@ -33,7 +34,7 @@ const individual = [
     <SiteHeader />
 
     <main class="mx-auto max-w-2xl px-5 py-12">
-      <NuxtLink to="/guides" class="rc-nav-link mb-6 inline-flex">{{ t('wfc_back_all_guides') }}</NuxtLink>
+      <NuxtLink :to="localePath('/guides')" class="rc-nav-link mb-6 inline-flex">{{ t('wfc_back_all_guides') }}</NuxtLink>
 
       <h1 class="font-display text-3xl font-semibold tracking-wide sm:text-4xl">{{ t('wfc_title') }}</h1>
       <p class="mt-4 leading-relaxed text-plum-muted">{{ t('wfc_subtitle') }}</p>
@@ -103,8 +104,8 @@ const individual = [
         <div class="orn-divider" aria-hidden="true">✦</div>
         <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('wfc_cta_body') }}</p>
         <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <NuxtLink to="/app" class="rc-btn-primary">{{ t('wfc_open_app') }}</NuxtLink>
-          <NuxtLink to="/characters" class="rc-btn-ghost">{{ t('wfc_browse_characters') }}</NuxtLink>
+          <NuxtLink :to="localePath('/app')" class="rc-btn-primary">{{ t('wfc_open_app') }}</NuxtLink>
+          <NuxtLink :to="localePath('/characters')" class="rc-btn-ghost">{{ t('wfc_browse_characters') }}</NuxtLink>
         </div>
       </section>
     </main>

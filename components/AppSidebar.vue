@@ -4,6 +4,7 @@ import { useLocale } from '~/composables/useLocale';
 
 const store = useAppStore();
 const { t } = useI18n();
+const localePath = useLocalePath();
 const ui = useUiStore();
 const { setLocale, supported } = useLocale();
 
@@ -125,7 +126,7 @@ async function onImportFile(e: Event) {
   <aside id="sidebar" :class="{ open: store.sidebarOpen }" class="ui-sidebar w-[270px] flex-shrink-0 flex flex-col">
     <!-- Header -->
     <div class="px-5 py-4 flex items-center gap-3 border-b border-[var(--color-border)]">
-      <NuxtLink to="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+      <NuxtLink :to="localePath('/')" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
         <div class="w-9 h-9 rounded-xl ot-avatar-fill flex items-center justify-center text-[var(--color-on-primary)] text-xs font-bold tracking-tighter">RC</div>
         <div>
           <p class="text-sm font-bold leading-tight" style="color:var(--color-text)">RoleChat AI</p>
@@ -141,8 +142,8 @@ async function onImportFile(e: Event) {
 
     <!-- Site nav -->
     <div class="px-3 py-2 flex items-center gap-1 border-b border-[var(--color-border)]">
-      <NuxtLink to="/characters" class="ui-button ui-button-xs flex-1">{{ t('nav_characters') }}</NuxtLink>
-      <NuxtLink to="/guides" class="ui-button ui-button-xs flex-1">{{ t('nav_guides') }}</NuxtLink>
+      <NuxtLink :to="localePath('/characters')" class="ui-button ui-button-xs flex-1">{{ t('nav_characters') }}</NuxtLink>
+      <NuxtLink :to="localePath('/guides')" class="ui-button ui-button-xs flex-1">{{ t('nav_guides') }}</NuxtLink>
     </div>
 
     <!-- New Chat -->

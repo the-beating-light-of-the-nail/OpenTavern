@@ -9,6 +9,7 @@ import { nextTick } from 'vue';
 const store = useAppStore();
 const ui = useUiStore();
 const { t } = useI18n();
+const localePath = useLocalePath();
 const { sendMessage, stopGeneration, regenerate, isGenerating, streamingContent, streamingCot } = useChat();
 const groupMention = useGroupMention();
 const comfy = useComfy();
@@ -118,7 +119,7 @@ function onComfyGenerate() {
         </div>
       </div>
       <div class="flex items-center gap-2 flex-shrink-0 topbar-actions">
-        <NuxtLink v-if="currentSlug" :to="`/characters/${currentSlug}`" class="ui-button ui-button-sm" :title="t('profile')">
+        <NuxtLink v-if="currentSlug" :to="localePath(`/characters/${currentSlug}`)" class="ui-button ui-button-sm" :title="t('profile')">
           <span class="hidden sm:inline">{{ t('profile') }}</span>
           <span class="sm:hidden text-[10px] font-semibold uppercase leading-none">{{ t('profile_short') }}</span>
         </NuxtLink>

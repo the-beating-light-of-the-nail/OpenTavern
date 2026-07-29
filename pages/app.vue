@@ -14,14 +14,16 @@ onMounted(() => watchTheme());
 
 /**
  * 处理 ?character=<slug>：从 SEO 角色页 / 角色卡 "Start Chat" 跳入。
- * 等 store 加载完成后：有已有会话则恢复，否则转换角色卡并新建会话。
+ * 同时监听 store.ready 与 route.query.character：
+ * - ready 首次翻 true：覆盖“首次进入 /app?character=slug（SPA 冷启动）”场景；
+ * - query 变化：覆盖“已在 /app 内（Public Library）再点 Start Chat”场景——此时 ready 已是
+ *   true、不再翻转，单纯监听 ready 不会触发，旧实现在这里静默失效。
  * 处理完清掉 query，避免刷新重复建会话。
  */
 watch(
-  () => store.ready,
-  (ready) => {
+  () => [store.ready, route.query.character] as const,
+  ([ready, slug]) => {
     if (!ready) return;
-    const slug = route.query.character;
     if (!slug || typeof slug !== 'string') return;
     const seo = getCharacterBySlug(slug, $i18n.locale.value);
     if (!seo) {

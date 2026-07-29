@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { t } = useI18n();
+const localePath = useLocalePath();
 </script>
 
 <template>
@@ -16,13 +17,13 @@ const { t } = useI18n();
         <span class="text-sm font-bold">RoleChat AI</span>
       </div>
       <nav class="flex flex-wrap items-center justify-center gap-4 text-xs text-plum-faint">
-        <NuxtLink to="/characters" class="hover:text-plum-light">{{ t('nav_characters') }}</NuxtLink>
-        <NuxtLink to="/guides" class="hover:text-plum-light">{{ t('nav_guides') }}</NuxtLink>
-        <NuxtLink to="/about" class="hover:text-plum-light">{{ t('nav_about') }}</NuxtLink>
-        <NuxtLink to="/contact" class="hover:text-plum-light">{{ t('nav_contact') }}</NuxtLink>
-        <NuxtLink to="/privacy" class="hover:text-plum-light">{{ t('nav_privacy') }}</NuxtLink>
-        <NuxtLink to="/terms" class="hover:text-plum-light">{{ t('nav_terms') }}</NuxtLink>
-        <NuxtLink to="/app" class="hover:text-plum-light">{{ t('nav_open_app') }}</NuxtLink>
+        <NuxtLink :to="localePath('/characters')" class="hover:text-plum-light">{{ t('nav_characters') }}</NuxtLink>
+        <NuxtLink :to="localePath('/guides')" class="hover:text-plum-light">{{ t('nav_guides') }}</NuxtLink>
+        <NuxtLink :to="localePath('/about')" class="hover:text-plum-light">{{ t('nav_about') }}</NuxtLink>
+        <NuxtLink :to="localePath('/contact')" class="hover:text-plum-light">{{ t('nav_contact') }}</NuxtLink>
+        <NuxtLink :to="localePath('/privacy')" class="hover:text-plum-light">{{ t('nav_privacy') }}</NuxtLink>
+        <NuxtLink :to="localePath('/terms')" class="hover:text-plum-light">{{ t('nav_terms') }}</NuxtLink>
+        <NuxtLink :to="localePath('/app')" class="hover:text-plum-light">{{ t('nav_open_app') }}</NuxtLink>
       </nav>
       <p class="text-xs text-plum-faint">{{ t('home_footer_tagline') }}</p>
     </div>

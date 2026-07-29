@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useCharacters } from '~/data';
 const { t } = useI18n();
+const localePath = useLocalePath();
 
 useSeoMeta({
   title: () => t('home_seo_title'),
@@ -69,8 +70,8 @@ const faqs = computed(() => [
           {{ t('home_hero_desc') }}
         </p>
         <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <NuxtLink to="/app" class="rc-btn-primary">{{ t('home_cta_start') }}</NuxtLink>
-          <NuxtLink to="/characters" class="rc-btn-ghost">{{ t('home_cta_explore') }}</NuxtLink>
+          <NuxtLink :to="localePath('/app')" class="rc-btn-primary">{{ t('home_cta_start') }}</NuxtLink>
+          <NuxtLink :to="localePath('/characters')" class="rc-btn-ghost">{{ t('home_cta_explore') }}</NuxtLink>
         </div>
       </div>
     </section>
@@ -83,7 +84,7 @@ const faqs = computed(() => [
         <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_popular_desc') }}</p>
       </div>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <NuxtLink v-for="c in featured" :key="c.slug" :to="`/characters/${c.slug}`" class="rc-card group block p-5">
+        <NuxtLink v-for="c in featured" :key="c.slug" :to="localePath(`/characters/${c.slug}`)" class="rc-card group block p-5">
           <div class="flex items-center gap-3">
             <CharAvatar :avatar="c.avatar" :initial="c.initial" size="md" />
             <div class="min-w-0">
@@ -98,7 +99,7 @@ const faqs = computed(() => [
         </NuxtLink>
       </div>
       <div class="mt-10 text-center">
-        <NuxtLink to="/characters" class="rc-btn-ghost">{{ t('home_see_all') }}</NuxtLink>
+        <NuxtLink :to="localePath('/characters')" class="rc-btn-ghost">{{ t('home_see_all') }}</NuxtLink>
       </div>
     </section>
 
@@ -122,8 +123,8 @@ const faqs = computed(() => [
           </div>
         </div>
         <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
-          <NuxtLink to="/app" class="rc-btn-primary">{{ t('home_compat_cta_app') }}</NuxtLink>
-          <NuxtLink to="/where-to-find-character-cards" class="rc-btn-ghost">{{ t('home_compat_cta_cards') }}</NuxtLink>
+          <NuxtLink :to="localePath('/app')" class="rc-btn-primary">{{ t('home_compat_cta_app') }}</NuxtLink>
+          <NuxtLink :to="localePath('/where-to-find-character-cards')" class="rc-btn-ghost">{{ t('home_compat_cta_cards') }}</NuxtLink>
         </div>
       </div>
     </section>
@@ -202,8 +203,8 @@ const faqs = computed(() => [
         <div class="orn-divider" aria-hidden="true">✦</div>
         <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_footer_ready_desc') }}</p>
         <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <NuxtLink to="/app" class="rc-btn-primary">{{ t('home_cta_start') }}</NuxtLink>
-          <NuxtLink to="/characters" class="rc-btn-ghost">{{ t('home_cta_explore') }}</NuxtLink>
+          <NuxtLink :to="localePath('/app')" class="rc-btn-primary">{{ t('home_cta_start') }}</NuxtLink>
+          <NuxtLink :to="localePath('/characters')" class="rc-btn-ghost">{{ t('home_cta_explore') }}</NuxtLink>
         </div>
       </div>
     </section>
@@ -216,13 +217,13 @@ const faqs = computed(() => [
           <span class="text-sm font-bold">RoleChat AI</span>
         </div>
         <nav class="flex items-center gap-4 text-xs text-plum-faint">
-          <NuxtLink to="/characters" class="hover:text-plum-light">{{ t('nav_characters') }}</NuxtLink>
-          <NuxtLink to="/guides" class="hover:text-plum-light">{{ t('nav_guides') }}</NuxtLink>
-          <NuxtLink to="/about" class="hover:text-plum-light">{{ t('nav_about') }}</NuxtLink>
-          <NuxtLink to="/contact" class="hover:text-plum-light">{{ t('nav_contact') }}</NuxtLink>
-          <NuxtLink to="/privacy" class="hover:text-plum-light">{{ t('nav_privacy') }}</NuxtLink>
-          <NuxtLink to="/terms" class="hover:text-plum-light">{{ t('nav_terms') }}</NuxtLink>
-          <NuxtLink to="/app" class="hover:text-plum-light">{{ t('nav_open_app') }}</NuxtLink>
+          <NuxtLink :to="localePath('/characters')" class="hover:text-plum-light">{{ t('nav_characters') }}</NuxtLink>
+          <NuxtLink :to="localePath('/guides')" class="hover:text-plum-light">{{ t('nav_guides') }}</NuxtLink>
+          <NuxtLink :to="localePath('/about')" class="hover:text-plum-light">{{ t('nav_about') }}</NuxtLink>
+          <NuxtLink :to="localePath('/contact')" class="hover:text-plum-light">{{ t('nav_contact') }}</NuxtLink>
+          <NuxtLink :to="localePath('/privacy')" class="hover:text-plum-light">{{ t('nav_privacy') }}</NuxtLink>
+          <NuxtLink :to="localePath('/terms')" class="hover:text-plum-light">{{ t('nav_terms') }}</NuxtLink>
+          <NuxtLink :to="localePath('/app')" class="hover:text-plum-light">{{ t('nav_open_app') }}</NuxtLink>
           <a href="#how" class="hover:text-plum-light">{{ t('nav_how_it_works') }}</a>
           <a href="#faq" class="hover:text-plum-light">{{ t('nav_faq') }}</a>
         </nav>

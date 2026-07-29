@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { getGuideBySlug } from '~/data';
 const { t } = useI18n();
+const localePath = useLocalePath();
 const { $i18n } = useNuxtApp();
 
 const route = useRoute();
@@ -57,7 +58,7 @@ useHead({ script: jsonLd });
     <SiteHeader />
 
     <main class="mx-auto max-w-2xl px-5 py-12">
-      <NuxtLink to="/guides" class="rc-nav-link mb-6 inline-flex">{{ t('guide_all_guides') }}</NuxtLink>
+      <NuxtLink :to="localePath('/guides')" class="rc-nav-link mb-6 inline-flex">{{ t('guide_all_guides') }}</NuxtLink>
 
       <h1 class="font-display text-3xl font-semibold tracking-wide sm:text-4xl">{{ g.title }}</h1>
       <p class="mt-4 leading-relaxed text-plum-muted">{{ g.description }}</p>

@@ -2,6 +2,7 @@
 import { useCharacters, useCollections } from '~/data';
 import type { CharacterSeo, CharacterCategory } from '~/types/seo';
 const { t } = useI18n();
+const localePath = useLocalePath();
 
 useSeoMeta({
   title: () => t('characters_seo_title'),
@@ -116,7 +117,7 @@ function toggleTag(tt: string) {
       <section class="mt-14">
         <h2 class="text-lg font-bold">{{ t('characters_browse_collections') }}</h2>
         <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <NuxtLink v-for="col in collections" :key="col.slug" :to="`/collections/${col.slug}`" class="rc-card group block p-5">
+          <NuxtLink v-for="col in collections" :key="col.slug" :to="localePath(`/collections/${col.slug}`)" class="rc-card group block p-5">
             <h3 class="text-base font-bold group-hover:text-rose-accent">{{ col.title }}</h3>
             <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-plum-muted">{{ col.intro }}</p>
             <p class="mt-3 text-xs font-semibold text-rose-accent/70">{{ col.characterSlugs.length }} {{ t('characters_count_suffix') }}</p>
@@ -125,7 +126,7 @@ function toggleTag(tt: string) {
       </section>
 
       <div class="mt-14 text-center">
-        <NuxtLink to="/app" class="rc-btn-primary">{{ t('characters_start_now') }}</NuxtLink>
+        <NuxtLink :to="localePath('/app')" class="rc-btn-primary">{{ t('characters_start_now') }}</NuxtLink>
       </div>
     </main>
   </div>

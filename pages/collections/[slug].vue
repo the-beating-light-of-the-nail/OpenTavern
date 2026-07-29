@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { getCollectionBySlug, getCharacterBySlug } from '~/data';
 const { t } = useI18n();
+const localePath = useLocalePath();
 const { $i18n } = useNuxtApp();
 
 const route = useRoute();
@@ -32,21 +33,21 @@ const members = computed(() =>
     <SiteHeader />
 
     <main class="mx-auto max-w-3xl px-5 py-12">
-      <NuxtLink to="/characters" class="rc-nav-link mb-6 inline-flex">{{ t('collection_all_characters') }}</NuxtLink>
+      <NuxtLink :to="localePath('/characters')" class="rc-nav-link mb-6 inline-flex">{{ t('collection_all_characters') }}</NuxtLink>
 
       <h1 class="font-display text-3xl font-semibold tracking-wide sm:text-4xl">{{ col.title }}</h1>
       <p class="mt-4 leading-relaxed text-plum-muted">{{ col.intro }}</p>
 
       <div class="mt-8 flex flex-wrap gap-3">
-        <NuxtLink to="/app" class="rc-btn-primary">{{ t('collection_start_chatting') }}</NuxtLink>
-        <NuxtLink to="/characters" class="rc-btn-ghost">{{ t('collection_browse_all') }}</NuxtLink>
+        <NuxtLink :to="localePath('/app')" class="rc-btn-primary">{{ t('collection_start_chatting') }}</NuxtLink>
+        <NuxtLink :to="localePath('/characters')" class="rc-btn-ghost">{{ t('collection_browse_all') }}</NuxtLink>
       </div>
 
       <!-- Character list -->
       <section class="mt-10">
         <h2 class="text-lg font-bold">{{ t('collection_chars_in') }}</h2>
         <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <NuxtLink v-for="m in members" :key="m.slug" :to="`/characters/${m.slug}`" class="rc-card group block p-5">
+          <NuxtLink v-for="m in members" :key="m.slug" :to="localePath(`/characters/${m.slug}`)" class="rc-card group block p-5">
             <div class="flex items-center gap-3">
               <div class="rc-avatar-fill flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl text-lg font-bold">{{ m.initial }}</div>
               <div class="min-w-0">

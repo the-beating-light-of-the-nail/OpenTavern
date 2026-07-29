@@ -4,6 +4,7 @@
 // 这里只在「接受」时翻成 granted、或「拒绝」时再次确认 denied。
 const STORAGE_KEY = 'cookie-consent';
 const { t } = useI18n();
+const localePath = useLocalePath();
 const dismissed = ref(false);
 
 function updateConsent(state: 'granted' | 'denied') {
@@ -45,7 +46,7 @@ function reject() {
       >
         <p class="cookie-text m-0 max-w-[640px] text-plum-faint">
           <span>{{ t('cookie_message') }}</span>
-          <NuxtLink to="/privacy" class="ml-1 whitespace-nowrap text-plum underline hover:text-plum-light">{{ t('nav_privacy') }}</NuxtLink>
+          <NuxtLink :to="localePath('/privacy')" class="ml-1 whitespace-nowrap text-plum underline hover:text-plum-light">{{ t('nav_privacy') }}</NuxtLink>
         </p>
         <div class="flex shrink-0 gap-3">
           <button

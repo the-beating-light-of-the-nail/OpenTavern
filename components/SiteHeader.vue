@@ -4,6 +4,7 @@ import { useLocale } from '~/composables/useLocale';
 
 withDefaults(defineProps<{ showExtraLinks?: boolean }>(), { showExtraLinks: true });
 const { t } = useI18n();
+const localePath = useLocalePath();
 const store = useAppStore();
 const { setLocale, supported } = useLocale();
 
@@ -44,7 +45,7 @@ function onLangChange(e: Event) {
 <template>
   <header class="sticky top-0 z-20 border-b border-border-warm backdrop-blur-xl" style="background:color-mix(in srgb,var(--color-bg) 82%,transparent)">
     <div class="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
-      <NuxtLink to="/" class="flex items-center gap-2">
+      <NuxtLink :to="localePath('/')" class="flex items-center gap-2">
         <div class="rc-avatar-fill flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold tracking-tighter">RC</div>
         <span class="text-sm font-bold">RoleChat AI</span>
       </NuxtLink>
@@ -52,13 +53,13 @@ function onLangChange(e: Event) {
         <select :value="store.settings.lang" class="text-xs font-semibold rounded-md px-2 py-1 border cursor-pointer appearance-none text-center mr-1 transition-colors" style="background:color-mix(in srgb, var(--color-primary) 10%, transparent);color:var(--color-primary);border-color:color-mix(in srgb, var(--color-primary) 18%, transparent)" @change="onLangChange">
           <option v-for="o in langOptions" :key="o.code" :value="o.code">{{ o.label }}</option>
         </select>
-        <NuxtLink to="/characters" class="rc-nav-link">{{ t('nav_characters') }}</NuxtLink>
-        <NuxtLink to="/guides" class="rc-nav-link">{{ t('nav_guides') }}</NuxtLink>
+        <NuxtLink :to="localePath('/characters')" class="rc-nav-link">{{ t('nav_characters') }}</NuxtLink>
+        <NuxtLink :to="localePath('/guides')" class="rc-nav-link">{{ t('nav_guides') }}</NuxtLink>
         <template v-if="showExtraLinks">
-          <a href="/#how" class="rc-nav-link">{{ t('nav_how_it_works') }}</a>
-          <a href="/#faq" class="rc-nav-link">{{ t('nav_faq') }}</a>
+          <NuxtLink :to="localePath('/#how')" class="rc-nav-link">{{ t('nav_how_it_works') }}</NuxtLink>
+          <NuxtLink :to="localePath('/#faq')" class="rc-nav-link">{{ t('nav_faq') }}</NuxtLink>
         </template>
-        <NuxtLink to="/app" class="rc-nav-link-primary">{{ t('nav_open_app') }}</NuxtLink>
+        <NuxtLink :to="localePath('/app')" class="rc-nav-link-primary">{{ t('nav_open_app') }}</NuxtLink>
       </nav>
     </div>
   </header>

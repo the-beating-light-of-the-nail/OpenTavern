@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { t } = useI18n();
+const localePath = useLocalePath();
 const { $i18n } = useNuxtApp();
 
 useSeoMeta({
@@ -29,7 +30,7 @@ useHead({ script: jsonLd });
     <SiteHeader />
 
     <main class="mx-auto max-w-3xl px-5 py-16">
-      <NuxtLink to="/" class="rc-nav-link mb-6 inline-flex">{{ t('about_back_home') }}</NuxtLink>
+      <NuxtLink :to="localePath('/')" class="rc-nav-link mb-6 inline-flex">{{ t('about_back_home') }}</NuxtLink>
       <h1 class="font-display text-4xl font-semibold tracking-wide">{{ t('about_title') }}</h1>
       <p class="mt-4 text-lg leading-relaxed text-plum-muted">
         {{ t('about_subtitle') }}
@@ -66,7 +67,7 @@ useHead({ script: jsonLd });
         </p>
         <p>
           {{ t('about_cta') }}
-          <NuxtLink to="/contact" class="font-medium underline underline-offset-4"
+          <NuxtLink :to="localePath('/contact')" class="font-medium underline underline-offset-4"
             >{{ t('about_get_in_touch') }}</NuxtLink
           >.
         </p>

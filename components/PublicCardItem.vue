@@ -19,6 +19,7 @@ const props = withDefaults(defineProps<{
 });
 
 const { t } = useI18n();
+const localePath = useLocalePath();
 
 /** 去重 + 截断：过滤 category 重复，取前 3 */
 const displayTags = computed(() => {
@@ -51,10 +52,10 @@ const isApp = computed(() => props.mode === 'app');
         <span v-if="displayTags.extra" class="rc-tag opacity-70">{{ displayTags.extra }}</span>
       </div>
       <div v-if="showProfileButton || showStartButton" class="mt-4 flex gap-2">
-        <NuxtLink v-if="showProfileButton" :to="`/characters/${c.slug}`" class="rc-btn-ghost rc-btn-compact flex-1">
+        <NuxtLink v-if="showProfileButton" :to="localePath(`/characters/${c.slug}`)" class="rc-btn-ghost rc-btn-compact flex-1">
           {{ t('view_profile') }}
         </NuxtLink>
-        <NuxtLink v-if="showStartButton" :to="`/app?character=${c.slug}`" class="rc-btn-primary rc-btn-compact flex-1">
+        <NuxtLink v-if="showStartButton" :to="localePath(`/app?character=${c.slug}`)" class="rc-btn-primary rc-btn-compact flex-1">
           {{ t('start_chat') }}
         </NuxtLink>
       </div>
@@ -79,10 +80,10 @@ const isApp = computed(() => props.mode === 'app');
         <span v-if="displayTags.extra" class="char-tag opacity-70">{{ displayTags.extra }}</span>
       </div>
       <div v-if="showProfileButton || showStartButton" class="mt-4 flex gap-2">
-        <NuxtLink v-if="showProfileButton" :to="`/characters/${c.slug}`" class="ui-button-ghost ui-button-sm flex-1">
+        <NuxtLink v-if="showProfileButton" :to="localePath(`/characters/${c.slug}`)" class="ui-button-ghost ui-button-sm flex-1">
           {{ t('view_profile') }}
         </NuxtLink>
-        <NuxtLink v-if="showStartButton" :to="`/app?character=${c.slug}`" class="ui-button-primary ui-button-sm flex-1">
+        <NuxtLink v-if="showStartButton" :to="localePath(`/app?character=${c.slug}`)" class="ui-button-primary ui-button-sm flex-1">
           {{ t('start_chat') }}
         </NuxtLink>
       </div>

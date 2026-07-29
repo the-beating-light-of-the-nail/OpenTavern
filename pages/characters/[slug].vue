@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { getCharacterBySlug } from '~/data';
 const { t } = useI18n();
+const localePath = useLocalePath();
 const { $i18n } = useNuxtApp();
 
 const route = useRoute();
@@ -64,7 +65,7 @@ const related = computed(() =>
     <SiteHeader />
 
     <main class="mx-auto max-w-3xl px-5 py-12">
-      <NuxtLink to="/characters" class="rc-nav-link mb-6 inline-flex">{{ t('char_all_characters') }}</NuxtLink>
+      <NuxtLink :to="localePath('/characters')" class="rc-nav-link mb-6 inline-flex">{{ t('char_all_characters') }}</NuxtLink>
 
       <!-- Character header -->
       <div class="flex items-center gap-4">
@@ -86,8 +87,8 @@ const related = computed(() =>
 
       <!-- CTA -->
       <div class="mt-8 flex flex-wrap gap-3">
-        <NuxtLink :to="`/app?character=${c.slug}`" class="rc-btn-primary">{{ t('char_start_private_chat') }}</NuxtLink>
-        <NuxtLink to="/characters" class="rc-btn-ghost">{{ t('char_browse_others') }}</NuxtLink>
+        <NuxtLink :to="localePath(`/app?character=${c.slug}`)" class="rc-btn-primary">{{ t('char_start_private_chat') }}</NuxtLink>
+        <NuxtLink :to="localePath('/characters')" class="rc-btn-ghost">{{ t('char_browse_others') }}</NuxtLink>
       </div>
 
       <!-- Description -->
@@ -129,7 +130,7 @@ const related = computed(() =>
       <section v-if="related.length" class="mt-10">
         <h2 class="font-display text-lg font-semibold tracking-wide">{{ t('char_related') }}</h2>
         <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <NuxtLink v-for="r in related" :key="r.slug" :to="`/characters/${r.slug}`" class="rc-card group flex items-center gap-3 p-4">
+          <NuxtLink v-for="r in related" :key="r.slug" :to="localePath(`/characters/${r.slug}`)" class="rc-card group flex items-center gap-3 p-4">
             <CharAvatar :avatar="r.avatar" :initial="r.initial" size="sm" />
             <div class="min-w-0">
               <p class="truncate text-sm font-bold group-hover:text-rose-accent">{{ r.name }}</p>
@@ -154,7 +155,7 @@ const related = computed(() =>
       <section class="mt-12 rounded-2xl border border-border-warm bg-rose-tint p-8 text-center">
         <h2 class="font-display text-xl font-semibold tracking-wide">{{ t('char_ready_title', { name: c.name }) }}</h2>
         <p class="mx-auto mt-2 max-w-md text-sm text-plum-muted">{{ t('char_ready_desc') }}</p>
-        <NuxtLink :to="`/app?character=${c.slug}`" class="rc-btn-primary mt-5 inline-flex">{{ t('char_start_private_chat') }}</NuxtLink>
+        <NuxtLink :to="localePath(`/app?character=${c.slug}`)" class="rc-btn-primary mt-5 inline-flex">{{ t('char_start_private_chat') }}</NuxtLink>
       </section>
     </main>
   </div>

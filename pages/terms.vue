@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { t } = useI18n();
+const localePath = useLocalePath();
 const { $i18n } = useNuxtApp();
 const SUPPORT_EMAIL = 'r3fbilgebasaran@gmail.com';
 
@@ -35,7 +36,7 @@ useHead({ script: jsonLd });
     <SiteHeader />
 
     <main class="mx-auto max-w-3xl px-5 py-16">
-      <NuxtLink to="/" class="rc-nav-link mb-6 inline-flex">{{ t('terms_back_home') }}</NuxtLink>
+      <NuxtLink :to="localePath('/')" class="rc-nav-link mb-6 inline-flex">{{ t('terms_back_home') }}</NuxtLink>
       <h1 class="font-display text-4xl font-semibold tracking-wide">{{ t('terms_title') }}</h1>
       <p class="mt-2 text-sm text-plum-faint">{{ t('terms_updated') }}</p>
 

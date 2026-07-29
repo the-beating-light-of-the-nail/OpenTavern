@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const SUPPORT_EMAIL = 'r3fbilgebasaran@gmail.com';
 const { t } = useI18n();
+const localePath = useLocalePath();
 const { $i18n } = useNuxtApp();
 
 const seoTitle = computed(() => t('contact_title') + ' · ' + 'Open Tavern · RoleChat AI');
@@ -39,7 +40,7 @@ useHead({ script: jsonLd });
     <SiteHeader />
 
     <main class="mx-auto max-w-2xl px-5 py-16">
-      <NuxtLink to="/" class="rc-nav-link mb-6 inline-flex">{{ t('contact_back_home') }}</NuxtLink>
+      <NuxtLink :to="localePath('/')" class="rc-nav-link mb-6 inline-flex">{{ t('contact_back_home') }}</NuxtLink>
       <h1 class="font-display text-4xl font-semibold tracking-wide">{{ t('contact_title') }}</h1>
       <p class="mt-4 text-lg leading-relaxed text-plum-muted">
         {{ t('contact_subtitle') }}
