@@ -43,6 +43,22 @@ export function useRemoteAPI() {
     status: 'idle', models: [], total: 0, detail: '', testedUrls: [], suggestions: [],
   });
 
+  /** /v1/models 拉取的模型清单（供设置面板「模型」下拉联想使用） */
+  const availableModels = ref<string[]>([]);
+  const modelsLoading = ref(false);
+  const modelsError = ref('');
+
+  /** 从 /v1/models 响应里解析出模型 id 列表（兼容 {data:[…]} 与 裸数组 两种形态） */
+  function parseModelList(data: any): string[] {
+    let list: string[] = [];
+    if (data && Array.isArray(data.data)) {
+      list = data.data.map((m: any) => (m && (m.id || m.name)) || String(m)).filter(Boolean);
+    } else if (Array.isArray(data)) {
+      list = data.map((m: any) => (m && (m.id || m.name)) || String(m)).filter(Boolean);
+    }
+    return list;
+  }
+
   async function streamChat(
     messages: any[],
     settings: Settings,
@@ -210,12 +226,8 @@ export function useRemoteAPI() {
         const resp = await fetchWithTimeout(modelsUrl, { method: 'GET', headers: authHeaders() });
         if (resp.ok) {
           const data: any = await resp.json().catch(() => ({}));
-          let modelsList: string[] = [];
-          if (data && Array.isArray(data.data)) {
-            modelsList = data.data.map((m: any) => (m && (m.id || m.name)) || String(m)).filter(Boolean);
-          } else if (Array.isArray(data)) {
-            modelsList = data.map((m: any) => (m && (m.id || m.name)) || String(m)).filter(Boolean);
-          }
+          const modelsList = parseModelList(data);
+          availableModels.value = modelsList; // 测试通过同步填充「模型」下拉
           apiTest.value = {
             status: 'success',
             models: modelsList.slice(0, 12),
@@ -287,5 +299,35 @@ export function useRemoteAPI() {
     }
   }
 
-  return { streamChat, testApiConnection, isTesting, apiTest };
+  /**
+   * 独立拉取 /v1/models 填充「模型」下拉联想（尽力而为）。
+   * 失败/返回空时清空列表，用户仍可手动输入模型名——覆盖不支持 /models 的服务端。
+   */
+  async function fetchModels(): Promise<void> {
+    const rawEndpoint = String(store.settings.apiEndpoint || '').trim();
+    if (!rawEndpoint) { availableModels.value = []; modelsError.value = ''; return; }
+    const apiKey = String(store.settings.apiKey || '').trim();
+    const modelsUrl = deriveModelsEndpoint(rawEndpoint);
+    modelsLoading.value = true;
+    modelsError.value = '';
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 15000);
+      const headers: Record<string, string> = {};
+      if (apiKey) headers['Authorization'] = 'Bearer ' + apiKey;
+      const resp = await fetch(modelsUrl, { method: 'GET', headers, signal: controller.signal })
+        .finally(() => clearTimeout(timer));
+      if (!resp.ok) { availableModels.value = []; modelsError.value = 'HTTP ' + resp.status; return; }
+      const data: any = await resp.json().catch(() => ({}));
+      availableModels.value = parseModelList(data);
+      if (!availableModels.value.length) modelsError.value = 'empty';
+    } catch (e: any) {
+      availableModels.value = [];
+      modelsError.value = (e?.name === 'AbortError') ? 'timeout' : (e?.message || 'error');
+    } finally {
+      modelsLoading.value = false;
+    }
+  }
+
+  return { streamChat, testApiConnection, isTesting, apiTest, fetchModels, availableModels, modelsLoading, modelsError };
 }

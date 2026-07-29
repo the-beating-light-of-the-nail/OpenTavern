@@ -10,7 +10,7 @@ const ui = useUiStore();
 const { t } = useI18n();
 const webllm = useWebLLM();
 const comfy = useComfy();
-const { testApiConnection, isTesting: apiTesting, apiTest } = useRemoteAPI();
+const { testApiConnection, isTesting: apiTesting, apiTest, fetchModels, availableModels, modelsLoading, modelsError } = useRemoteAPI();
 const { setLocale, supported } = useLocale();
 
 const s = computed(() => store.settings);
@@ -30,6 +30,17 @@ const apiTestBoxStyle = computed(() => {
   if (st === 'success') return { background: 'color-mix(in srgb,var(--color-success) 10%,transparent)', borderColor: 'color-mix(in srgb,var(--color-success) 35%,transparent)', color: 'var(--color-success)' };
   if (st === 'error') return { background: 'color-mix(in srgb,var(--color-danger) 10%,transparent)', borderColor: 'color-mix(in srgb,var(--color-danger) 35%,transparent)', color: 'var(--color-danger)' };
   return { background: 'var(--color-surface-soft)', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' };
+});
+
+// 模型下拉：打开设置且已填 endpoint 时自动拉取 /v1/models；失败/无列表则退回手输
+watch(() => ui.isOpen('settings'), (open) => {
+  if (open && s.value.apiEndpoint?.trim()) fetchModels();
+});
+const modelHint = computed<{ text: string; color: string } | null>(() => {
+  if (modelsLoading.value) return { text: t('settings_model_loading'), color: 'var(--color-text-muted)' };
+  if (modelsError.value) return { text: t('settings_model_fetch_failed'), color: 'var(--color-danger)' };
+  if (availableModels.value.length) return { text: t('settings_model_available', { n: availableModels.value.length }), color: 'var(--color-text-muted)' };
+  return null;
 });
 
 const prevBackend = ref(s.value.inferenceBackend || 'remote-api');
@@ -141,10 +152,19 @@ const langOptions = computed(() => [
         </label>
       </div>
 
-      <!-- Model -->
+      <!-- Model（下拉联想 + 手动输入兜底） -->
       <div>
-        <label class="label-base">{{ t('settings_model') }}</label>
-        <input v-model="s.model" type="text" class="ui-input mt-1.5" @change="persist">
+        <div class="flex items-center justify-between gap-2">
+          <label class="label-base">{{ t('settings_model') }}</label>
+          <button type="button" class="text-[11px] font-semibold transition-colors disabled:opacity-50" style="color:var(--color-primary)" :disabled="modelsLoading" @click="fetchModels">
+            {{ modelsLoading ? t('settings_model_loading') : t('settings_model_load') }}
+          </button>
+        </div>
+        <input v-model="s.model" list="rc-model-options" type="text" class="ui-input mt-1.5" @change="persist">
+        <datalist id="rc-model-options">
+          <option v-for="m in availableModels" :key="m" :value="m" />
+        </datalist>
+        <p v-if="modelHint" class="ui-help-text mt-1" :style="{ color: modelHint.color }">{{ modelHint.text }}</p>
       </div>
 
       <!-- Test API Connection -->
