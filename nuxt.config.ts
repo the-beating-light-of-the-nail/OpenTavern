@@ -162,6 +162,11 @@ export default defineNuxtConfig({
     // 与 i18n 集成：自动生成 <xhtml:link rel="alternate" hreflang="..."> 备选语言链接
     autoLastmod: true,
     i18n: true,
+    // 关闭 sitemap 运行时缓存：模块默认用 Nitro defineCachedFunction(swr + 600s) 在生产环境
+    // 缓存 sitemap，命中即写入 Vercel Data Cache（Vercel 计费口径 = "ISR Writes"）。
+    // 26 语言 × 多个 sitemap 端点 × 爬虫反复抓取 → ISR Writes 配额被快速耗尽。
+    // 设 0 后运行时不再写缓存；sitemap 仍由 prerender 输出为静态 XML，经 CDN 提供，SEO 不受影响。
+    cacheMaxAgeSeconds: 0,
   },
 
   compatibilityDate: '2024-11-01',
