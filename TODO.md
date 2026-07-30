@@ -49,6 +49,11 @@
 - [ ] 完善 OG 图片覆盖
 - [ ] 性能优化（LCP/FID/CLS）
 - [ ] 结构化数据（JSON-LD）
+- [ ] **角色卡下载功能（抢 "download character cards for SillyTavern" 意图，GSC 簇 C 的下载分支）**
+  - 现状：`public/cards/` 已有每角色 `.json` 卡文件（113 个），但全站**无任何下载入口**；簇 C 里 "sillytavern free character cards download" 这类查询目前完全没在服务。
+  - 待评估：(1) 确认 `.json` 为合法角色卡 v2 格式；(2) 这些角色多是**蔚蓝档案等二次元 IP**，公开发布下载有版权风险 —— **建议仅对原创角色开放下载**；(3) 角色详情页加下载按钮 + 可能新增 `/cards` 下载索引页。
+- [ ] **竞品对比页（抢 GSC 簇 B 的导航流量）**
+  - 簇 B（rolechat / botbooru / sillytavern，96 展现 / 1 点击）多为想去竞品官网的裸品牌搜索，直接优化现有页捞不回；可另起 "alternatives to rolechat" / "sites like botbooru" / "OpenTavern vs SillyTavern" 对比页，吃另一组对比查询。
 
 ## 功能扩展
 - [ ] 用户系统（注册/登录）

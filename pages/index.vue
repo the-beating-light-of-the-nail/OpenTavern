@@ -213,7 +213,7 @@ const faqs = computed(() => [
     <footer class="border-t border-border-warm">
       <div class="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 px-5 py-8 sm:flex-row">
         <div class="flex items-center gap-2">
-          <div class="rc-avatar-fill flex h-7 w-7 items-center justify-center rounded-lg text-[10px] font-bold tracking-tighter">RC</div>
+          <div class="rc-avatar-fill flex h-7 w-7 items-center justify-center rounded-lg text-[10px] font-bold tracking-tighter" role="img" aria-label="Open Tavern · RoleChat AI">RC</div>
           <span class="text-sm font-bold">RoleChat AI</span>
         </div>
         <nav class="flex items-center gap-4 text-xs text-plum-faint">

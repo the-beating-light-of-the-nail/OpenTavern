@@ -39,6 +39,12 @@ const individual = [
       <h1 class="font-display text-3xl font-semibold tracking-wide sm:text-4xl">{{ t('wfc_title') }}</h1>
       <p class="mt-4 leading-relaxed text-plum-muted">{{ t('wfc_subtitle') }}</p>
 
+      <!-- 本站自己的角色库才是首选源：在列出外部资源之前，先把 C 簇「character database / cards」意图收回站内 -->
+      <section class="mt-8 rounded-2xl border border-border-warm bg-rose-tint p-6">
+        <p class="text-sm leading-relaxed text-plum-muted">{{ t('characters_desc') }}</p>
+        <NuxtLink :to="localePath('/characters')" class="rc-btn-primary mt-4 inline-flex">{{ t('home_cta_explore') }}</NuxtLink>
+      </section>
+
       <!-- Quick explanation for beginners -->
       <section class="mt-10">
         <h2 class="text-xl font-bold">{{ t('wfc_explanation_title') }}</h2>

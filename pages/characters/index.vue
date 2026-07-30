@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useCharacters, useCollections } from '~/data';
 import type { CharacterSeo, CharacterCategory } from '~/types/seo';
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const localePath = useLocalePath();
 
 useSeoMeta({
@@ -24,6 +24,44 @@ function catLabel(cat: CharacterCategory | 'All'): string {
 // 数据随当前 locale 响应式切换
 const characters = useCharacters();
 const collections = useCollections();
+
+// 结构化数据：CollectionPage + ItemList（向搜索引擎声明这是一个角色条目目录/数据库，
+// 即簇 C 的核心信号 —— 让 "AI character cards / database" 类查询能命中本页）
+// + BreadcrumbList（面包屑富结果）。locale 切换时随 t()/characters 响应式重算。
+const collectionJsonLd = computed(() => [
+  {
+    type: 'application/ld+json',
+    innerHTML: JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: t('characters_title'),
+      description: t('characters_seo_desc'),
+      url: absUrl(localePath('/characters')),
+      inLanguage: locale.value,
+      isPartOf: { '@type': 'WebSite', name: BRAND, url: absUrl('/') },
+      mainEntity: {
+        '@type': 'ItemList',
+        numberOfItems: characters.value.length,
+        itemListElement: characters.value.map((c, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: c.name,
+          url: absUrl(localePath(`/characters/${c.slug}`)),
+        })),
+      },
+    }),
+  },
+  {
+    type: 'application/ld+json',
+    innerHTML: JSON.stringify(
+      breadcrumbSchema([
+        { name: t('breadcrumb_home'), path: localePath('/') },
+        { name: t('nav_characters'), path: localePath('/characters') },
+      ]),
+    ),
+  },
+]);
+useHead({ script: collectionJsonLd });
 
 // 标签筛选（纯前端，数据已 SSR 进 HTML）
 const allTags = computed(() => {

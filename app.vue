@@ -21,7 +21,7 @@ useHead({
 
 useSeoMeta({
   ogType: 'website',
-  ogSiteName: 'Open Tavern · RoleChat AI',
+  ogSiteName: BRAND,
   ogUrl: canonicalUrl,
   ogImage,
   ogImageAlt: 'Open Tavern · RoleChat AI — Private AI Character Roleplay',
@@ -37,8 +37,8 @@ useHead({
       innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'WebSite',
-        name: 'Open Tavern · RoleChat AI',
-        alternateName: 'RoleChat AI',
+        name: BRAND,
+        alternateName: BRAND_ALTERNATE_NAMES,
         url: absUrl('/'),
         inLanguage: 'en',
       }),
@@ -49,7 +49,7 @@ useHead({
         '@context': 'https://schema.org',
         '@type': 'Organization',
         name: 'Open Tavern',
-        alternateName: 'RoleChat AI',
+        alternateName: BRAND_ALTERNATE_NAMES,
         url: absUrl('/'),
         description:
           'Open Tavern (RoleChat AI) is an easy private AI roleplay platform with original romance and fantasy characters. Bring your own AI key.',
