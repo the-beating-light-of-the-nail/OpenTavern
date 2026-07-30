@@ -1,6 +1,7 @@
 <template>
   <NuxtPage />
   <CookieConsent />
+  <AdSidebar />
   <AdPanel />
 </template>
 
