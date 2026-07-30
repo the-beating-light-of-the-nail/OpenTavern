@@ -162,6 +162,7 @@ function onComfyGenerate() {
 
     <!-- Input Area -->
     <div class="ui-topbar flex-shrink-0 px-4 py-3">
+      <ChatMobileAd />
       <!-- @ 提及气泡（群聊选择后显示） -->
       <div v-if="groupMention.hasPending.value" id="mentionPill" class="mb-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium" style="background:color-mix(in srgb,var(--color-primary) 20%,transparent);border:1px solid color-mix(in srgb,var(--color-primary) 40%,transparent);color:var(--color-primary)">
         <span id="mentionPillName">{{ groupMention.pillDisplayName.value }}</span>

@@ -24,8 +24,8 @@ export const ADS = {
   native: { html: '/ad-native.html', width: 330, height: 280 },
 } as const;
 
-// 广告位置：script=全站脚本注入；topbar=公开页顶栏（SiteAd）；content=首页试验区（index）；sidebar=侧边贴边（AdSidebar 左/右）；card=角色卡片网格（AdCard）；footer=页面底部（AdFooter）
-export type AdPlacement = 'script' | 'topbar' | 'content' | 'sidebar' | 'card' | 'footer';
+// 广告位置：script=全站脚本注入；topbar=公开页顶栏（SiteAd）；content=首页试验区（index）；sidebar=侧边贴边（AdSidebar 左/右）；card=角色卡片网格（AdCard）；footer=页面底部（AdFooter）；chat=手机聊天输入框上方薄横幅（ChatMobileAd）
+export type AdPlacement = 'script' | 'topbar' | 'content' | 'sidebar' | 'card' | 'footer' | 'chat';
 
 export interface AdDef {
   id: string;
@@ -47,7 +47,7 @@ export const AD_REGISTRY: AdDef[] = [
   { id: 'banner300', label: 'Banner 300×250（底部）', placement: 'footer', html: ADS.banner300.html, width: ADS.banner300.width, height: ADS.banner300.height, defaultOn: true },
   { id: 'banner160x300', label: 'Banner 160×300（左侧）', placement: 'sidebar', html: ADS.banner160x300.html, width: ADS.banner160x300.width, height: ADS.banner160x300.height, defaultOn: true },
   { id: 'banner728x90', label: 'Banner 728×90', placement: 'content', html: ADS.banner728x90.html, width: ADS.banner728x90.width, height: ADS.banner728x90.height, defaultOn: false },
-  { id: 'banner320x50', label: 'Banner 320×50', placement: 'content', html: ADS.banner320x50.html, width: ADS.banner320x50.width, height: ADS.banner320x50.height, defaultOn: false },
+  { id: 'banner320x50', label: 'Banner 320×50（手机聊天横幅）', placement: 'chat', html: ADS.banner320x50.html, width: ADS.banner320x50.width, height: ADS.banner320x50.height, defaultOn: true },
   { id: 'banner160x600', label: 'Banner 160×600（右侧贴边）', placement: 'sidebar', html: ADS.banner160x600.html, width: ADS.banner160x600.width, height: ADS.banner160x600.height, defaultOn: true },
   { id: 'nativeBanner', label: 'Native Banner（卡片位）', placement: 'card', html: ADS.native.html, width: ADS.native.width, height: ADS.native.height, defaultOn: true },
 ];
