@@ -52,6 +52,7 @@ watch(
         <LibraryView v-if="store.currentView === 'library'" />
         <ChatView v-else />
       </div>
+      <AppRailAd />
     </div>
     <ModalsHost />
   </div>
