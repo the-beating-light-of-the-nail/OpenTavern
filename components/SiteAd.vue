@@ -1,0 +1,45 @@
+<script setup lang="ts">
+// SiteAd：渲染「需要放置位置」的广告位。
+//   - smartlink：跳转链接，渲染成全站可点击入口（当前启用）。
+//   - native-banner：invoke.js + 容器（未来在此扩展，按 utils/ads.ts 的 ADS.nativeBanner）。
+// popunder / social-bar 是全站型脚本，在 app.vue 注入，与此组件无关。
+// 切换广告见 utils/ads.ts 的 ACTIVE_AD。
+import { ACTIVE_AD, ADS } from '~/utils/ads';
+</script>
+
+<template>
+  <!-- Smartlink：全站顶部可点击入口，点击在新标签打开广告落地页 -->
+  <div
+    v-if="ACTIVE_AD === 'smartlink'"
+    class="border-b border-border-warm"
+    style="background:color-mix(in srgb, var(--color-primary) 10%, transparent)"
+  >
+    <div class="mx-auto flex max-w-5xl items-center justify-center px-5 py-1.5">
+      <a
+        :href="ADS.smartlink"
+        target="_blank"
+        rel="noopener noreferrer sponsored"
+        class="rc-smartlink"
+      >
+        <span aria-hidden="true">✨</span>
+        <span>Featured — Sponsored</span>
+      </a>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.rc-smartlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--color-primary);
+  transition: opacity 0.15s ease;
+}
+.rc-smartlink:hover {
+  opacity: 0.75;
+}
+</style>

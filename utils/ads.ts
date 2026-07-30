@@ -11,7 +11,8 @@
 export type AdFormat = 'none' | 'popunder' | 'smartlink' | 'native-banner' | 'social-bar';
 
 // 当前启用的广告（测试时在这里切换）
-export const ACTIVE_AD: AdFormat = 'popunder';
+// 'smartlink' 由 <SiteAd/> 渲染成全站可点击入口（见 components/SiteAd.vue）。
+export const ACTIVE_AD: AdFormat = 'smartlink';
 
 // Adsterra 各广告位代码（来自后台）
 export const ADS = {

@@ -62,5 +62,6 @@ function onLangChange(e: Event) {
         <NuxtLink :to="localePath('/app')" class="rc-nav-link-primary">{{ t('nav_open_app') }}</NuxtLink>
       </nav>
     </div>
+    <SiteAd />
   </header>
 </template>
