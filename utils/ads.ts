@@ -1,47 +1,56 @@
-// ── Adsterra 广告测试开关 ──────────────────────────────────────────
-// 脚本型广告（ACTIVE_AD）与 Smartlink 入口（SMARTLINK_ENABLED）分两套开关，可并存。
-// 切换流程：改下面的值 → git commit → push（Vercel 自动重建部署）。
-// 全部撤下：ACTIVE_AD 设 'none' 且 SMARTLINK_ENABLED 设 false，即彻底移除全部广告。
+// ── Adsterra 广告系统 ──────────────────────────────────────────────
+// 数据驱动：AD_REGISTRY 描述每个广告位的渲染方式与默认开关；
+// 运行时显隐由 useAdPanel（composables/useAdPanel.ts）的状态控制，存 localStorage。
+// 主页 ?adpanel=1 可调出切换面板（仅自己可见）。
 //
-// 各类型说明：
-//  - 'popunder' / 'social-bar'：全站型，脚本注入即生效，不需要放置位置。
-//  - 'native-banner'：需要容器 <div>，由 <SiteAd/> 组件渲染（放在内容页顶部）。
-//  - 'smartlink'：是一个跳转链接，由 <SiteAd/> 渲染成可点击入口。
+// iframe/native 类广告：invoke.js 在 iframe 内运行，避免 document.write 清主页面。
+// script 类（social-bar/popunder）：由 app.vue 注入；运行时关闭后可能需刷新才彻底消失。
 
-export type AdFormat = 'none' | 'popunder' | 'smartlink' | 'native-banner' | 'social-bar';
-
-// 当前启用的全站脚本型广告（测试时在这里切换；social-bar 由 app.vue 注入脚本）
-export const ACTIVE_AD: AdFormat = 'social-bar';
-
-// Smartlink 顶栏入口开关（独立于 ACTIVE_AD，可与脚本型广告同时启用；由 <SiteAd/> 渲染）
-export const SMARTLINK_ENABLED = true;
-
-// 468x60 Banner 开关（独立；由 <SiteAd/> 用 <iframe> 渲染，invoke.js 在 iframe 内运行避免 document.write 清主页面）
-export const BANNER_468_ENABLED = true;
-
-// 300x250 Banner 开关（独立；由 <AdBanner/> 在首页 Hero 下方渲染）
-export const BANNER_300_ENABLED = true;
-
-// 160x300 Banner 开关（独立；由 <AdBanner/> 在首页 Hero 下方与 300x250 并排）
-export const BANNER_160_ENABLED = true;
-
-// Adsterra 各广告位代码（来自后台）
+// 各广告位 URL / 尺寸（来自 Adsterra 后台）
 export const ADS = {
-  // Popunder
-  popunder: 'https://pl30543824.effectivecpmnetwork.com/0d/39/73/0d3973984642a2711dd446bc6274f99b.js',
-  // Smartlink（跳转链接）
-  smartlink: 'https://www.effectivecpmnetwork.com/e6y38sqr?key=85ee6852261e741bbd39cb1366cc9466',
-  // Native Banner（invoke.js + 容器 id）
-  nativeBanner: {
-    invoke: 'https://pl30543826.effectivecpmnetwork.com/8807d0bbfa07b068d18d940340198e0b/invoke.js',
-    containerId: 'container-8807d0bbfa07b068d18d940340198e0b',
-  },
-  // Social Bar
+  // 全站脚本型
   socialBar: 'https://pl30543827.effectivecpmnetwork.com/c1/a5/41/c1a5413ba48b3178d0b162735d4deb78.js',
-  // 468x60 Banner（iframe 形式；HTML 放 public/ad-banner-468x60.html）
+  popunder: 'https://pl30543824.effectivecpmnetwork.com/0d/39/73/0d3973984642a2711dd446bc6274f99b.js',
+  // Smartlink 跳转链接
+  smartlink: 'https://www.effectivecpmnetwork.com/e6y38sqr?key=85ee6852261e741bbd39cb1366cc9466',
+  // iframe banner（HTML 放 public/）
   banner468: { html: '/ad-banner-468x60.html', width: 468, height: 60 },
-  // 300x250 Banner（iframe 形式；HTML 放 public/ad-banner-300x250.html）
   banner300: { html: '/ad-banner-300x250.html', width: 300, height: 250 },
-  // 160x300 Banner（iframe 形式；HTML 放 public/ad-banner-160x300.html）
-  banner160: { html: '/ad-banner-160x300.html', width: 160, height: 300 },
+  banner160x300: { html: '/ad-banner-160x300.html', width: 160, height: 300 },
+  banner160x600: { html: '/ad-banner-160x600.html', width: 160, height: 600 },
+  banner728x90: { html: '/ad-banner-728x90.html', width: 728, height: 90 },
+  banner320x50: { html: '/ad-banner-320x50.html', width: 320, height: 50 },
+  // Native Banner（iframe 加载含 container 的静态页）
+  native: { html: '/ad-native.html', width: 330, height: 280 },
 } as const;
+
+// 广告位置：script=全站脚本注入；topbar=公开页顶栏（SiteAd）；content=首页试验区（index）
+export type AdPlacement = 'script' | 'topbar' | 'content';
+
+export interface AdDef {
+  id: string;
+  label: string; // 面板显示名
+  placement: AdPlacement;
+  src?: string; // script 型脚本 URL
+  href?: string; // smartlink 跳转 URL
+  html?: string; // iframe/native 静态页
+  width?: number;
+  height?: number;
+  defaultOn: boolean;
+}
+
+// 广告注册表（驱动渲染 + 面板）
+export const AD_REGISTRY: AdDef[] = [
+  { id: 'socialBar', label: 'Social Bar（全站·脚本）', placement: 'script', src: ADS.socialBar, defaultOn: true },
+  { id: 'smartlink', label: 'Smartlink（顶栏入口）', placement: 'topbar', href: ADS.smartlink, defaultOn: true },
+  { id: 'banner468', label: 'Banner 468×60（顶栏）', placement: 'topbar', html: ADS.banner468.html, width: ADS.banner468.width, height: ADS.banner468.height, defaultOn: true },
+  { id: 'banner300', label: 'Banner 300×250', placement: 'content', html: ADS.banner300.html, width: ADS.banner300.width, height: ADS.banner300.height, defaultOn: true },
+  { id: 'banner160x300', label: 'Banner 160×300', placement: 'content', html: ADS.banner160x300.html, width: ADS.banner160x300.width, height: ADS.banner160x300.height, defaultOn: true },
+  { id: 'banner728x90', label: 'Banner 728×90', placement: 'content', html: ADS.banner728x90.html, width: ADS.banner728x90.width, height: ADS.banner728x90.height, defaultOn: false },
+  { id: 'banner320x50', label: 'Banner 320×50', placement: 'content', html: ADS.banner320x50.html, width: ADS.banner320x50.width, height: ADS.banner320x50.height, defaultOn: false },
+  { id: 'banner160x600', label: 'Banner 160×600', placement: 'content', html: ADS.banner160x600.html, width: ADS.banner160x600.width, height: ADS.banner160x600.height, defaultOn: false },
+  { id: 'nativeBanner', label: 'Native Banner', placement: 'content', html: ADS.native.html, width: ADS.native.width, height: ADS.native.height, defaultOn: false },
+];
+
+// 便捷查找
+export const adById = (id: string) => AD_REGISTRY.find((a) => a.id === id);

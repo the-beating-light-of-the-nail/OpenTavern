@@ -1,12 +1,14 @@
 <template>
   <NuxtPage />
   <CookieConsent />
+  <AdPanel />
 </template>
 
 <script setup lang="ts">
 // 站点级 SEO 默认值（所有页面生效；页面内 useSeoMeta 可按需覆盖）
 // 解决审计发现的全站缺失项：canonical、OG/Twitter、Organization/WebSite JSON-LD
-import { ACTIVE_AD, ADS } from '~/utils/ads';
+import { ADS } from '~/utils/ads';
+import { useAdPanel } from '~/composables/useAdPanel';
 // SITE_URL / 绝对 URL 统一来自 composables/useSeo.ts（单一来源）
 const canonicalUrl = useCanonicalUrl();
 const hreflangLinks = useHreflang();
@@ -58,11 +60,13 @@ useHead({
   ],
 });
 
-// ── 广告测试：全站型广告脚本（popunder / social-bar），按 utils/ads.ts 的 ACTIVE_AD 开关注入 ──
-// 仅浏览器端执行；prerender 只输出 <script> 标签，不运行外部脚本。
-// 换 AdSense 前把 ACTIVE_AD 设为 'none' 即可彻底移除。
-if (ACTIVE_AD === 'popunder' || ACTIVE_AD === 'social-bar') {
-  const adSrc = ACTIVE_AD === 'popunder' ? ADS.popunder : ADS.socialBar;
-  useHead({ script: [{ src: adSrc, async: true, body: true }] });
-}
+// social-bar 脚本注入：随运行时状态 state.socialBar 显隐。
+// ?adpanel=1 面板可切换；脚本型广告关闭后可能需刷新才彻底消失。
+const { state, load } = useAdPanel();
+useHead(
+  computed(() => ({
+    script: state.value.socialBar ? [{ src: ADS.socialBar, async: true, body: true }] : [],
+  })),
+);
+onMounted(() => load());
 </script>

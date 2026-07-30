@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { useCharacters } from '~/data';
-import { BANNER_300_ENABLED, BANNER_160_ENABLED, ADS } from '~/utils/ads';
+import { AD_REGISTRY } from '~/utils/ads';
+import { useAdPanel } from '~/composables/useAdPanel';
+
+// 首页试验区：所有 content 位广告，由 ?adpanel=1 面板的运行时开关控制显隐
+const { state } = useAdPanel();
+const contentAds = AD_REGISTRY.filter((a) => a.placement === 'content');
+const anyContentOn = computed(() => contentAds.some((a) => state.value[a.id]));
 const { t } = useI18n();
 const localePath = useLocalePath();
 
@@ -77,13 +83,21 @@ const faqs = computed(() => [
       </div>
     </section>
 
-    <!-- Banner 区块（Hero 下方）：300x250 中等矩形 + 160x300 竖幅并排 -->
-    <section v-if="BANNER_300_ENABLED || BANNER_160_ENABLED" class="mx-auto max-w-5xl px-5 py-8">
-      <div class="flex flex-wrap items-center justify-center gap-6">
-        <AdBanner v-if="BANNER_300_ENABLED" :src="ADS.banner300.html" :width="ADS.banner300.width" :height="ADS.banner300.height" />
-        <AdBanner v-if="BANNER_160_ENABLED" :src="ADS.banner160.html" :width="ADS.banner160.width" :height="ADS.banner160.height" />
-      </div>
-    </section>
+    <!-- Banner 试验区（Hero 下方）：所有 content 位广告，由 ?adpanel=1 面板控制显隐 -->
+    <ClientOnly>
+      <section v-if="anyContentOn" class="mx-auto max-w-5xl px-5 py-8">
+        <div class="flex flex-wrap items-center justify-center gap-6">
+          <AdBanner
+            v-for="ad in contentAds"
+            v-show="state[ad.id]"
+            :key="ad.id"
+            :src="ad.html"
+            :width="ad.width"
+            :height="ad.height"
+          />
+        </div>
+      </section>
+    </ClientOnly>
 
     <!-- Popular Romance Characters (原创非 IP，链接到真实角色页) -->
     <section class="mx-auto max-w-5xl px-5 py-20">
