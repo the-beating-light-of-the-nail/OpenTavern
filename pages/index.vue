@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { useCharacters } from '~/data';
-import { AD_REGISTRY } from '~/utils/ads';
+import { AD_REGISTRY, withAdCards } from '~/utils/ads';
 import { useAdPanel } from '~/composables/useAdPanel';
 
 // 首页试验区：所有 content 位广告，由 ?adpanel=1 面板的运行时开关控制显隐
 const { state } = useAdPanel();
 const contentAds = AD_REGISTRY.filter((a) => a.placement === 'content');
 const anyContentOn = computed(() => contentAds.some((a) => state.value[a.id]));
+// 首页 Popular 网格：每 6 张角色卡后插 1 张原生广告卡
+const featuredGrid = computed(() => withAdCards(featured.value, (c) => c.slug));
 const { t } = useI18n();
 const localePath = useLocalePath();
 
@@ -107,19 +109,22 @@ const faqs = computed(() => [
         <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_popular_desc') }}</p>
       </div>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <NuxtLink v-for="c in featured" :key="c.slug" :to="localePath(`/characters/${c.slug}`)" class="rc-card group block p-5">
-          <div class="flex items-center gap-3">
-            <CharAvatar :avatar="c.avatar" :initial="c.initial" size="md" />
-            <div class="min-w-0">
-              <h3 class="font-display truncate text-lg font-semibold tracking-wide group-hover:text-rose-accent">{{ c.name }}</h3>
-              <p class="truncate text-xs text-rose-accent">{{ c.archetype }}</p>
+        <template v-for="g in featuredGrid" :key="g.key">
+          <AdCard v-if="g.kind === 'ad'" />
+          <NuxtLink v-else :to="localePath(`/characters/${g.item.slug}`)" class="rc-card group block p-5">
+            <div class="flex items-center gap-3">
+              <CharAvatar :avatar="g.item.avatar" :initial="g.item.initial" size="md" />
+              <div class="min-w-0">
+                <h3 class="font-display truncate text-lg font-semibold tracking-wide group-hover:text-rose-accent">{{ g.item.name }}</h3>
+                <p class="truncate text-xs text-rose-accent">{{ g.item.archetype }}</p>
+              </div>
             </div>
-          </div>
-          <p class="mt-3 line-clamp-3 text-sm leading-relaxed text-plum-muted">{{ c.tagline }}</p>
-          <div class="mt-4 flex flex-wrap gap-1.5">
-            <span v-for="tg in c.tags.slice(0, 3)" :key="tg" class="rc-tag">{{ tg }}</span>
-          </div>
-        </NuxtLink>
+            <p class="mt-3 line-clamp-3 text-sm leading-relaxed text-plum-muted">{{ g.item.tagline }}</p>
+            <div class="mt-4 flex flex-wrap gap-1.5">
+              <span v-for="tg in g.item.tags.slice(0, 3)" :key="tg" class="rc-tag">{{ tg }}</span>
+            </div>
+          </NuxtLink>
+        </template>
       </div>
       <div class="mt-10 text-center">
         <NuxtLink :to="localePath('/characters')" class="rc-btn-ghost">{{ t('home_see_all') }}</NuxtLink>

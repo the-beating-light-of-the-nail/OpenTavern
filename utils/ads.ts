@@ -24,8 +24,8 @@ export const ADS = {
   native: { html: '/ad-native.html', width: 330, height: 280 },
 } as const;
 
-// 广告位置：script=全站脚本注入；topbar=公开页顶栏（SiteAd）；content=首页试验区（index）；sidebar=右侧贴边（AdSidebar）
-export type AdPlacement = 'script' | 'topbar' | 'content' | 'sidebar';
+// 广告位置：script=全站脚本注入；topbar=公开页顶栏（SiteAd）；content=首页试验区（index）；sidebar=右侧贴边（AdSidebar）；card=混入角色卡片网格（AdCard）
+export type AdPlacement = 'script' | 'topbar' | 'content' | 'sidebar' | 'card';
 
 export interface AdDef {
   id: string;
@@ -49,8 +49,24 @@ export const AD_REGISTRY: AdDef[] = [
   { id: 'banner728x90', label: 'Banner 728×90', placement: 'content', html: ADS.banner728x90.html, width: ADS.banner728x90.width, height: ADS.banner728x90.height, defaultOn: false },
   { id: 'banner320x50', label: 'Banner 320×50', placement: 'content', html: ADS.banner320x50.html, width: ADS.banner320x50.width, height: ADS.banner320x50.height, defaultOn: false },
   { id: 'banner160x600', label: 'Banner 160×600（右侧贴边）', placement: 'sidebar', html: ADS.banner160x600.html, width: ADS.banner160x600.width, height: ADS.banner160x600.height, defaultOn: true },
-  { id: 'nativeBanner', label: 'Native Banner', placement: 'content', html: ADS.native.html, width: ADS.native.width, height: ADS.native.height, defaultOn: false },
+  { id: 'nativeBanner', label: 'Native Banner（卡片位）', placement: 'card', html: ADS.native.html, width: ADS.native.width, height: ADS.native.height, defaultOn: true },
 ];
 
 // 便捷查找
 export const adById = (id: string) => AD_REGISTRY.find((a) => a.id === id);
+
+// 把广告卡按固定间隔插入条目列表（每 every 项后插一张），用于卡片网格原生广告。
+// featured(6) → 末尾 1 张广告卡；filtered(N) → 每 6 张插 1 张（首屏前 6 张不出现）。
+export type GridCell<T> =
+  | { kind: 'item'; item: T; key: string }
+  | { kind: 'ad'; key: string };
+
+export function withAdCards<T>(items: T[], keyOf: (item: T) => string, every = 6): GridCell<T>[] {
+  const out: GridCell<T>[] = [];
+  let adIdx = 0;
+  items.forEach((item, i) => {
+    out.push({ kind: 'item', item, key: keyOf(item) });
+    if ((i + 1) % every === 0) out.push({ kind: 'ad', key: `native-ad-${adIdx++}` });
+  });
+  return out;
+}

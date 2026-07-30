@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useCharacters, useCollections } from '~/data';
+import { withAdCards } from '~/utils/ads';
 import type { CharacterSeo, CharacterCategory } from '~/types/seo';
 const { t, locale } = useI18n();
 const localePath = useLocalePath();
@@ -92,6 +93,9 @@ const filtered = computed<CharacterSeo[]>(() => {
 function toggleTag(tt: string) {
   activeTag.value = activeTag.value === tt ? null : tt;
 }
+
+// 角色网格：每 6 张后插 1 张原生广告卡（首屏前 6 张不出现）
+const charGrid = computed(() => withAdCards(filtered.value, (c) => c.slug));
 </script>
 
 <template>
@@ -145,7 +149,10 @@ function toggleTag(tt: string) {
 
       <!-- Grid -->
       <div v-if="filtered.length" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <PublicCardItem v-for="c in filtered" :key="c.slug" :c="c" />
+        <template v-for="g in charGrid" :key="g.key">
+          <AdCard v-if="g.kind === 'ad'" />
+          <PublicCardItem v-else :c="g.item" />
+        </template>
       </div>
       <div v-else class="py-16 text-center text-plum-faint">
         <p>{{ t('no_characters_match') }}</p>
