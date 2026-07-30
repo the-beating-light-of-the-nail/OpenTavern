@@ -22,6 +22,9 @@ export const BANNER_468_ENABLED = true;
 // 300x250 Banner 开关（独立；由 <AdBanner/> 在首页 Hero 下方渲染）
 export const BANNER_300_ENABLED = true;
 
+// 160x300 Banner 开关（独立；由 <AdBanner/> 在首页 Hero 下方与 300x250 并排）
+export const BANNER_160_ENABLED = true;
+
 // Adsterra 各广告位代码（来自后台）
 export const ADS = {
   // Popunder
@@ -39,4 +42,6 @@ export const ADS = {
   banner468: { html: '/ad-banner-468x60.html', width: 468, height: 60 },
   // 300x250 Banner（iframe 形式；HTML 放 public/ad-banner-300x250.html）
   banner300: { html: '/ad-banner-300x250.html', width: 300, height: 250 },
+  // 160x300 Banner（iframe 形式；HTML 放 public/ad-banner-160x300.html）
+  banner160: { html: '/ad-banner-160x300.html', width: 160, height: 300 },
 } as const;

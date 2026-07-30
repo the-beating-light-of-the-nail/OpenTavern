@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useCharacters } from '~/data';
-import { BANNER_300_ENABLED, ADS } from '~/utils/ads';
+import { BANNER_300_ENABLED, BANNER_160_ENABLED, ADS } from '~/utils/ads';
 const { t } = useI18n();
 const localePath = useLocalePath();
 
@@ -77,9 +77,12 @@ const faqs = computed(() => [
       </div>
     </section>
 
-    <!-- 300x250 Banner（中等矩形，Hero 下方） -->
-    <section v-if="BANNER_300_ENABLED" class="mx-auto max-w-5xl px-5 py-8">
-      <AdBanner :src="ADS.banner300.html" :width="ADS.banner300.width" :height="ADS.banner300.height" />
+    <!-- Banner 区块（Hero 下方）：300x250 中等矩形 + 160x300 竖幅并排 -->
+    <section v-if="BANNER_300_ENABLED || BANNER_160_ENABLED" class="mx-auto max-w-5xl px-5 py-8">
+      <div class="flex flex-wrap items-center justify-center gap-6">
+        <AdBanner v-if="BANNER_300_ENABLED" :src="ADS.banner300.html" :width="ADS.banner300.width" :height="ADS.banner300.height" />
+        <AdBanner v-if="BANNER_160_ENABLED" :src="ADS.banner160.html" :width="ADS.banner160.width" :height="ADS.banner160.height" />
+      </div>
     </section>
 
     <!-- Popular Romance Characters (原创非 IP，链接到真实角色页) -->
