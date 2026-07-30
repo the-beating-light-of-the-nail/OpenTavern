@@ -3,14 +3,14 @@
 //   - smartlink：跳转链接，渲染成全站可点击入口（当前启用）。
 //   - native-banner：invoke.js + 容器（未来在此扩展，按 utils/ads.ts 的 ADS.nativeBanner）。
 // popunder / social-bar 是全站型脚本，在 app.vue 注入，与此组件无关。
-// 切换广告见 utils/ads.ts 的 ACTIVE_AD。
-import { ACTIVE_AD, ADS } from '~/utils/ads';
+// 切换见 utils/ads.ts 的 SMARTLINK_ENABLED。
+import { SMARTLINK_ENABLED, ADS } from '~/utils/ads';
 </script>
 
 <template>
   <!-- Smartlink：全站顶部可点击入口，点击在新标签打开广告落地页 -->
   <div
-    v-if="ACTIVE_AD === 'smartlink'"
+    v-if="SMARTLINK_ENABLED"
     class="border-b border-border-warm"
     style="background:color-mix(in srgb, var(--color-primary) 10%, transparent)"
   >
