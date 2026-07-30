@@ -19,6 +19,9 @@ export const SMARTLINK_ENABLED = true;
 // 468x60 Banner 开关（独立；由 <SiteAd/> 用 <iframe> 渲染，invoke.js 在 iframe 内运行避免 document.write 清主页面）
 export const BANNER_468_ENABLED = true;
 
+// 300x250 Banner 开关（独立；由 <AdBanner/> 在首页 Hero 下方渲染）
+export const BANNER_300_ENABLED = true;
+
 // Adsterra 各广告位代码（来自后台）
 export const ADS = {
   // Popunder
@@ -34,4 +37,6 @@ export const ADS = {
   socialBar: 'https://pl30543827.effectivecpmnetwork.com/c1/a5/41/c1a5413ba48b3178d0b162735d4deb78.js',
   // 468x60 Banner（iframe 形式；HTML 放 public/ad-banner-468x60.html）
   banner468: { html: '/ad-banner-468x60.html', width: 468, height: 60 },
+  // 300x250 Banner（iframe 形式；HTML 放 public/ad-banner-300x250.html）
+  banner300: { html: '/ad-banner-300x250.html', width: 300, height: 250 },
 } as const;

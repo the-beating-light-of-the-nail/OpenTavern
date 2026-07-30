@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useCharacters } from '~/data';
+import { BANNER_300_ENABLED, ADS } from '~/utils/ads';
 const { t } = useI18n();
 const localePath = useLocalePath();
 
@@ -74,6 +75,11 @@ const faqs = computed(() => [
           <NuxtLink :to="localePath('/characters')" class="rc-btn-ghost">{{ t('home_cta_explore') }}</NuxtLink>
         </div>
       </div>
+    </section>
+
+    <!-- 300x250 Banner（中等矩形，Hero 下方） -->
+    <section v-if="BANNER_300_ENABLED" class="mx-auto max-w-5xl px-5 py-8">
+      <AdBanner :src="ADS.banner300.html" :width="ADS.banner300.width" :height="ADS.banner300.height" />
     </section>
 
     <!-- Popular Romance Characters (原创非 IP，链接到真实角色页) -->
