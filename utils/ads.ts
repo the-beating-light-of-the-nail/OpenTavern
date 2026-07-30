@@ -24,8 +24,8 @@ export const ADS = {
   native: { html: '/ad-native.html', width: 330, height: 280 },
 } as const;
 
-// 广告位置：script=全站脚本注入；topbar=公开页顶栏（SiteAd）；content=首页试验区（index）；sidebar=右侧贴边（AdSidebar）；card=混入角色卡片网格（AdCard）
-export type AdPlacement = 'script' | 'topbar' | 'content' | 'sidebar' | 'card';
+// 广告位置：script=全站脚本注入；topbar=公开页顶栏（SiteAd）；content=首页试验区（index）；sidebar=侧边贴边（AdSidebar 左/右）；card=角色卡片网格（AdCard）；footer=页面底部（AdFooter）
+export type AdPlacement = 'script' | 'topbar' | 'content' | 'sidebar' | 'card' | 'footer';
 
 export interface AdDef {
   id: string;
@@ -44,8 +44,8 @@ export const AD_REGISTRY: AdDef[] = [
   { id: 'socialBar', label: 'Social Bar（全站·脚本·已停用）', placement: 'script', src: ADS.socialBar, defaultOn: false },
   { id: 'smartlink', label: 'Smartlink（顶栏入口）', placement: 'topbar', href: ADS.smartlink, defaultOn: true },
   { id: 'banner468', label: 'Banner 468×60（顶栏）', placement: 'topbar', html: ADS.banner468.html, width: ADS.banner468.width, height: ADS.banner468.height, defaultOn: true },
-  { id: 'banner300', label: 'Banner 300×250', placement: 'content', html: ADS.banner300.html, width: ADS.banner300.width, height: ADS.banner300.height, defaultOn: true },
-  { id: 'banner160x300', label: 'Banner 160×300', placement: 'content', html: ADS.banner160x300.html, width: ADS.banner160x300.width, height: ADS.banner160x300.height, defaultOn: true },
+  { id: 'banner300', label: 'Banner 300×250（底部）', placement: 'footer', html: ADS.banner300.html, width: ADS.banner300.width, height: ADS.banner300.height, defaultOn: true },
+  { id: 'banner160x300', label: 'Banner 160×300（左侧）', placement: 'sidebar', html: ADS.banner160x300.html, width: ADS.banner160x300.width, height: ADS.banner160x300.height, defaultOn: true },
   { id: 'banner728x90', label: 'Banner 728×90', placement: 'content', html: ADS.banner728x90.html, width: ADS.banner728x90.width, height: ADS.banner728x90.height, defaultOn: false },
   { id: 'banner320x50', label: 'Banner 320×50', placement: 'content', html: ADS.banner320x50.html, width: ADS.banner320x50.width, height: ADS.banner320x50.height, defaultOn: false },
   { id: 'banner160x600', label: 'Banner 160×600（右侧贴边）', placement: 'sidebar', html: ADS.banner160x600.html, width: ADS.banner160x600.width, height: ADS.banner160x600.height, defaultOn: true },

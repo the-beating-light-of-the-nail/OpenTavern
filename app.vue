@@ -1,7 +1,9 @@
 <template>
   <NuxtPage />
   <CookieConsent />
-  <AdSidebar />
+  <AdSidebar side="right" ad-id="banner160x600" :src="ADS.banner160x600.html" :width="ADS.banner160x600.width" :height="ADS.banner160x600.height" />
+  <AdSidebar side="left" ad-id="banner160x300" :src="ADS.banner160x300.html" :width="ADS.banner160x300.width" :height="ADS.banner160x300.height" />
+  <AdFooter ad-id="banner300" :src="ADS.banner300.html" :width="ADS.banner300.width" :height="ADS.banner300.height" />
   <AdPanel />
 </template>
 
