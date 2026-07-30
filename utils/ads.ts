@@ -41,7 +41,7 @@ export interface AdDef {
 
 // 广告注册表（驱动渲染 + 面板）
 export const AD_REGISTRY: AdDef[] = [
-  { id: 'socialBar', label: 'Social Bar（全站·脚本）', placement: 'script', src: ADS.socialBar, defaultOn: true },
+  { id: 'socialBar', label: 'Social Bar（全站·脚本·已停用）', placement: 'script', src: ADS.socialBar, defaultOn: false },
   { id: 'smartlink', label: 'Smartlink（顶栏入口）', placement: 'topbar', href: ADS.smartlink, defaultOn: true },
   { id: 'banner468', label: 'Banner 468×60（顶栏）', placement: 'topbar', html: ADS.banner468.html, width: ADS.banner468.width, height: ADS.banner468.height, defaultOn: true },
   { id: 'banner300', label: 'Banner 300×250', placement: 'content', html: ADS.banner300.html, width: ADS.banner300.width, height: ADS.banner300.height, defaultOn: true },
