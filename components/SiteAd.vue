@@ -3,8 +3,8 @@
 //   - smartlink：跳转链接，渲染成全站可点击入口（当前启用）。
 //   - native-banner：invoke.js + 容器（未来在此扩展，按 utils/ads.ts 的 ADS.nativeBanner）。
 // popunder / social-bar 是全站型脚本，在 app.vue 注入，与此组件无关。
-// 切换见 utils/ads.ts 的 SMARTLINK_ENABLED。
-import { SMARTLINK_ENABLED, ADS } from '~/utils/ads';
+// 切换见 utils/ads.ts 的 SMARTLINK_ENABLED / BANNER_468_ENABLED。
+import { SMARTLINK_ENABLED, BANNER_468_ENABLED, ADS } from '~/utils/ads';
 </script>
 
 <template>
@@ -25,6 +25,21 @@ import { SMARTLINK_ENABLED, ADS } from '~/utils/ads';
         <span>Featured — Sponsored</span>
       </a>
     </div>
+  </div>
+
+  <!-- 468x60 Banner：iframe 加载 public 里的静态广告页，居中显示；移动端超宽居中裁切 -->
+  <div
+    v-if="BANNER_468_ENABLED"
+    class="flex justify-center overflow-hidden border-b border-border-warm px-5 py-1.5"
+  >
+    <iframe
+      :src="ADS.banner468.html"
+      :width="ADS.banner468.width"
+      :height="ADS.banner468.height"
+      title="Advertisement"
+      scrolling="no"
+      style="border: 0; display: block; max-width: 100%"
+    />
   </div>
 </template>
 
