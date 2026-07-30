@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useAppStore } from '~/stores/app';
 import { useCharacters } from '~/data';
+import { withAdCards } from '~/utils/ads';
 import type { CharacterSeo } from '~/types/seo';
 
 const store = useAppStore();
@@ -58,6 +59,9 @@ const publicCards = computed<CharacterSeo[]>(() => {
     );
   });
 });
+
+// 公共卡片网格：每 6 张后插 1 张原生广告卡（app 深色模式）
+const publicGrid = computed(() => withAdCards(publicCards.value, (c) => c.slug));
 
 // ---- My Cards（用户导入的角色卡）----
 interface CardVM { id: string; name: string; tags: string[]; description: string; image?: string }
@@ -129,7 +133,10 @@ function onSelectMyCard(cardVm: CardVM) {
     <div class="flex-1 overflow-y-auto p-4">
       <!-- Public（注意：不可再有 hidden class 与 v-show 冲突） -->
       <div v-show="activeTab === 'public'" id="publicCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        <PublicCardItem v-for="c in publicCards" :key="c.slug" :c="c" mode="app" />
+        <template v-for="g in publicGrid" :key="g.key">
+          <AdCard v-if="g.kind === 'ad'" mode="app" />
+          <PublicCardItem v-else :c="g.item" mode="app" />
+        </template>
         <div v-if="!publicCards.length" class="col-span-full text-center text-sm py-12" style="color:var(--color-text-muted)">{{ t('no_characters_match') }}</div>
       </div>
       <!-- My Cards -->

@@ -1,15 +1,20 @@
 <script setup lang="ts">
-// 原生广告卡：rc-card 外壳 + Sponsored 角标 + Native Banner iframe，混入角色卡片网格。
+// 原生广告卡：外壳随模式自适配（seo=白 rc-card / app=深色 ui-panel）+ Sponsored 角标 + Native iframe。
 import { ADS } from '~/utils/ads';
 import { useAdPanel } from '~/composables/useAdPanel';
 
+withDefaults(defineProps<{ mode?: 'seo' | 'app' }>(), { mode: 'seo' });
 const { state } = useAdPanel();
 const b = ADS.native;
 </script>
 
 <template>
   <ClientOnly>
-    <div v-if="state.nativeBanner" class="rc-card relative flex flex-col overflow-hidden">
+    <div
+      v-if="state.nativeBanner"
+      class="relative flex flex-col overflow-hidden"
+      :class="mode === 'app' ? 'ui-panel rounded-2xl' : 'rc-card'"
+    >
       <div class="rc-card-accent" />
       <span class="ad-card-badge">Sponsored</span>
       <div class="p-5">
@@ -35,8 +40,8 @@ const b = ADS.native;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #8a7a6c;
-  background: color-mix(in srgb, var(--color-primary, #b65c7a) 12%, transparent);
+  color: #d8cabb;
+  background: color-mix(in srgb, var(--color-primary, #b65c7a) 22%, transparent);
   border-radius: 999px;
 }
 </style>
