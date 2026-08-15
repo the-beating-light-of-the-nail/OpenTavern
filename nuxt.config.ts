@@ -103,6 +103,11 @@ export default defineNuxtConfig({
           innerHTML:
             "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-9P6PL73E94');",
         },
+        // 4) Microsoft Clarity 用户行为分析 —— 官方异步安装代码，写入 <head>
+        {
+          innerHTML:
+            "(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src=\"https://www.clarity.ms/tag/\"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, \"clarity\", \"script\", \"y2vcc4nzof\");",
+        },
       ],
     },
   },
