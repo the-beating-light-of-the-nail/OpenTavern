@@ -12,11 +12,12 @@ const localePath = useLocalePath();
         <div
           class="rc-avatar-fill flex h-7 w-7 items-center justify-center rounded-lg text-[10px] font-bold tracking-tighter"
         >
-          RC
+          OT
         </div>
-        <span class="text-sm font-bold">RoleChat AI</span>
+        <span class="text-sm font-bold">Open Tavern</span>
       </div>
       <nav class="flex flex-wrap items-center justify-center gap-4 text-xs text-plum-faint">
+        <NuxtLink :to="localePath('/tools')" class="hover:text-plum-light">{{ t('nav_tools') }}</NuxtLink>
         <NuxtLink :to="localePath('/characters')" class="hover:text-plum-light">{{ t('nav_characters') }}</NuxtLink>
         <NuxtLink :to="localePath('/guides')" class="hover:text-plum-light">{{ t('nav_guides') }}</NuxtLink>
         <NuxtLink :to="localePath('/about')" class="hover:text-plum-light">{{ t('nav_about') }}</NuxtLink>

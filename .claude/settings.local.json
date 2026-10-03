@@ -29,7 +29,30 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
-      "Bash(git fetch *)"
+      "Bash(git fetch *)",
+      "Bash(git pull *)",
+      "Bash(git log *)",
+      "Bash(curl -sI \"https://open-tavern.vercel.app/characters/the-vampire-lord\")",
+      "Bash(curl -sI \"https://open-tavern.vercel.app/ar/characters/the-vampire-lord\")",
+      "Bash(curl -sI \"https://open-tavern.vercel.app/ar/characters/the-vampire-lord?$\\(date +%s\\)\")",
+      "Bash(curl -sI \"https://open-tavern.vercel.app/zh-CN/characters/the-vampire-lord\")",
+      "Bash(curl -s \"https://open-tavern.vercel.app/sitemap_index.xml\")",
+      "Bash(curl -s \"https://open-tavern.vercel.app/ar/sitemap.xml\")",
+      "Bash(curl -sI \"https://open-tavern.vercel.app/characters/the-brooding-vampire-lord\")",
+      "Bash(curl -sI \"https://open-tavern.vercel.app/ar/characters/the-brooding-vampire-lord\")",
+      "Bash(curl -sI \"https://open-tavern.vercel.app/__sitemap__/en-US.xml\")",
+      "Bash(curl -sI \"https://open-tavern.vercel.app/__sitemap__/ar-SA.xml\")",
+      "Bash(curl -s \"https://open-tavern.vercel.app/__sitemap__/en-US.xml\")",
+      "Bash(grep -vE \"vercel.app/\\(characters|guides|collections|about|contact|privacy|terms|where|app|$\\)\")",
+      "Bash(curl -s \"https://open-tavern.vercel.app/__sitemap__/zh-CN.xml\")",
+      "Bash(git -C /mnt/g/global-projects/OpenTavern log --oneline -- nuxt.config.ts)",
+      "Bash(git -C /mnt/g/global-projects/OpenTavern log -p --follow -- nuxt.config.ts)",
+      "Bash(git -C /mnt/g/global-projects/OpenTavern log -p -- nuxt.config.ts)",
+      "Bash(git -C /mnt/g/global-projects/OpenTavern log --oneline -S 'swr:' -- nuxt.config.ts)",
+      "Bash(git -C /mnt/g/global-projects/OpenTavern log --oneline -S 'isr:' -- nuxt.config.ts)",
+      "Bash(git -C /mnt/g/global-projects/OpenTavern log --oneline -S 'cacheMaxAgeSeconds' -- nuxt.config.ts)",
+      "Bash(git -C /mnt/g/global-projects/OpenTavern log --oneline -S '@nuxtjs/sitemap' -- nuxt.config.ts)",
+      "Bash(git -C /mnt/g/global-projects/OpenTavern log --oneline -S '@nuxtjs/sitemap' -- package.json)"
     ]
   }
 }

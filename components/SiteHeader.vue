@@ -46,13 +46,14 @@ function onLangChange(e: Event) {
   <header class="sticky top-0 z-20 border-b border-border-warm backdrop-blur-xl" style="background:color-mix(in srgb,var(--color-bg) 82%,transparent)">
     <div class="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
       <NuxtLink :to="localePath('/')" class="flex items-center gap-2">
-        <div class="rc-avatar-fill flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold tracking-tighter">RC</div>
-        <span class="text-sm font-bold">RoleChat AI</span>
+        <div class="rc-avatar-fill flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold tracking-tighter">OT</div>
+        <span class="text-sm font-bold">Open Tavern</span>
       </NuxtLink>
       <nav class="flex items-center gap-1.5">
         <select :value="store.settings.lang" class="text-xs font-semibold rounded-md px-2 py-1 border cursor-pointer appearance-none text-center mr-1 transition-colors" style="background:color-mix(in srgb, var(--color-primary) 10%, transparent);color:var(--color-primary);border-color:color-mix(in srgb, var(--color-primary) 18%, transparent)" @change="onLangChange">
           <option v-for="o in langOptions" :key="o.code" :value="o.code">{{ o.label }}</option>
         </select>
+        <NuxtLink :to="localePath('/tools')" class="rc-nav-link">{{ t('nav_tools') }}</NuxtLink>
         <NuxtLink :to="localePath('/characters')" class="rc-nav-link">{{ t('nav_characters') }}</NuxtLink>
         <NuxtLink :to="localePath('/guides')" class="rc-nav-link">{{ t('nav_guides') }}</NuxtLink>
         <template v-if="showExtraLinks">

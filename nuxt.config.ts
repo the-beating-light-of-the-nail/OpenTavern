@@ -6,6 +6,8 @@ export default defineNuxtConfig({
   // 路由级渲染控制：营销页与 SEO 页预渲染为静态 HTML（含动态 [slug] 页），聊天 App 锁回纯客户端 SPA
   routeRules: {
     '/': { prerender: true },
+    '/tools': { prerender: true },
+    '/tools/**': { prerender: true },
     '/characters': { prerender: true },
     '/characters/**': { prerender: true },
     '/collections/**': { prerender: true },
@@ -165,6 +167,9 @@ export default defineNuxtConfig({
     // /app 是纯客户端 SPA，不索引；其余预渲染路由由模块从 nitro prerender 自动发现
     exclude: ['/app/**', '/app', '/zh-CN/app', '/zh-TW/app', '/es/app', '/ar/app', '/pt/app', '/ru/app', '/fr/app', '/de/app', '/ja/app', '/ko/app', '/it/app', '/nl/app', '/sv/app', '/no/app', '/da/app', '/fi/app', '/pl/app', '/tr/app', '/hi/app', '/id/app', '/vi/app', '/th/app', '/ms/app', '/tl/app'],
     // 与 i18n 集成：自动生成 <xhtml:link rel="alternate" hreflang="..."> 备选语言链接
+    // （注：@nuxtjs/sitemap v8 的 ModuleOptions 类型无 i18n 手动选项——此键为历史遗留，
+    //   运行时被忽略、hreflang 由模块自动探测 @nuxtjs/i18n 生成；类型报错为预存问题，勿删，
+    //   删除会暴露本仓库双 @nuxt/schema（hoisted 4.x / nested 3.17.7）导致的 routeRules 幻影错误）
     autoLastmod: true,
     i18n: true,
     // 关闭 sitemap 运行时缓存：模块默认用 Nitro defineCachedFunction(swr + 600s) 在生产环境
