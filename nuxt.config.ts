@@ -162,7 +162,7 @@ export default defineNuxtConfig({
 
   // 站点 URL — sitemap.xml 生成 <loc> 绝对路径所需
   site: {
-    url: 'https://open-tavern.vercel.app',
+    url: 'https://www.rolechatai.com',
   },
 
   sitemap: {

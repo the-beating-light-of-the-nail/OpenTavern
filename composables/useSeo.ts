@@ -1,7 +1,7 @@
 // 站点级 SEO 工具：canonical URL 单一来源 + 结构化数据拼装 + hreflang
 // SITE_URL 与 nuxt.config 的 site.url 保持一致；换域名时只改这里 + nuxt.config
 
-export const SITE_URL = 'https://open-tavern.vercel.app';
+export const SITE_URL = 'https://www.rolechatai.com';
 // 全部支持的 locale —— hreflang 必须覆盖所有语言，否则非中英文 locale 的 alternate 链断裂
 export const LOCALES = ['en', 'zh-CN', 'zh-TW', 'es', 'ar', 'pt', 'ru', 'fr', 'de', 'ja', 'ko', 'it', 'nl', 'sv', 'no', 'da', 'fi', 'pl', 'tr', 'hi', 'id', 'vi', 'th', 'ms', 'tl'] as const;
 

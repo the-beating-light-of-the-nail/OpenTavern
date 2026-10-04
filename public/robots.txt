@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /app
 
-Sitemap: https://open-tavern.vercel.app/sitemap.xml
+Sitemap: https://www.rolechatai.com/sitemap.xml
