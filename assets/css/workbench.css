@@ -1,0 +1,261 @@
+/* ============================================================
+   首页工作台布局（workbench）
+   结构参照 tools.laopobao.online 首页：顶栏 + 左分类栏 + 工具卡网格。
+   配色/圆角/阴影一律走现有 --color-* token，不引入目标站 coffee 主题。
+   规格来源：docs/research/laopobao-tools/home/{PAGE_TOPOLOGY,BEHAVIORS}.md
+   —— 本文件只被 pages/index.vue + components/home/* 使用，其他页面零影响。
+   ============================================================ */
+
+/* —— 页面外壳：纵向 flex，header sticky，主体撑满视口 —— */
+.wb-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    background: var(--color-bg);
+    color: var(--color-text);
+}
+
+/* —— 层 1：顶栏（sticky, h 56px + 1px border, backdrop blur） —— */
+.wb-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid var(--color-border);
+    background: color-mix(in srgb, var(--color-bg) 82%, transparent);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+}
+.wb-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    max-width: 1280px;
+    height: 3.5rem;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+.wb-brand { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.125rem; }
+.wb-brand-mark {
+    display: flex; align-items: center; justify-content: center;
+    width: 2rem; height: 2rem; flex-shrink: 0;
+    border-radius: 0.5rem;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: -0.02em;
+    color: var(--color-on-primary);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+}
+.wb-brand-name { font-weight: 700; font-size: 1.125rem; }
+@media (max-width: 639.98px) { .wb-brand-name { display: none; } }
+
+.wb-header-right { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
+.wb-nav { display: flex; align-items: center; gap: 0.5rem; }
+.wb-nav-link {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.5rem 0.75rem; border-radius: 0.5rem;
+    font-size: 0.875rem; font-weight: 500;
+    color: var(--color-text-muted); white-space: nowrap;
+    transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.wb-nav-link:hover { background: color-mix(in srgb, var(--color-primary) 9%, transparent); color: var(--color-text); }
+.wb-nav-link.is-active {
+    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    color: var(--color-primary);
+    font-weight: 600;
+}
+/* 偏离源站：源站 <768px 整组隐藏导航；首页承担站内导流，故移动端保留图标、隐藏文字 */
+@media (max-width: 767.98px) { .wb-nav-label { display: none; } .wb-nav-link { padding: 0.5rem; } }
+
+.wb-header-divider {
+    margin-left: 0.5rem; padding-left: 0.5rem;
+    border-left: 1px solid color-mix(in srgb, var(--color-border) 70%, transparent);
+}
+.wb-lang {
+    appearance: none; cursor: pointer;
+    padding: 0.375rem 0.5rem; border-radius: 0.5rem;
+    font-size: 0.75rem; font-weight: 600; text-align: center;
+    background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    color: var(--color-primary);
+    border: 1px solid color-mix(in srgb, var(--color-primary) 18%, transparent);
+    transition: border-color 0.15s ease;
+}
+.wb-lang:hover { border-color: var(--color-primary); }
+.wb-cta {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.5rem 0.85rem; border-radius: 0.5rem;
+    font-size: 0.8rem; font-weight: 600; white-space: nowrap;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+    color: var(--color-on-primary);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    transition: filter 0.15s ease;
+}
+.wb-cta:hover { filter: brightness(1.06); }
+@media (max-width: 639.98px) { .wb-cta-label { display: none; } .wb-cta { padding: 0.5rem; } }
+
+/* —— 层 2：主容器 —— */
+.wb-main {
+    flex: 1;
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 5rem;
+}
+@media (min-width: 768px) { .wb-main { padding-bottom: 1.5rem; } }
+
+/* —— 层 3：两栏（<768 纵排，≥768 横排） —— */
+.wb-layout { display: flex; flex-direction: column; gap: 1.5rem; min-height: calc(100vh - 120px); }
+@media (min-width: 768px) { .wb-layout { flex-direction: row; } }
+.wb-content { flex: 1; min-width: 0; }
+
+/* —— 层 3a：分类侧栏（≥768 显示） —— */
+.wb-rail { display: none; }
+@media (min-width: 768px) {
+    .wb-rail {
+        display: block;
+        width: 12rem; flex-shrink: 0;
+        padding: 1rem 1rem 1rem 0.75rem;
+        border-right: 1px solid var(--color-border);
+        border-radius: 0.75rem 0 0 0.75rem;
+        background: color-mix(in srgb, var(--color-primary) 5%, transparent);
+    }
+}
+.wb-rail-title {
+    padding: 0.5rem 0.75rem; margin-bottom: 0.5rem;
+    font-size: 0.75rem; font-weight: 600; line-height: 1rem;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+}
+.wb-cat {
+    display: flex; align-items: center; gap: 0.5rem;
+    width: 100%; padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem; line-height: 1.25rem; font-weight: 400;
+    color: var(--color-text); text-align: left;
+    transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.wb-cat + .wb-cat { margin-top: 0.25rem; }
+.wb-cat:hover { background: color-mix(in srgb, var(--color-primary) 9%, transparent); }
+.wb-cat.is-active { background: var(--color-primary); color: var(--color-on-primary); font-weight: 500; }
+.wb-cat-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wb-cat-count { margin-left: auto; font-size: 0.75rem; font-weight: inherit; opacity: 0.7; }
+.wb-rail-cta { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--color-border); }
+.wb-rail-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    width: 100%; height: 2rem; padding: 0 0.625rem;
+    border: 1px solid var(--color-border); border-radius: 0.5rem;
+    background: var(--color-surface);
+    font-size: 0.875rem; font-weight: 500; color: var(--color-text);
+    transition: border-color 0.15s ease, color 0.15s ease;
+}
+.wb-rail-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
+/* —— 层 3b：移动端分类胶囊（<768 显示） —— */
+.wb-pills {
+    display: flex; gap: 0.5rem;
+    overflow-x: auto; padding-bottom: 0.5rem; margin-bottom: 1rem;
+    scrollbar-width: none;
+}
+.wb-pills::-webkit-scrollbar { display: none; }
+@media (min-width: 768px) { .wb-pills { display: none; } }
+.wb-pill {
+    flex-shrink: 0;
+    display: inline-flex; align-items: center; gap: 0.375rem;
+    padding: 0.375rem 0.75rem; border-radius: 9999px;
+    font-size: 0.75rem; font-weight: 500;
+    background: color-mix(in srgb, var(--color-primary) 7%, transparent);
+    color: var(--color-text-muted);
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+.wb-pill.is-active { background: var(--color-primary); color: var(--color-on-primary); }
+
+/* —— 标题行 —— */
+.wb-head { display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; }
+.wb-title { font-size: 1.5rem; line-height: 2rem; font-weight: 700; letter-spacing: -0.025em; }
+.wb-sub { margin-top: 0.25rem; font-size: 0.875rem; line-height: 1.25rem; color: var(--color-text-muted); }
+.wb-head-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+
+/* 工具网格上方的小节标题（原首页 tools hub 的 H2 + 描述） */
+.wb-tools-head { margin-bottom: 1rem; }
+.wb-tools-title { font-size: 1.125rem; line-height: 1.75rem; font-weight: 600; letter-spacing: -0.01em; }
+.wb-tools-sub { margin-top: 0.25rem; font-size: 0.8125rem; line-height: 1.25rem; color: var(--color-text-muted); }
+
+/* —— 工具卡网格：1 / 2 / 3 / 4 列 —— */
+.wb-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.75rem; }
+@media (min-width: 640px) { .wb-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .wb-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1280px) { .wb-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+/* —— 工具卡 —— */
+.wb-card {
+    position: relative;
+    display: flex; flex-direction: column;
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    background: var(--color-surface);
+    transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.wb-card:hover {
+    border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
+    box-shadow: 0 10px 26px -12px color-mix(in srgb, var(--color-primary) 32%, transparent);
+    transform: translateY(-2px);
+}
+.wb-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.5rem; }
+.wb-card-title {
+    font-size: 0.875rem; line-height: 1.125rem; font-weight: 600;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    transition: color 0.15s ease;
+}
+.wb-card:hover .wb-card-title { color: var(--color-primary); }
+.wb-card-badge {
+    flex-shrink: 0;
+    display: inline-flex; align-items: center; gap: 0.25rem;
+    padding: 0.125rem 0.375rem; border-radius: 0.375rem;
+    font-size: 0.625rem; line-height: 1rem; white-space: nowrap;
+    color: var(--color-text-muted);
+    background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+.wb-card-badge.is-soon { color: var(--color-accent); background: color-mix(in srgb, var(--color-accent) 16%, transparent); }
+.wb-card-desc {
+    font-size: 0.75rem; line-height: 1.2rem; color: var(--color-text-muted);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.wb-card-foot {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+    padding-top: 0.5rem; margin-top: auto;
+}
+.wb-card-tag {
+    display: inline-flex; align-items: center; gap: 0.25rem;
+    padding: 0.125rem 0.5rem; border-radius: 9999px;
+    font-size: 0.625rem; line-height: 1rem; white-space: nowrap;
+    color: var(--color-text-muted);
+    background: color-mix(in srgb, var(--color-primary) 9%, transparent);
+}
+.wb-card-go { flex-shrink: 0; color: var(--color-text-faint); transition: color 0.15s ease, transform 0.15s ease; }
+.wb-card:hover .wb-card-go { color: var(--color-primary); transform: translateX(2px); }
+
+/* 开发中：虚线禁用卡（无链接，保留路线图展示） */
+.wb-card.is-soon { border-style: dashed; border-color: var(--color-border-strong); background: color-mix(in srgb, var(--color-surface) 55%, transparent); }
+.wb-card.is-soon .wb-card-title { color: var(--color-text-muted); }
+.wb-card.is-soon .wb-card-go { display: none; }
+
+/* —— 广告位：工具网格下方（content 位 banner + native 卡） —— */
+.wb-ads { margin-top: 2.5rem; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+.wb-ads-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 1.5rem; }
+
+/* —— SEO 内容区：工作台下方，原首页营销段落 1:1 恢复（保住正文体量、H2/H3 层级与内链） —— */
+.wb-seo { display: block; }
+
+/* —— 极简页脚（源站无页脚；OpenTavern 保留合规与导航链接） —— */
+.wb-footer { border-top: 1px solid var(--color-border); background: color-mix(in srgb, var(--color-surface-soft) 45%, transparent); }
+.wb-footer-inner {
+    display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+    max-width: 1280px; margin: 0 auto; padding: 1.5rem 1rem;
+    font-size: 0.75rem; color: var(--color-text-faint);
+}
+@media (min-width: 768px) { .wb-footer-inner { flex-direction: row; justify-content: space-between; } }
+.wb-footer-brand { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 0.8125rem; color: var(--color-text); }
+.wb-footer-nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.25rem 1rem; }
+.wb-footer-nav a { transition: color 0.15s ease; }
+.wb-footer-nav a:hover { color: var(--color-primary); }

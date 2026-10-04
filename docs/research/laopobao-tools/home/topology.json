@@ -1,0 +1,53 @@
+[
+  {
+    "depth": 0,
+    "path": "",
+    "tag": "body",
+    "cls": "notranslate",
+    "top": 0,
+    "height": 900,
+    "width": 1440,
+    "bg": "rgb(247, 247, 247)",
+    "bgImage": null,
+    "position": "static",
+    "display": "block",
+    "padding": "0px",
+    "maxWidth": "none",
+    "text": "🐰 小兔几 首页 小剧场 历史 设置 切换主题 工具分类 全部 10 角色设定 4 酒馆脚本 3 酒馆工具 2 难评 1 导入插件 探索工具 选择一个功能模块开始您的创作之旅 人",
+    "childCount": 1
+  },
+  {
+    "depth": 1,
+    "path": "/0",
+    "tag": "div",
+    "cls": "",
+    "top": 0,
+    "height": 900,
+    "width": 1440,
+    "bg": "rgba(0, 0, 0, 0)",
+    "bgImage": null,
+    "position": "static",
+    "display": "block",
+    "padding": "0px",
+    "maxWidth": "none",
+    "text": "🐰 小兔几 首页 小剧场 历史 设置 切换主题 工具分类 全部 10 角色设定 4 酒馆脚本 3 酒馆工具 2 难评 1 导入插件 探索工具 选择一个功能模块开始您的创作之旅 人",
+    "childCount": 1
+  },
+  {
+    "depth": 2,
+    "path": "/0/0",
+    "tag": "div",
+    "cls": "min-h-screen relative flex flex-col bg-background text-foreground",
+    "top": 0,
+    "height": 900,
+    "width": 1440,
+    "bg": "rgb(247, 247, 247)",
+    "bgImage": null,
+    "position": "relative",
+    "display": "flex",
+    "padding": "0px",
+    "maxWidth": "none",
+    "text": "🐰 小兔几 首页 小剧场 历史 设置 切换主题 工具分类 全部 10 角色设定 4 酒馆脚本 3 酒馆工具 2 难评 1 导入插件 探索工具 选择一个功能模块开始您的创作之旅 人",
+    "childCount": 4
+  }
+]

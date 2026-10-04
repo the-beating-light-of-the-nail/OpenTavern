@@ -1,0 +1,40 @@
+{
+  "beforeFilter": [
+    "RoleChat AI",
+    "Characters",
+    "Card Studio",
+    "Card Converter",
+    "Worldbook Forge",
+    "Preset Lab",
+    "AI Toolkit",
+    "Story to Worldbook",
+    "PureTavern",
+    "SillyTavernMOD",
+    "SillyTavern",
+    "RisuAI",
+    "AgnAI",
+    "Guides",
+    "Card Sources"
+  ],
+  "afterFilter": {
+    "titles": [
+      "RoleChat AI",
+      "Characters"
+    ],
+    "activeText": "Play online\n2",
+    "activeBg": "rgb(169, 79, 109)",
+    "activeColor": "rgb(255, 255, 255)",
+    "activeFw": "500"
+  },
+  "hoverBefore": {
+    "borderTopColor": "rgb(240, 227, 225)",
+    "boxShadow": "none",
+    "transform": "none"
+  },
+  "hoverAfter": {
+    "borderTopColor": "color(srgb 0.662745 0.309804 0.427451 / 0.4)",
+    "boxShadow": "color(srgb 0.662745 0.309804 0.427451 / 0.32) 0px 10px 26px -12px",
+    "transform": "matrix(1, 0, 0, 1, 0, -2)",
+    "titleColor": "rgb(169, 79, 109)"
+  }
+}

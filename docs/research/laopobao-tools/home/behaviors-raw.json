@@ -1,0 +1,307 @@
+{
+  "hover:card": {
+    "selector": "div.grid.gap-3 > div",
+    "hovered": true,
+    "diff": {
+      "borderTopColor": {
+        "from": "rgb(214, 214, 214)",
+        "to": "oklab(0.434058 0.0291569 0.0262385 / 0.3)"
+      }
+    },
+    "transition": "0.2s cubic-bezier(0.4, 0, 0.2, 1)"
+  },
+  "hover:card-title": {
+    "selector": "div.grid.gap-3 > div h3",
+    "hovered": true,
+    "diff": {
+      "color": {
+        "from": "rgb(31, 31, 31)",
+        "to": "rgb(100, 74, 64)"
+      }
+    },
+    "transition": "color 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), outline-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), text-decoration-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), fill 0.15s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.15s cubic-bezier(0.4, 0, 0.2, 1), --tw-gradient-from 0.15s cubic-bezier(0.4, 0, 0.2, 1), --tw-gradient-via 0.15s cubic-bezier(0.4, 0, 0.2, 1), --tw-gradient-to 0.15s cubic-bezier(0.4, 0, 0.2, 1)"
+  },
+  "hover:card-tag": {
+    "selector": "div.grid.gap-3 > div span.rounded-full",
+    "hovered": true,
+    "diff": {},
+    "transition": "all"
+  },
+  "hover:nav-idle": {
+    "selector": "header nav a:nth-child(2)",
+    "hovered": true,
+    "diff": {
+      "backgroundColor": {
+        "from": "rgba(0, 0, 0, 0)",
+        "to": "rgb(237, 237, 237)"
+      },
+      "color": {
+        "from": "rgb(99, 99, 99)",
+        "to": "rgb(31, 31, 31)"
+      }
+    },
+    "transition": "color 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), outline-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), text-decoration-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), fill 0.15s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.15s cubic-bezier(0.4, 0, 0.2, 1), --tw-gradient-from 0.15s cubic-bezier(0.4, 0, 0.2, 1), --tw-gradient-via 0.15s cubic-bezier(0.4, 0, 0.2, 1), --tw-gradient-to 0.15s cubic-bezier(0.4, 0, 0.2, 1)"
+  },
+  "hover:sidebar-cat-idle": {
+    "selector": "aside button:not([class*=\"bg-primary\"])",
+    "hovered": true,
+    "diff": {
+      "backgroundColor": {
+        "from": "rgba(0, 0, 0, 0)",
+        "to": "rgb(237, 237, 237)"
+      }
+    },
+    "transition": "color 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), outline-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), text-decoration-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), fill 0.15s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.15s cubic-bezier(0.4, 0, 0.2, 1), --tw-gradient-from 0.15s cubic-bezier(0.4, 0, 0.2, 1), --tw-gradient-via 0.15s cubic-bezier(0.4, 0, 0.2, 1), --tw-gradient-to 0.15s cubic-bezier(0.4, 0, 0.2, 1)"
+  },
+  "hover:import-btn": {
+    "selector": "aside button.w-full.gap-2",
+    "hovered": true,
+    "diff": {},
+    "transition": "color 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), outline-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), text-decoration-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), fill 0.15s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.15s cubic-bezier(0.4, 0, 0.2, 1), --tw-gradient-from 0.15s cubic-bezier(0.4, 0, 0.2, 1), --tw-gradient-via 0.15s cubic-bezier(0.4, 0, 0.2, 1), --tw-gradient-to 0.15s cubic-bezier(0.4, 0, 0.2, 1)"
+  },
+  "categoryFilter": {
+    "before": {
+      "count": 10,
+      "titles": [
+        "人物设定生成",
+        "开场白生成",
+        "世界观生成",
+        "正则脚本生成",
+        "美化生成",
+        "文本内容优化",
+        "小皮医生",
+        "小皮书童",
+        "快速回复生成器",
+        "抽象内容生成"
+      ]
+    },
+    "after": {
+      "count": 4,
+      "titles": [
+        "人物设定生成",
+        "开场白生成",
+        "世界观生成",
+        "文本内容优化"
+      ],
+      "activeCat": "角色设定\n4",
+      "activeCatStyle": {
+        "bg": "rgb(100, 74, 64)",
+        "color": "rgb(255, 255, 255)",
+        "fw": "500"
+      }
+    }
+  },
+  "cardFooterRight": {
+    "html": "<div class=\"flex items-center gap-1.5\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-arrow-right h-3.5 w-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all\" aria-hidden=\"true\"><path d=\"M5 12h14\"></path><path d=\"m12 5 7 7-7 7\"></path></svg></div>",
+    "childCount": 1,
+    "innerText": ""
+  },
+  "cardAuthorBadge": "<span class=\"text-[10px] text-muted-foreground/80 flex items-center gap-1 shrink-0 bg-muted/30 px-1.5 py-0.5 rounded\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-users h-3 w-3\" aria-hidden=\"true\"><path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"></path><path d=\"M16 3.128a4 4 0 0 1 0 7.744\"></path><path d=\"M22 21v-2a4 4 0 0 0-3-3.87\"></path><circle cx=\"9\" cy=\"7\" r=\"4\"></circle></svg><span class=\"truncate max-w-[80px]\">老婆宝</span></span>",
+  "headerOnScroll": {
+    "backgroundColor": "oklab(0.976133 0.0000446737 0.0000195503 / 0.6)",
+    "color": "rgb(31, 31, 31)",
+    "borderTopColor": "rgb(214, 214, 214)",
+    "borderTopWidth": "0px",
+    "borderRadius": "0px",
+    "boxShadow": "none",
+    "transform": "none",
+    "opacity": "1",
+    "padding": "0px",
+    "fontSize": "16px",
+    "fontWeight": "400",
+    "textDecorationLine": "none",
+    "cursor": "auto",
+    "transition": "all",
+    "width": "1440px",
+    "height": "57px",
+    "gap": "normal",
+    "outlineColor": "oklab(0.434058 0.0291569 0.0262385 / 0.5)",
+    "outlineWidth": "3px",
+    "filter": "none"
+  },
+  "mobile": {
+    "headerInner": {
+      "display": "flex",
+      "w": 390,
+      "h": 56,
+      "font": "16px",
+      "pad": "0px 16px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "br": "0px",
+      "gridTemplateColumns": "none",
+      "gap": "normal",
+      "overflowX": "visible"
+    },
+    "logoText": {
+      "display": "none",
+      "w": 0,
+      "h": 0,
+      "font": "18px",
+      "pad": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "br": "0px",
+      "gridTemplateColumns": "none",
+      "gap": "normal",
+      "overflowX": "visible"
+    },
+    "navDesktop": {
+      "display": "none",
+      "w": 0,
+      "h": 0,
+      "font": "16px",
+      "pad": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "br": "0px",
+      "gridTemplateColumns": "none",
+      "gap": "8px",
+      "overflowX": "visible"
+    },
+    "themeBtn": {
+      "display": "inline-flex",
+      "w": 36,
+      "h": 36,
+      "font": "14px",
+      "pad": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "br": "6px",
+      "gridTemplateColumns": "none",
+      "gap": "8px",
+      "overflowX": "visible"
+    },
+    "aside": {
+      "display": "none",
+      "w": 0,
+      "h": 0,
+      "font": "16px",
+      "pad": "16px 16px 16px 12px",
+      "bg": "oklab(0.946099 0.0000428557 0.0000189543 / 0.2)",
+      "br": "12px 0px 0px 12px",
+      "gridTemplateColumns": "none",
+      "gap": "normal",
+      "overflowX": "visible"
+    },
+    "mobileCatRow": {
+      "display": "block",
+      "w": 358,
+      "h": 80,
+      "font": "16px",
+      "pad": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "br": "0px",
+      "gridTemplateColumns": "none",
+      "gap": "normal",
+      "overflowX": "visible"
+    },
+    "pillRow": {
+      "display": "flex",
+      "w": 358,
+      "h": 36,
+      "font": "16px",
+      "pad": "0px 0px 8px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "br": "0px",
+      "gridTemplateColumns": "none",
+      "gap": "8px",
+      "overflowX": "auto"
+    },
+    "mainPadding": {
+      "display": "block",
+      "w": 390,
+      "h": 1709,
+      "font": "16px",
+      "pad": "24px 16px 80px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "br": "0px",
+      "gridTemplateColumns": "none",
+      "gap": "normal",
+      "overflowX": "visible"
+    },
+    "layoutRow": {
+      "display": "flex",
+      "w": 358,
+      "h": 1605,
+      "font": "16px",
+      "pad": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "br": "0px",
+      "gridTemplateColumns": "none",
+      "gap": "24px",
+      "overflowX": "visible"
+    },
+    "grid": {
+      "display": "grid",
+      "w": 358,
+      "h": 1429,
+      "font": "16px",
+      "pad": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "br": "0px",
+      "gridTemplateColumns": "358px",
+      "gap": "12px",
+      "overflowX": "visible"
+    },
+    "card": {
+      "display": "block",
+      "w": 358,
+      "h": 136,
+      "font": "16px",
+      "pad": "16px",
+      "bg": "rgb(252, 252, 252)",
+      "br": "8px",
+      "gridTemplateColumns": "none",
+      "gap": "normal",
+      "overflowX": "visible"
+    },
+    "title": {
+      "display": "block",
+      "w": 224,
+      "h": 32,
+      "font": "24px",
+      "pad": "0px",
+      "bg": "rgba(0, 0, 0, 0)",
+      "br": "0px",
+      "gridTemplateColumns": "none",
+      "gap": "normal",
+      "overflowX": "visible"
+    },
+    "bodyScrollW": 390,
+    "winW": 390
+  },
+  "tablet768": {
+    "aside": {
+      "display": "block",
+      "w": 192,
+      "gridTemplateColumns": "none",
+      "gap": "normal",
+      "flexDirection": "row"
+    },
+    "nav": {
+      "display": "flex",
+      "w": 342,
+      "gridTemplateColumns": "none",
+      "gap": "8px",
+      "flexDirection": "row"
+    },
+    "grid": {
+      "display": "grid",
+      "w": 520,
+      "gridTemplateColumns": "254px 254px",
+      "gap": "12px",
+      "flexDirection": "row"
+    },
+    "layoutRow": {
+      "display": "flex",
+      "w": 736,
+      "gridTemplateColumns": "none",
+      "gap": "24px",
+      "flexDirection": "row"
+    },
+    "mobileCatRow": {
+      "display": "none",
+      "w": 0,
+      "gridTemplateColumns": "none",
+      "gap": "normal",
+      "flexDirection": "row"
+    }
+  }
+}

@@ -25,3 +25,6 @@ npm-debug.log*
 
 # i18n content-generation work dir (manifests + native-rewrite outputs)
 .i18n-work/
+
+# ZCode session artifacts
+.zcode/

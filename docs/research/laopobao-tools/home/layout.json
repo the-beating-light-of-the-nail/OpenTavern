@@ -1,0 +1,24 @@
+{
+  "title": "小兔几",
+  "htmlClass": "notranslate light theme-coffee",
+  "bodyClass": "notranslate",
+  "bodyBg": "rgb(247, 247, 247)",
+  "htmlBg": "rgba(0, 0, 0, 0)",
+  "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+  "bodyColor": "rgb(31, 31, 31)",
+  "bodyFontSize": "16px",
+  "scrollHeight": 900,
+  "innerWidth": 1440,
+  "rootChildren": [
+    {
+      "tag": "DIV",
+      "cls": "min-h-screen relative flex flex-col bg-background text-foreground",
+      "id": ""
+    }
+  ],
+  "scrollContainer": null,
+  "stylesheets": [
+    "https://tools.laopobao.online/assets/index-DmqGhbuO.css",
+    "(inline)"
+  ]
+}

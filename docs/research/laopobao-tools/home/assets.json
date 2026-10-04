@@ -1,0 +1,274 @@
+{
+  "fonts": [],
+  "fontLinks": [
+    "https://tools.laopobao.online/assets/index-DmqGhbuO.css"
+  ],
+  "images": [],
+  "svgs": 52,
+  "svgList": [
+    {
+      "cls": "lucide lucide-house h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "首页"
+    },
+    {
+      "cls": "lucide lucide-drama h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "小剧场"
+    },
+    {
+      "cls": "lucide lucide-history h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "历史"
+    },
+    {
+      "cls": "lucide lucide-settings h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "设置"
+    },
+    {
+      "cls": "w-5 h-5",
+      "vb": "0 0 24 24",
+      "parentText": ""
+    },
+    {
+      "cls": "lucide lucide-sun h-[1.1rem] w-[1.1rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0",
+      "vb": "0 0 24 24",
+      "parentText": "切换主题"
+    },
+    {
+      "cls": "lucide lucide-moon absolute h-[1.1rem] w-[1.1rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100",
+      "vb": "0 0 24 24",
+      "parentText": "切换主题"
+    },
+    {
+      "cls": "lucide lucide-layout-grid h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "全部\n10"
+    },
+    {
+      "cls": "lucide lucide-wrench h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "角色设定\n4"
+    },
+    {
+      "cls": "lucide lucide-wrench h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "酒馆脚本\n3"
+    },
+    {
+      "cls": "lucide lucide-wrench h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "酒馆工具\n2"
+    },
+    {
+      "cls": "lucide lucide-wrench h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "难评\n1"
+    },
+    {
+      "cls": "lucide lucide-upload h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "导入插件"
+    },
+    {
+      "cls": "lucide lucide-wrench h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": " 角色设定 (4)"
+    },
+    {
+      "cls": "lucide lucide-wrench h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": " 酒馆脚本 (3)"
+    },
+    {
+      "cls": "lucide lucide-wrench h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": " 酒馆工具 (2)"
+    },
+    {
+      "cls": "lucide lucide-wrench h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": " 难评 (1)"
+    },
+    {
+      "cls": "lucide lucide-upload h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "导入插件"
+    },
+    {
+      "cls": "lucide lucide-users h-3 w-3",
+      "vb": "0 0 24 24",
+      "parentText": "老婆宝"
+    },
+    {
+      "cls": "lucide lucide-wrench h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "角色设定"
+    },
+    {
+      "cls": "lucide lucide-arrow-right h-3.5 w-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all",
+      "vb": "0 0 24 24",
+      "parentText": ""
+    },
+    {
+      "cls": "lucide lucide-users h-3 w-3",
+      "vb": "0 0 24 24",
+      "parentText": "老婆宝"
+    },
+    {
+      "cls": "lucide lucide-wrench h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "角色设定"
+    },
+    {
+      "cls": "lucide lucide-arrow-right h-3.5 w-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all",
+      "vb": "0 0 24 24",
+      "parentText": ""
+    },
+    {
+      "cls": "lucide lucide-users h-3 w-3",
+      "vb": "0 0 24 24",
+      "parentText": "老婆宝"
+    },
+    {
+      "cls": "lucide lucide-wrench h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "角色设定"
+    },
+    {
+      "cls": "lucide lucide-arrow-right h-3.5 w-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all",
+      "vb": "0 0 24 24",
+      "parentText": ""
+    },
+    {
+      "cls": "lucide lucide-users h-3 w-3",
+      "vb": "0 0 24 24",
+      "parentText": "老婆宝"
+    },
+    {
+      "cls": "lucide lucide-wrench h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "酒馆脚本"
+    },
+    {
+      "cls": "lucide lucide-arrow-right h-3.5 w-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all",
+      "vb": "0 0 24 24",
+      "parentText": ""
+    },
+    {
+      "cls": "lucide lucide-users h-3 w-3",
+      "vb": "0 0 24 24",
+      "parentText": "老婆宝"
+    },
+    {
+      "cls": "lucide lucide-wrench h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "酒馆脚本"
+    },
+    {
+      "cls": "lucide lucide-arrow-right h-3.5 w-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all",
+      "vb": "0 0 24 24",
+      "parentText": ""
+    },
+    {
+      "cls": "lucide lucide-users h-3 w-3",
+      "vb": "0 0 24 24",
+      "parentText": "老婆宝"
+    },
+    {
+      "cls": "lucide lucide-wrench h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "角色设定"
+    },
+    {
+      "cls": "lucide lucide-arrow-right h-3.5 w-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all",
+      "vb": "0 0 24 24",
+      "parentText": ""
+    },
+    {
+      "cls": "lucide lucide-users h-3 w-3",
+      "vb": "0 0 24 24",
+      "parentText": "老婆宝"
+    },
+    {
+      "cls": "lucide lucide-wrench h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "酒馆工具"
+    },
+    {
+      "cls": "lucide lucide-arrow-right h-3.5 w-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all",
+      "vb": "0 0 24 24",
+      "parentText": ""
+    },
+    {
+      "cls": "lucide lucide-users h-3 w-3",
+      "vb": "0 0 24 24",
+      "parentText": "老婆宝"
+    },
+    {
+      "cls": "lucide lucide-wrench h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "酒馆工具"
+    },
+    {
+      "cls": "lucide lucide-arrow-right h-3.5 w-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all",
+      "vb": "0 0 24 24",
+      "parentText": ""
+    },
+    {
+      "cls": "lucide lucide-users h-3 w-3",
+      "vb": "0 0 24 24",
+      "parentText": "老婆宝"
+    },
+    {
+      "cls": "lucide lucide-wrench h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "酒馆脚本"
+    },
+    {
+      "cls": "lucide lucide-arrow-right h-3.5 w-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all",
+      "vb": "0 0 24 24",
+      "parentText": ""
+    },
+    {
+      "cls": "lucide lucide-users h-3 w-3",
+      "vb": "0 0 24 24",
+      "parentText": "徐小酸"
+    },
+    {
+      "cls": "lucide lucide-wrench h-4 w-4",
+      "vb": "0 0 24 24",
+      "parentText": "难评"
+    },
+    {
+      "cls": "lucide lucide-arrow-right h-3.5 w-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all",
+      "vb": "0 0 24 24",
+      "parentText": ""
+    },
+    {
+      "cls": "lucide lucide-house h-5 w-5 stroke-[2.5]",
+      "vb": "0 0 24 24",
+      "parentText": "首页"
+    },
+    {
+      "cls": "lucide lucide-drama h-5 w-5",
+      "vb": "0 0 24 24",
+      "parentText": "小剧场"
+    },
+    {
+      "cls": "lucide lucide-history h-5 w-5",
+      "vb": "0 0 24 24",
+      "parentText": "历史"
+    },
+    {
+      "cls": "lucide lucide-settings h-5 w-5",
+      "vb": "0 0 24 24",
+      "parentText": "设置"
+    }
+  ],
+  "favicon": [
+    "https://tools.laopobao.online/pwa-192x192.png",
+    "https://tools.laopobao.online/apple-touch-icon.png"
+  ]
+}

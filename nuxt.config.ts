@@ -45,6 +45,8 @@ export default defineNuxtConfig({
     '~/assets/css/main.css',
     '~/assets/css/components.css',
     '~/assets/css/marketing.css',
+    // 首页工作台布局（顶栏 + 分类栏 + 工具卡网格）；仅 pages/index.vue 使用
+    '~/assets/css/workbench.css',
   ],
 
   postcss: {

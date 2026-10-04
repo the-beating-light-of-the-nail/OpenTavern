@@ -1,0 +1,275 @@
+{
+  "/": {
+    "lang": "en",
+    "dir": "ltr",
+    "h1": "Explore the tools",
+    "subLines": 1,
+    "subWidth": 1005,
+    "cats": [
+      {
+        "label": "All",
+        "count": "15"
+      },
+      {
+        "label": "Play online",
+        "count": "2"
+      },
+      {
+        "label": "Creation",
+        "count": "6"
+      },
+      {
+        "label": "Local taverns",
+        "count": "5"
+      },
+      {
+        "label": "Learn & find",
+        "count": "2"
+      }
+    ],
+    "pills": [
+      "All ( 15 )",
+      "Play online ( 2 )",
+      "Creation ( 6 )",
+      "Local taverns ( 5 )",
+      "Learn & find ( 2 )"
+    ],
+    "cards": 15,
+    "navLabels": [
+      "Home",
+      "Tools",
+      "Characters",
+      "Guides"
+    ],
+    "cta": "Open App",
+    "railCta": "All Tavern Tools",
+    "scrollW": 1440,
+    "winW": 1440,
+    "overflowX": false,
+    "title": "Open Tavern · RoleChat AI — Private AI Character Roleplay"
+  },
+  "/zh-CN/": {
+    "lang": "en",
+    "dir": "ltr",
+    "h1": "Explore the tools",
+    "subLines": 1,
+    "subWidth": 1005,
+    "cats": [
+      {
+        "label": "All",
+        "count": "15"
+      },
+      {
+        "label": "Play online",
+        "count": "2"
+      },
+      {
+        "label": "Creation",
+        "count": "6"
+      },
+      {
+        "label": "Local taverns",
+        "count": "5"
+      },
+      {
+        "label": "Learn & find",
+        "count": "2"
+      }
+    ],
+    "pills": [
+      "All ( 15 )",
+      "Play online ( 2 )",
+      "Creation ( 6 )",
+      "Local taverns ( 5 )",
+      "Learn & find ( 2 )"
+    ],
+    "cards": 15,
+    "navLabels": [
+      "Home",
+      "Tools",
+      "Characters",
+      "Guides"
+    ],
+    "cta": "Open App",
+    "railCta": "All Tavern Tools",
+    "scrollW": 1440,
+    "winW": 1440,
+    "overflowX": false,
+    "title": "Open Tavern · RoleChat AI — Private AI Character Roleplay"
+  },
+  "/ja/": {
+    "lang": "en",
+    "dir": "ltr",
+    "h1": "Explore the tools",
+    "subLines": 1,
+    "subWidth": 1005,
+    "cats": [
+      {
+        "label": "All",
+        "count": "15"
+      },
+      {
+        "label": "Play online",
+        "count": "2"
+      },
+      {
+        "label": "Creation",
+        "count": "6"
+      },
+      {
+        "label": "Local taverns",
+        "count": "5"
+      },
+      {
+        "label": "Learn & find",
+        "count": "2"
+      }
+    ],
+    "pills": [
+      "All ( 15 )",
+      "Play online ( 2 )",
+      "Creation ( 6 )",
+      "Local taverns ( 5 )",
+      "Learn & find ( 2 )"
+    ],
+    "cards": 15,
+    "navLabels": [
+      "Home",
+      "Tools",
+      "Characters",
+      "Guides"
+    ],
+    "cta": "Open App",
+    "railCta": "All Tavern Tools",
+    "scrollW": 1440,
+    "winW": 1440,
+    "overflowX": false,
+    "title": "Open Tavern · RoleChat AI — Private AI Character Roleplay"
+  },
+  "/ar/": {
+    "lang": "en",
+    "dir": "ltr",
+    "h1": "Explore the tools",
+    "subLines": 1,
+    "subWidth": 1005,
+    "cats": [
+      {
+        "label": "All",
+        "count": "15"
+      },
+      {
+        "label": "Play online",
+        "count": "2"
+      },
+      {
+        "label": "Creation",
+        "count": "6"
+      },
+      {
+        "label": "Local taverns",
+        "count": "5"
+      },
+      {
+        "label": "Learn & find",
+        "count": "2"
+      }
+    ],
+    "pills": [
+      "All ( 15 )",
+      "Play online ( 2 )",
+      "Creation ( 6 )",
+      "Local taverns ( 5 )",
+      "Learn & find ( 2 )"
+    ],
+    "cards": 15,
+    "navLabels": [
+      "Home",
+      "Tools",
+      "Characters",
+      "Guides"
+    ],
+    "cta": "Open App",
+    "railCta": "All Tavern Tools",
+    "scrollW": 1440,
+    "winW": 1440,
+    "overflowX": false,
+    "title": "Open Tavern · RoleChat AI — Private AI Character Roleplay"
+  },
+  "/fr/": {
+    "lang": "en",
+    "dir": "ltr",
+    "h1": "Explore the tools",
+    "subLines": 1,
+    "subWidth": 1005,
+    "cats": [
+      {
+        "label": "All",
+        "count": "15"
+      },
+      {
+        "label": "Play online",
+        "count": "2"
+      },
+      {
+        "label": "Creation",
+        "count": "6"
+      },
+      {
+        "label": "Local taverns",
+        "count": "5"
+      },
+      {
+        "label": "Learn & find",
+        "count": "2"
+      }
+    ],
+    "pills": [
+      "All ( 15 )",
+      "Play online ( 2 )",
+      "Creation ( 6 )",
+      "Local taverns ( 5 )",
+      "Learn & find ( 2 )"
+    ],
+    "cards": 15,
+    "navLabels": [
+      "Home",
+      "Tools",
+      "Characters",
+      "Guides"
+    ],
+    "cta": "Open App",
+    "railCta": "All Tavern Tools",
+    "scrollW": 1440,
+    "winW": 1440,
+    "overflowX": false,
+    "title": "Open Tavern · RoleChat AI — Private AI Character Roleplay"
+  },
+  "filterCheck": [
+    {
+      "label": "All",
+      "declared": 15,
+      "rendered": 15
+    },
+    {
+      "label": "Play online",
+      "declared": 2,
+      "rendered": 2
+    },
+    {
+      "label": "Creation",
+      "declared": 6,
+      "rendered": 6
+    },
+    {
+      "label": "Local taverns",
+      "declared": 5,
+      "rendered": 5
+    },
+    {
+      "label": "Learn & find",
+      "declared": 2,
+      "rendered": 2
+    }
+  ],
+  "vueErrors": []
+}

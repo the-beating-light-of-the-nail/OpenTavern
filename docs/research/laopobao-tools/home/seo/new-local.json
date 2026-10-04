@@ -1,0 +1,128 @@
+{
+  "url": "http://localhost:3200/",
+  "title": "Open Tavern · RoleChat AI — Private AI Character Roleplay",
+  "metaDesc": "Open Tavern is a toolbox for AI roleplay: chat in seconds with the RoleChat AI web tavern (no install, bring your own key), meet PureTavern for free static self-hosting, and compare local tavern clients.",
+  "canonical": "https://open-tavern.vercel.app/",
+  "h1": [
+    "Explore the tools"
+  ],
+  "heads": [
+    {
+      "tag": "H3",
+      "text": "TOOL CATEGORIES"
+    },
+    {
+      "tag": "H1",
+      "text": "Explore the tools"
+    },
+    {
+      "tag": "H3",
+      "text": "RoleChat AI"
+    },
+    {
+      "tag": "H3",
+      "text": "Characters"
+    },
+    {
+      "tag": "H3",
+      "text": "Card Studio"
+    },
+    {
+      "tag": "H3",
+      "text": "Card Converter"
+    },
+    {
+      "tag": "H3",
+      "text": "Worldbook Forge"
+    },
+    {
+      "tag": "H3",
+      "text": "Preset Lab"
+    },
+    {
+      "tag": "H3",
+      "text": "AI Toolkit"
+    },
+    {
+      "tag": "H3",
+      "text": "Story to Worldbook"
+    },
+    {
+      "tag": "H3",
+      "text": "PureTavern"
+    },
+    {
+      "tag": "H3",
+      "text": "SillyTavernMOD"
+    },
+    {
+      "tag": "H3",
+      "text": "SillyTavern"
+    },
+    {
+      "tag": "H3",
+      "text": "RisuAI"
+    },
+    {
+      "tag": "H3",
+      "text": "AgnAI"
+    },
+    {
+      "tag": "H3",
+      "text": "Guides"
+    },
+    {
+      "tag": "H3",
+      "text": "Card Sources"
+    }
+  ],
+  "bodyText": "TOOL CATEGORIES All 15 Play online 2 Creation 6 Local taverns 5 Learn & find 2 All Tavern Tools Explore the tools Pick a tool and start creating — everything runs in your browser, and your keys and data stay local. Tools marked as coming soon are on the roadmap. RoleChat AI Original romance and fantasy characters, SillyTavern card import, and your own API key — right in the browser. Play online Characters Original romance and fantasy characters with full profile pages — pick one and start chatting. Play online Card Studio Create and edit SillyTavern V2/V3 character cards in the browser: AI-assisted fields, macro autocomplete, completeness score, PNG/JSON export. Creation Card Converter Coming soon Convert character profiles from other roleplay apps into SillyTavern cards, right in the browser. Creation Worldbook Forge Coming soon Full worldbook editor: every entry field, drag-order, batch edits and a hit preview. Creation Preset Lab Coming soon Visual preset.json editor with macro analysis, variable tools and lossless round-trip export. Creation AI Toolkit Coming soon AI generators for character sheets, greetings, worldbook entries, regex scripts and more. Creation Story to Worldbook Coming soon Turn long novels into worldbook entries, chapter by chapter, with AI assistance. Creation PureTavern AGPL-3.0 A SillyTavern-compatible client that deploys to any static host. Characters, chats and keys stay in local storage. Local taverns SillyTavernMOD AGPL-3.0 A SillyTavern fork with accounts, invite codes, quotas, card sharing and an admin panel — for running a tavern site of your own. Local taverns SillyTavern AGPL-3.0 The classic local tavern. Run it on your own machine and get the largest ecosystem of extensions, presets and guides. Local taverns RisuAI A cross-platform client with a large character-card community and built-in regex and lorebook tools. Local taverns AgnAI A lightweight open-source client focused on group roleplay and quick setup. Local taverns Guides Beginner-friendly guides for AI roleplay, character cards and running your own tavern. Learn & find Card Sources Where to find character cards: curated card sites and communities for every taste. Learn & find SPONSORED",
+  "bodyChars": 2217,
+  "wordCount": 338,
+  "internalLinks": [
+    "/",
+    "/tools",
+    "/characters",
+    "/guides",
+    "/app",
+    "/tools/card-studio",
+    "/tools/pure-tavern",
+    "/tools/sillytavern-mod",
+    "/where-to-find-character-cards",
+    "/about",
+    "/contact",
+    "/privacy",
+    "/terms"
+  ],
+  "internalLinkTexts": [
+    "/ :: OT Open Tavern",
+    "/ :: Home",
+    "/tools :: Tools",
+    "/characters :: Characters",
+    "/guides :: Guides",
+    "/app :: Open App",
+    "/tools :: All Tavern Tools",
+    "/app :: RoleChat AI Original romance and fantasy",
+    "/characters :: Characters Original romance and fantasy ",
+    "/tools/card-studio :: Card Studio Create and edit SillyTavern ",
+    "/tools/pure-tavern :: PureTavern AGPL-3.0 A SillyTavern-compat",
+    "/tools/sillytavern-mod :: SillyTavernMOD AGPL-3.0 A SillyTavern fo",
+    "/guides :: Guides Beginner-friendly guides for AI r",
+    "/where-to-find-character-cards :: Card Sources Where to find character car",
+    "/about :: About",
+    "/contact :: Contact",
+    "/privacy :: Privacy",
+    "/terms :: Terms"
+  ],
+  "faqCount": 0,
+  "faq": [],
+  "imgCount": 0,
+  "imgsWithAlt": 0,
+  "h1Count": 1,
+  "h2Count": 0,
+  "h3Count": 16,
+  "ldjson": [
+    "{\"@context\":\"https://schema.org\",\"@type\":\"WebSite\",\"name\":\"Open Tavern · RoleChat AI\",\"alternateName\":[\"Open Tavern\",\"OpenTavern\",\"Open-Tavern\",\"Open Tavern AI\",\"OpenTavern AI\",\"opentaven\",\"opentarver",
+    "{\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"name\":\"Open Tavern\",\"alternateName\":[\"Open Tavern\",\"OpenTavern\",\"Open-Tavern\",\"Open Tavern AI\",\"OpenTavern AI\",\"opentaven\",\"opentarvern\",\"opent"
+  ]
+}

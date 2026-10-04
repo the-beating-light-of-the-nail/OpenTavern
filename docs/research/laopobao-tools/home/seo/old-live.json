@@ -1,0 +1,288 @@
+{
+  "url": "https://www.rolechatai.com/",
+  "title": "Open Tavern · RoleChat AI — Private AI Character Roleplay",
+  "metaDesc": "Open Tavern is a toolbox for AI roleplay: chat in seconds with the RoleChat AI web tavern (no install, bring your own key), meet PureTavern for free static self-hosting, and compare local tavern clients.",
+  "canonical": "https://open-tavern.vercel.app/",
+  "h1": [
+    "Open Tavern Pick your tavern."
+  ],
+  "heads": [
+    {
+      "tag": "H1",
+      "text": "Open Tavern Pick your tavern."
+    },
+    {
+      "tag": "H3",
+      "text": "TOOL CATEGORIES"
+    },
+    {
+      "tag": "H2",
+      "text": "Explore the tools"
+    },
+    {
+      "tag": "H3",
+      "text": "RoleChat AI"
+    },
+    {
+      "tag": "H3",
+      "text": "Characters"
+    },
+    {
+      "tag": "H3",
+      "text": "Card Studio"
+    },
+    {
+      "tag": "H3",
+      "text": "Card Converter"
+    },
+    {
+      "tag": "H3",
+      "text": "Worldbook Forge"
+    },
+    {
+      "tag": "H3",
+      "text": "Preset Lab"
+    },
+    {
+      "tag": "H3",
+      "text": "AI Toolkit"
+    },
+    {
+      "tag": "H3",
+      "text": "Story to Worldbook"
+    },
+    {
+      "tag": "H3",
+      "text": "PureTavern"
+    },
+    {
+      "tag": "H3",
+      "text": "SillyTavernMOD"
+    },
+    {
+      "tag": "H3",
+      "text": "SillyTavern"
+    },
+    {
+      "tag": "H3",
+      "text": "RisuAI"
+    },
+    {
+      "tag": "H3",
+      "text": "AgnAI"
+    },
+    {
+      "tag": "H3",
+      "text": "Guides"
+    },
+    {
+      "tag": "H3",
+      "text": "Card Sources"
+    },
+    {
+      "tag": "H2",
+      "text": "Popular Romance Characters"
+    },
+    {
+      "tag": "H3",
+      "text": "Dr. Julian Vale"
+    },
+    {
+      "tag": "H3",
+      "text": "Ren"
+    },
+    {
+      "tag": "H3",
+      "text": "Silas Ashford"
+    },
+    {
+      "tag": "H3",
+      "text": "Elias Thorn"
+    },
+    {
+      "tag": "H3",
+      "text": "Marcus Cole"
+    },
+    {
+      "tag": "H3",
+      "text": "Damian Sterling"
+    },
+    {
+      "tag": "H2",
+      "text": "SillyTavern compatible, by design"
+    },
+    {
+      "tag": "H3",
+      "text": "100% SillyTavern card compatible"
+    },
+    {
+      "tag": "H3",
+      "text": "Bring your whole collection"
+    },
+    {
+      "tag": "H3",
+      "text": "No need to make your own"
+    },
+    {
+      "tag": "H3",
+      "text": "Built-in handcrafted characters"
+    },
+    {
+      "tag": "H2",
+      "text": "How it works"
+    },
+    {
+      "tag": "H3",
+      "text": "Pick a character"
+    },
+    {
+      "tag": "H3",
+      "text": "Add your AI key"
+    },
+    {
+      "tag": "H3",
+      "text": "Start chatting"
+    },
+    {
+      "tag": "H2",
+      "text": "Private by design"
+    },
+    {
+      "tag": "H3",
+      "text": "Your key never leaves your browser"
+    },
+    {
+      "tag": "H3",
+      "text": "No account required"
+    },
+    {
+      "tag": "H3",
+      "text": "Your chats stay on your device"
+    },
+    {
+      "tag": "H3",
+      "text": "Bring your own key"
+    },
+    {
+      "tag": "H2",
+      "text": "Beginner guides"
+    },
+    {
+      "tag": "H3",
+      "text": "How to get an AI key"
+    },
+    {
+      "tag": "H3",
+      "text": "Start your first chat"
+    },
+    {
+      "tag": "H3",
+      "text": "Tips for better roleplay"
+    },
+    {
+      "tag": "H2",
+      "text": "FAQ"
+    },
+    {
+      "tag": "H2",
+      "text": "Ready to start your story?"
+    }
+  ],
+  "bodyText": "OT Open Tavern EN 简 繁 ES ع PT RU FR DE Japanese Korean Italian Dutch Swedish Norwegian Danish Finnish Polish Turkish Hindi Indonesian Vietnamese Thai Malay Tagalog Tools Characters Guides How it works FAQ Open App Tavern tools for AI roleplay Open Tavern Pick your tavern. Open Tavern is your toolbox for AI roleplay: chat instantly in the browser with RoleChat AI, self-host the no-backend PureTavern client, or browse local taverns like SillyTavern — all private by design. Start Chatting Browse Tavern Tools TOOL CATEGORIES All 15 Play online 2 Creation 6 Local taverns 5 Learn & find 2 Directory SillyTavern, RisuAI, AgnAI and more local tavern clients, side by side. → Explore the tools ✦ Pick a tool and start creating — everything runs in your browser, and your keys and data stay local. Tools marked as coming soon are on the roadmap. RoleChat AI Original romance and fantasy characters, SillyTavern card import, and your own API key — right in the browser. Play online → Characters Original romance and fantasy characters with full profile pages — pick one and start chatting. Play online → Card Studio Create and edit SillyTavern V2/V3 character cards in the browser: AI-assisted fields, macro autocomplete, completeness score, PNG/JSON export. Creation → Card Converter Coming soon Convert character profiles from other roleplay apps into SillyTavern cards, right in the browser. Creation Worldbook Forge Coming soon Full worldbook editor: every entry field, drag-order, batch edits and a hit preview. Creation Preset Lab Coming soon Visual preset.json editor with macro analysis, variable tools and lossless round-trip export. Creation AI Toolkit Coming soon AI generators for character sheets, greetings, worldbook entries, regex scripts and more. Creation Story to Worldbook Coming soon Turn long novels into worldbook entries, chapter by chapter, with AI assistance. Creation PureTavern AGPL-3.0 A SillyTavern-compatible client that deploys to any static host. Characters, chats and keys stay in local storage. Local taverns → SillyTavernMOD AGPL-3.0 A SillyTavern fork with accounts, invite codes, quotas, card sharing and an admin panel — for running a tavern site of your own. Local taverns → SillyTavern AGPL-3.0 The classic local tavern. Run it on your own machine and get the largest ecosystem of extensions, presets and guides. Local taverns ↗ RisuAI A cross-platform client with a large character-card community and built-in regex and lorebook tools. Local taverns ↗ AgnAI A lightweight open-source client focused on group roleplay and quick setup. Local taverns ↗ Guides Beginner-friendly guides for AI roleplay, character cards and running your own tavern. Learn & find → Card Sources Where to find character cards: curated card sites and communities for every taste. Learn & find → FEATURED · ROLECHAT AI, THE WEB TAVERN Popular Romance Characters ✦ Original male leads, each with their own voice, story, and secrets. Pick one and start a private chat in seconds. J Dr. Julian Vale The Cold Doctor Boyfriend The cold doctor with warm hands and a guarded heart. Modern Slow burn Comfort R Ren The Smiling Idol The idol who never stops smiling — except with you. Modern Comfort Hidden pain S Silas Ashford The Sharp-Tongued Detective Sarcastic, brilliant, and noticing far too much about you. Mystery Banter Slow burn E Elias Thorn The Gentle Librarian Soft-spoken, patient, and quietly devoted to you alone. Cozy Slow burn Comfort M Marcus Cole The Protective Bodyguard Sworn to protect you with his life — and slowly, with his heart. Modern Protector Slow burn D Damian Sterling The CEO Boyfriend The CEO who buys companies before breakfast and forgets how to breathe around you. Modern CEO Slow burn See all characters SillyTavern compatible SillyTavern compatible, by design ✦ Open Tavern fully follows the SillyTavern card spec. Your existing cards just work — drag, drop, chat. 100% SillyTavern card compatible Reads V1, V2, V3 JSON and SillyTavern PNG cards with embedded data. Drop a file in and start chatting — no conversion, no plugins, no setup. Bring your whole collection Already have cards from SillyTavern, RisuAI, or Janitor AI? Import them all. Preset prompts and world books come along too. No need to make your own Don't want to learn card formats? You don't have to. The app handles every format automatically — you just pick a character and talk. Built-in handcrafted characters 20 original romance and fantasy characters, written in-house. Browse the library, click anyone you like, and start in seconds. Open the App Where to find more cards How it works ✦ Three steps from zero to your first reply. 1 Pick a character Choose an original romance or fantasy character with their own voice, backstory, and secrets. 2 Add your AI key Paste your own OpenAI-compatible API key. It stays in your browser — we never see or store it on a server. 3 Start chatting Type your first message and the story begins. No installs, no setup wizard, no jargon. Private by design ✦ Your conversations are yours. We built it that way from the start. Your key never leaves your browser Your API key is stored locally on your device. There is no server in the middle reading your conversations. No account required Nothing to sign up for. Nothing to log into. Open the app and start. Your chats stay on your device Conversations are saved to your browser's storage — not uploaded to a cloud we control. Bring your own key Use any OpenAI-compatible provider you trust. You pick the model, you pay only for what you use. Beginner guides ✦ New to AI roleplay? Start here. How to get an AI key A 2-minute walkthrough of grabbing a key from a popular provider and pasting it into Settings. Start your first chat From picking a character to your first reply — everything you need to begin in under 60 seconds. Tips for better roleplay Small habits that make characters feel more alive: tone, pacing, and how to steer the story. FAQ ✦ Everything you might want to know before you start. Do I need to install anything? Is my data private? What is an API key and where do I get one? Can I use my own character cards? Is RoleChat AI free? Do I need to understand model settings? Are there other tavern tools on this site? Ready to start your story? ✦ Open the app, pick a character, and say hello. It really is that easy. Start Chatting Explore Characters OT Open Tavern Tools Characters Guides About Contact Privacy Terms Open App How it works FAQ Open Tavern · RoleChat AI",
+  "bodyChars": 6489,
+  "wordCount": 1089,
+  "internalLinks": [
+    "/",
+    "/tools",
+    "/characters",
+    "/guides",
+    "/app",
+    "/tools/card-studio",
+    "/tools/pure-tavern",
+    "/tools/sillytavern-mod",
+    "/where-to-find-character-cards",
+    "/characters/cold-doctor-boyfriend",
+    "/characters/the-smiling-idol",
+    "/characters/the-sharp-tongued-detective",
+    "/characters/the-gentle-librarian",
+    "/characters/the-protective-bodyguard",
+    "/characters/ceo-boyfriend",
+    "/about",
+    "/contact",
+    "/privacy",
+    "/terms"
+  ],
+  "internalLinkTexts": [
+    "/ :: OT Open Tavern",
+    "/tools :: Tools",
+    "/characters :: Characters",
+    "/guides :: Guides",
+    "/ :: How it works",
+    "/ :: FAQ",
+    "/app :: Open App",
+    "/app :: Start Chatting",
+    "/tools :: Directory SillyTavern, RisuAI, AgnAI and",
+    "/app :: RoleChat AI Original romance and fantasy",
+    "/characters :: Characters Original romance and fantasy ",
+    "/tools/card-studio :: Card Studio Create and edit SillyTavern ",
+    "/tools/pure-tavern :: PureTavern AGPL-3.0 A SillyTavern-compat",
+    "/tools/sillytavern-mod :: SillyTavernMOD AGPL-3.0 A SillyTavern fo",
+    "/guides :: Guides Beginner-friendly guides for AI r",
+    "/where-to-find-character-cards :: Card Sources Where to find character car",
+    "/tools :: DirectorySillyTavern, RisuAI, AgnAI and ",
+    "/characters/cold-doctor-boyfriend :: J Dr. Julian Vale The Cold Doctor Boyfri",
+    "/characters/the-smiling-idol :: R Ren The Smiling Idol The idol who neve",
+    "/characters/the-sharp-tongued-detective :: S Silas Ashford The Sharp-Tongued Detect",
+    "/characters/the-gentle-librarian :: E Elias Thorn The Gentle Librarian Soft-",
+    "/characters/the-protective-bodyguard :: M Marcus Cole The Protective Bodyguard S",
+    "/characters/ceo-boyfriend :: D Damian Sterling The CEO Boyfriend The ",
+    "/characters :: See all characters",
+    "/app :: Open the App",
+    "/where-to-find-character-cards :: Where to find more cards",
+    "/characters :: Explore Characters",
+    "/about :: About",
+    "/contact :: Contact",
+    "/privacy :: Privacy",
+    "/terms :: Terms"
+  ],
+  "faqCount": 7,
+  "faq": [
+    {
+      "q": "Do I need to install anything?",
+      "a": ""
+    },
+    {
+      "q": "Is my data private?",
+      "a": ""
+    },
+    {
+      "q": "What is an API key and where do I get one?",
+      "a": ""
+    },
+    {
+      "q": "Can I use my own character cards?",
+      "a": ""
+    },
+    {
+      "q": "Is RoleChat AI free?",
+      "a": ""
+    },
+    {
+      "q": "Do I need to understand model settings?",
+      "a": ""
+    },
+    {
+      "q": "Are there other tavern tools on this site?",
+      "a": ""
+    }
+  ],
+  "imgCount": 0,
+  "imgsWithAlt": 0,
+  "h1Count": 1,
+  "h2Count": 8,
+  "h3Count": 36,
+  "ldjson": [
+    "{\"@context\":\"https://schema.org\",\"@type\":\"WebSite\",\"name\":\"Open Tavern · RoleChat AI\",\"alternateName\":[\"Open Tavern\",\"OpenTavern\",\"Open-Tavern\",\"Open Tavern AI\",\"OpenTavern AI\",\"opentaven\",\"opentarver",
+    "{\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"name\":\"Open Tavern\",\"alternateName\":[\"Open Tavern\",\"OpenTavern\",\"Open-Tavern\",\"Open Tavern AI\",\"OpenTavern AI\",\"opentaven\",\"opentarvern\",\"opent"
+  ]
+}
