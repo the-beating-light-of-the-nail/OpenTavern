@@ -112,225 +112,259 @@ const footerLinks = computed(() => [
   { to: localePath('/terms'), label: t('nav_terms') },
   { to: localePath('/app'), label: t('nav_open_app') },
 ]);
+
+/* ================= 左栏收缩状态（本地记忆；窄屏首次访问默认收起） ================= */
+const RAIL_KEY = 'wb_rail_collapsed';
+const railCollapsed = ref(false);
+
+onMounted(() => {
+  let stored: string | null = null;
+  try {
+    stored = localStorage.getItem(RAIL_KEY);
+  } catch {
+    /* 隐私模式下 localStorage 可能不可用，忽略即可 */
+  }
+  // 用户手动选过就尊重其选择；否则 <1024（平板）默认收起，避免 232px 左栏吃掉三分之一屏宽
+  railCollapsed.value = stored !== null ? stored === '1' : window.innerWidth < 1024;
+});
+
+function toggleRail() {
+  railCollapsed.value = !railCollapsed.value;
+  try {
+    localStorage.setItem(RAIL_KEY, railCollapsed.value ? '1' : '0');
+  } catch {
+    /* 同上 */
+  }
+}
 </script>
 
 <template>
   <div class="wb-shell">
     <WorkbenchHeader />
 
-    <main class="wb-main">
-      <div class="wb-layout">
-        <!-- 桌面：分类侧栏（≥768px 显示） -->
+    <!-- 全幅主体：左栏贴死左侧边缘 + 内容列占满其余宽度 -->
+    <div class="wb-body">
+      <!-- 桌面：分类侧栏（≥768px 显示，可收缩成图标条） -->
+      <HubCategoryNav
+        variant="rail"
+        :categories="categories"
+        :model-value="activeCat"
+        :collapsed="railCollapsed"
+        @update:model-value="setCat"
+        @toggle-collapse="toggleRail"
+      />
+
+      <main class="wb-content">
+        <!-- 移动端：分类胶囊（<768px 显示） -->
         <HubCategoryNav
-          variant="rail"
+          variant="pills"
           :categories="categories"
           :model-value="activeCat"
           @update:model-value="setCat"
         />
 
-        <div class="wb-content">
-          <!-- 移动端：分类胶囊（<768px 显示） -->
-          <HubCategoryNav
-            variant="pills"
-            :categories="categories"
-            :model-value="activeCat"
-            @update:model-value="setCat"
+        <!-- 页面 H1：沿用改造前的 hero 文案，SEO 主标题不变 -->
+        <div class="wb-head">
+          <div>
+            <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-champagne/40 bg-rose-tint px-3 py-1 text-xs font-medium text-plum-light">
+              <span class="h-1.5 w-1.5 rounded-full bg-rose-deep" /> {{ t('home_badge') }}
+            </div>
+            <h1 class="wb-title">{{ t('home_hero_title_1') }} {{ t('home_hero_title_2') }}</h1>
+            <p class="wb-sub">{{ t('home_hero_desc') }}</p>
+          </div>
+          <div class="wb-head-actions">
+            <NuxtLink :to="localePath('/app')" class="rc-btn-primary rc-btn-compact">{{ t('home_cta_start') }}</NuxtLink>
+            <a href="#tools-hub" class="rc-btn-ghost rc-btn-compact">{{ t('home_cta_tools') }}</a>
+          </div>
+        </div>
+
+        <!-- 工具中枢：原 tools hub 的 H2 + 描述（锚点沿用 #tools-hub） -->
+        <div id="tools-hub" class="wb-tools-head scroll-mt-20">
+          <h2 class="wb-tools-title">{{ t('home_hub_title') }}</h2>
+          <p class="wb-tools-sub">{{ t('home_hub_desc') }}</p>
+        </div>
+
+        <div class="wb-grid">
+          <HubToolCard
+            v-for="tool in filteredHub"
+            :key="tool.slug"
+            :tool="tool"
+            :category-label="catLabelOf(tool.category)"
+            :to="toOf(tool)"
           />
-
-          <!-- 页面 H1：沿用改造前的 hero 文案，SEO 主标题不变 -->
-          <div class="wb-head">
-            <div>
-              <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-champagne/40 bg-rose-tint px-3 py-1 text-xs font-medium text-plum-light">
-                <span class="h-1.5 w-1.5 rounded-full bg-rose-deep" /> {{ t('home_badge') }}
-              </div>
-              <h1 class="wb-title">{{ t('home_hero_title_1') }} {{ t('home_hero_title_2') }}</h1>
-              <p class="wb-sub">{{ t('home_hero_desc') }}</p>
-            </div>
-            <div class="wb-head-actions">
-              <NuxtLink :to="localePath('/app')" class="rc-btn-primary rc-btn-compact">{{ t('home_cta_start') }}</NuxtLink>
-              <a href="#tools-hub" class="rc-btn-ghost rc-btn-compact">{{ t('home_cta_tools') }}</a>
-            </div>
-          </div>
-
-          <!-- 工具中枢：原 tools hub 的 H2 + 描述（锚点沿用 #tools-hub） -->
-          <div id="tools-hub" class="wb-tools-head scroll-mt-20">
-            <h2 class="wb-tools-title">{{ t('home_hub_title') }}</h2>
-            <p class="wb-tools-sub">{{ t('home_hub_desc') }}</p>
-          </div>
-
-          <div class="wb-grid">
-            <HubToolCard
-              v-for="tool in filteredHub"
-              :key="tool.slug"
-              :tool="tool"
-              :category-label="catLabelOf(tool.category)"
-              :to="toOf(tool)"
-            />
-          </div>
-
-          <!-- 广告位：网格下方（content 位 banner，由 ?adpanel=1 面板控制显隐） -->
-          <ClientOnly>
-            <div v-if="anyContentOn" class="wb-ads">
-              <div class="wb-ads-row">
-                <AdBanner
-                  v-for="ad in contentAds"
-                  v-show="state[ad.id]"
-                  :key="ad.id"
-                  :src="ad.html"
-                  :width="ad.width"
-                  :height="ad.height"
-                />
-              </div>
-            </div>
-          </ClientOnly>
         </div>
-      </div>
-    </main>
 
-    <!-- ================= SEO 内容区：原首页营销段落原样保留 ================= -->
-    <div class="wb-seo">
-      <!-- 产品区分隔：以下为 RoleChat AI（网页酒馆）产品内容 -->
-      <div class="border-y border-border-warm bg-rose-tint">
-        <p class="mx-auto max-w-5xl px-5 py-3 text-center text-xs font-bold uppercase tracking-[0.2em] text-plum-faint">
-          {{ t('home_featured_eyebrow') }}
-        </p>
-      </div>
+        <!-- 完整目录入口（承接改造前侧栏/移动端「目录」卡片的文案与内链） -->
+        <NuxtLink :to="localePath('/tools')" class="wb-more">
+          <span class="wb-more-text">
+            <span class="wb-more-tag">{{ t('home_tools_more_tag') }}</span>
+            <span class="wb-more-desc">{{ t('home_tools_more_desc') }}</span>
+          </span>
+          <span class="wb-more-cta">{{ t('home_tools_more_cta') }} →</span>
+        </NuxtLink>
 
-      <!-- Popular Romance Characters (原创非 IP，链接到真实角色页) -->
-      <section class="mx-auto max-w-5xl px-5 py-20">
-        <div class="mb-10 text-center">
-          <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_popular_title') }}</h2>
-          <div class="orn-divider" aria-hidden="true">✦</div>
-          <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_popular_desc') }}</p>
-        </div>
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <template v-for="g in featuredGrid" :key="g.key">
-            <AdCard v-if="g.kind === 'ad'" />
-            <NuxtLink v-else :to="localePath(`/characters/${g.item.slug}`)" class="rc-card group block p-5">
-              <div class="flex items-center gap-3">
-                <CharAvatar :avatar="g.item.avatar" :initial="g.item.initial" size="md" />
-                <div class="min-w-0">
-                  <h3 class="font-display truncate text-lg font-semibold tracking-wide group-hover:text-rose-accent">{{ g.item.name }}</h3>
-                  <p class="truncate text-xs text-rose-accent">{{ g.item.archetype }}</p>
+        <!-- 广告位：网格下方（content 位 banner，由 ?adpanel=1 面板控制显隐） -->
+        <ClientOnly>
+          <div v-if="anyContentOn" class="wb-ads">
+            <div class="wb-ads-row">
+              <AdBanner
+                v-for="ad in contentAds"
+                v-show="state[ad.id]"
+                :key="ad.id"
+                :src="ad.html"
+                :width="ad.width"
+                :height="ad.height"
+              />
+            </div>
+          </div>
+        </ClientOnly>
+
+        <!-- ================= SEO 内容区：原首页营销段落原样保留 ================= -->
+        <div class="wb-seo">
+          <!-- 产品区分隔：以下为 RoleChat AI（网页酒馆）产品内容 -->
+          <div class="border-y border-border-warm bg-rose-tint">
+            <p class="mx-auto max-w-5xl px-5 py-3 text-center text-xs font-bold uppercase tracking-[0.2em] text-plum-faint">
+              {{ t('home_featured_eyebrow') }}
+            </p>
+          </div>
+
+          <!-- Popular Romance Characters (原创非 IP，链接到真实角色页) -->
+          <section class="mx-auto max-w-5xl px-5 py-20">
+            <div class="mb-10 text-center">
+              <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_popular_title') }}</h2>
+              <div class="orn-divider" aria-hidden="true">✦</div>
+              <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_popular_desc') }}</p>
+            </div>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <template v-for="g in featuredGrid" :key="g.key">
+                <AdCard v-if="g.kind === 'ad'" />
+                <NuxtLink v-else :to="localePath(`/characters/${g.item.slug}`)" class="rc-card group block p-5">
+                  <div class="flex items-center gap-3">
+                    <CharAvatar :avatar="g.item.avatar" :initial="g.item.initial" size="md" />
+                    <div class="min-w-0">
+                      <h3 class="font-display truncate text-lg font-semibold tracking-wide group-hover:text-rose-accent">{{ g.item.name }}</h3>
+                      <p class="truncate text-xs text-rose-accent">{{ g.item.archetype }}</p>
+                    </div>
+                  </div>
+                  <p class="mt-3 line-clamp-3 text-sm leading-relaxed text-plum-muted">{{ g.item.tagline }}</p>
+                  <div class="mt-4 flex flex-wrap gap-1.5">
+                    <span v-for="tg in g.item.tags.slice(0, 3)" :key="tg" class="rc-tag">{{ tg }}</span>
+                  </div>
+                </NuxtLink>
+              </template>
+            </div>
+            <div class="mt-10 text-center">
+              <NuxtLink :to="localePath('/characters')" class="rc-btn-ghost">{{ t('home_see_all') }}</NuxtLink>
+            </div>
+          </section>
+
+          <!-- SillyTavern Compatible -->
+          <section class="border-y border-border-warm bg-rose-tint">
+            <div class="mx-auto max-w-5xl px-5 py-20">
+              <div class="mb-12 text-center">
+                <div class="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-champagne/40 bg-bg px-3 py-1 text-xs font-medium text-plum-light">
+                  <span class="h-1.5 w-1.5 rounded-full bg-rose-deep" /> {{ t('home_compat_badge') }}
+                </div>
+                <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_compat_title') }}</h2>
+                <div class="orn-divider" aria-hidden="true">✦</div>
+                <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_compat_desc') }}</p>
+              </div>
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div v-for="p in compatPoints" :key="p.title" class="rc-card p-6">
+                  <h3 class="flex items-center gap-2 text-base font-bold">
+                    <span class="h-2 w-2 flex-shrink-0 rounded-full" style="background:var(--color-rose-deep)" /> {{ p.title }}
+                  </h3>
+                  <p class="mt-2 text-sm leading-relaxed text-plum-muted">{{ p.desc }}</p>
                 </div>
               </div>
-              <p class="mt-3 line-clamp-3 text-sm leading-relaxed text-plum-muted">{{ g.item.tagline }}</p>
-              <div class="mt-4 flex flex-wrap gap-1.5">
-                <span v-for="tg in g.item.tags.slice(0, 3)" :key="tg" class="rc-tag">{{ tg }}</span>
+              <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
+                <NuxtLink :to="localePath('/app')" class="rc-btn-primary">{{ t('home_compat_cta_app') }}</NuxtLink>
+                <NuxtLink :to="localePath('/where-to-find-character-cards')" class="rc-btn-ghost">{{ t('home_compat_cta_cards') }}</NuxtLink>
               </div>
-            </NuxtLink>
-          </template>
-        </div>
-        <div class="mt-10 text-center">
-          <NuxtLink :to="localePath('/characters')" class="rc-btn-ghost">{{ t('home_see_all') }}</NuxtLink>
-        </div>
-      </section>
-
-      <!-- SillyTavern Compatible -->
-      <section class="border-y border-border-warm bg-rose-tint">
-        <div class="mx-auto max-w-5xl px-5 py-20">
-          <div class="mb-12 text-center">
-            <div class="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-champagne/40 bg-bg px-3 py-1 text-xs font-medium text-plum-light">
-              <span class="h-1.5 w-1.5 rounded-full bg-rose-deep" /> {{ t('home_compat_badge') }}
             </div>
-            <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_compat_title') }}</h2>
-            <div class="orn-divider" aria-hidden="true">✦</div>
-            <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_compat_desc') }}</p>
-          </div>
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div v-for="p in compatPoints" :key="p.title" class="rc-card p-6">
-              <h3 class="flex items-center gap-2 text-base font-bold">
-                <span class="h-2 w-2 flex-shrink-0 rounded-full" style="background:var(--color-rose-deep)" /> {{ p.title }}
-              </h3>
-              <p class="mt-2 text-sm leading-relaxed text-plum-muted">{{ p.desc }}</p>
+          </section>
+
+          <!-- How It Works -->
+          <section id="how" class="border-y border-border-warm bg-rose-tint">
+            <div class="mx-auto max-w-5xl px-5 py-20">
+              <div class="mb-12 text-center">
+                <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_how_title') }}</h2>
+                <div class="orn-divider" aria-hidden="true">✦</div>
+                <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_how_desc') }}</p>
+              </div>
+              <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                <div v-for="s in howSteps" :key="s.n" class="rc-card p-6">
+                  <div class="rc-avatar-fill mb-4 flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold">{{ s.n }}</div>
+                  <h3 class="text-base font-bold">{{ s.title }}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-plum-muted">{{ s.desc }}</p>
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
-            <NuxtLink :to="localePath('/app')" class="rc-btn-primary">{{ t('home_compat_cta_app') }}</NuxtLink>
-            <NuxtLink :to="localePath('/where-to-find-character-cards')" class="rc-btn-ghost">{{ t('home_compat_cta_cards') }}</NuxtLink>
-          </div>
-        </div>
-      </section>
+          </section>
 
-      <!-- How It Works -->
-      <section id="how" class="border-y border-border-warm bg-rose-tint">
-        <div class="mx-auto max-w-5xl px-5 py-20">
-          <div class="mb-12 text-center">
-            <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_how_title') }}</h2>
-            <div class="orn-divider" aria-hidden="true">✦</div>
-            <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_how_desc') }}</p>
-          </div>
-          <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
-            <div v-for="s in howSteps" :key="s.n" class="rc-card p-6">
-              <div class="rc-avatar-fill mb-4 flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold">{{ s.n }}</div>
-              <h3 class="text-base font-bold">{{ s.title }}</h3>
-              <p class="mt-2 text-sm leading-relaxed text-plum-muted">{{ s.desc }}</p>
+          <!-- Private by Design -->
+          <section class="mx-auto max-w-5xl px-5 py-20">
+            <div class="mb-12 text-center">
+              <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_private_title') }}</h2>
+              <div class="orn-divider" aria-hidden="true">✦</div>
+              <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_private_desc') }}</p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Private by Design -->
-      <section class="mx-auto max-w-5xl px-5 py-20">
-        <div class="mb-12 text-center">
-          <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_private_title') }}</h2>
-          <div class="orn-divider" aria-hidden="true">✦</div>
-          <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_private_desc') }}</p>
-        </div>
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div v-for="p in privatePoints" :key="p.title" class="rc-card p-6">
-            <h3 class="flex items-center gap-2 text-base font-bold">
-              <span class="h-2 w-2 flex-shrink-0 rounded-full" style="background:var(--color-success)" /> {{ p.title }}
-            </h3>
-            <p class="mt-2 text-sm leading-relaxed text-plum-muted">{{ p.desc }}</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Beginner Guides -->
-      <section class="border-y border-border-warm bg-rose-tint">
-        <div class="mx-auto max-w-5xl px-5 py-20">
-          <div class="mb-12 text-center">
-            <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_guides_title') }}</h2>
-            <div class="orn-divider" aria-hidden="true">✦</div>
-            <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_guides_desc') }}</p>
-          </div>
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div v-for="g in guides" :key="g.title" class="rc-card p-6">
-              <h3 class="text-base font-bold">{{ g.title }}</h3>
-              <p class="mt-2 text-sm leading-relaxed text-plum-muted">{{ g.desc }}</p>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div v-for="p in privatePoints" :key="p.title" class="rc-card p-6">
+                <h3 class="flex items-center gap-2 text-base font-bold">
+                  <span class="h-2 w-2 flex-shrink-0 rounded-full" style="background:var(--color-success)" /> {{ p.title }}
+                </h3>
+                <p class="mt-2 text-sm leading-relaxed text-plum-muted">{{ p.desc }}</p>
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
+          </section>
 
-      <!-- FAQ -->
-      <section id="faq" class="mx-auto max-w-3xl px-5 py-20">
-        <div class="mb-10 text-center">
-          <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_faq_title') }}</h2>
-          <div class="orn-divider" aria-hidden="true">✦</div>
-          <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_faq_desc') }}</p>
-        </div>
-        <div class="rc-faq">
-          <details v-for="f in faqs" :key="f.q">
-            <summary>{{ f.q }}</summary>
-            <p class="rc-faq-a">{{ f.a }}</p>
-          </details>
-        </div>
-      </section>
+          <!-- Beginner Guides -->
+          <section class="border-y border-border-warm bg-rose-tint">
+            <div class="mx-auto max-w-5xl px-5 py-20">
+              <div class="mb-12 text-center">
+                <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_guides_title') }}</h2>
+                <div class="orn-divider" aria-hidden="true">✦</div>
+                <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_guides_desc') }}</p>
+              </div>
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div v-for="g in guides" :key="g.title" class="rc-card p-6">
+                  <h3 class="text-base font-bold">{{ g.title }}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-plum-muted">{{ g.desc }}</p>
+                </div>
+              </div>
+            </div>
+          </section>
 
-      <!-- Footer CTA -->
-      <section class="rc-hero-bg border-t border-border-warm">
-        <div class="mx-auto max-w-3xl px-5 py-20 text-center">
-          <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_footer_ready_title') }}</h2>
-          <div class="orn-divider" aria-hidden="true">✦</div>
-          <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_footer_ready_desc') }}</p>
-          <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <NuxtLink :to="localePath('/app')" class="rc-btn-primary">{{ t('home_cta_start') }}</NuxtLink>
-            <NuxtLink :to="localePath('/characters')" class="rc-btn-ghost">{{ t('home_cta_explore') }}</NuxtLink>
-          </div>
+          <!-- FAQ -->
+          <section id="faq" class="mx-auto max-w-3xl px-5 py-20">
+            <div class="mb-10 text-center">
+              <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_faq_title') }}</h2>
+              <div class="orn-divider" aria-hidden="true">✦</div>
+              <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_faq_desc') }}</p>
+            </div>
+            <div class="rc-faq">
+              <details v-for="f in faqs" :key="f.q">
+                <summary>{{ f.q }}</summary>
+                <p class="rc-faq-a">{{ f.a }}</p>
+              </details>
+            </div>
+          </section>
+
+          <!-- Footer CTA -->
+          <section class="rc-hero-bg border-t border-border-warm">
+            <div class="mx-auto max-w-3xl px-5 py-20 text-center">
+              <h2 class="font-display text-2xl font-semibold tracking-wide sm:text-3xl">{{ t('home_footer_ready_title') }}</h2>
+              <div class="orn-divider" aria-hidden="true">✦</div>
+              <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('home_footer_ready_desc') }}</p>
+              <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+                <NuxtLink :to="localePath('/app')" class="rc-btn-primary">{{ t('home_cta_start') }}</NuxtLink>
+                <NuxtLink :to="localePath('/characters')" class="rc-btn-ghost">{{ t('home_cta_explore') }}</NuxtLink>
+              </div>
+            </div>
+          </section>
         </div>
-      </section>
+      </main>
     </div>
 
     <!-- 极简页脚 -->
@@ -342,6 +376,8 @@ const footerLinks = computed(() => [
         </NuxtLink>
         <nav class="wb-footer-nav">
           <NuxtLink v-for="l in footerLinks" :key="l.to" :to="l.to">{{ l.label }}</NuxtLink>
+          <a href="#how">{{ t('nav_how_it_works') }}</a>
+          <a href="#faq">{{ t('nav_faq') }}</a>
         </nav>
         <p>{{ t('home_footer_tagline') }}</p>
       </div>

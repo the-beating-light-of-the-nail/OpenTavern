@@ -1,10 +1,18 @@
 /* ============================================================
    首页工作台布局（workbench）
-   结构参照 tools.laopobao.online 首页：顶栏 + 左分类栏 + 工具卡网格。
+   结构参照 tools.laopobao.online 首页（顶栏 + 分类栏 + 工具卡网格），
+   外壳按全幅应用布局调整：顶栏通栏、左栏贴死左侧边缘且整屏高、可收缩成图标条。
    配色/圆角/阴影一律走现有 --color-* token，不引入目标站 coffee 主题。
    规格来源：docs/research/laopobao-tools/home/{PAGE_TOPOLOGY,BEHAVIORS}.md
    —— 本文件只被 pages/index.vue + components/home/* 使用，其他页面零影响。
    ============================================================ */
+
+:root {
+    /* 左栏宽度（展开 / 收缩）与顶栏高度，跨组件共用 */
+    --wb-rail-w: 232px;
+    --wb-rail-w-collapsed: 64px;
+    --wb-header-h: 3.5rem;
+}
 
 /* —— 页面外壳：纵向 flex，header sticky，主体撑满视口 —— */
 .wb-shell {
@@ -15,13 +23,13 @@
     color: var(--color-text);
 }
 
-/* —— 层 1：顶栏（sticky, h 56px + 1px border, backdrop blur） —— */
+/* —— 层 1：顶栏（通栏，h 56px + 1px 边框，backdrop blur） —— */
 .wb-header {
     position: sticky;
     top: 0;
     z-index: 50;
     border-bottom: 1px solid var(--color-border);
-    background: color-mix(in srgb, var(--color-bg) 82%, transparent);
+    background: color-mix(in srgb, var(--color-bg) 86%, transparent);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
 }
@@ -31,10 +39,9 @@
     justify-content: space-between;
     gap: 1rem;
     width: 100%;
-    max-width: 1280px;
-    height: 3.5rem;
-    margin: 0 auto;
-    padding: 0 1rem;
+    height: var(--wb-header-h);
+    margin: 0;
+    padding: 0 clamp(0.75rem, 1.6vw, 1.5rem);
 }
 .wb-brand { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.125rem; }
 .wb-brand-mark {
@@ -63,8 +70,9 @@
     color: var(--color-primary);
     font-weight: 600;
 }
-/* 偏离源站：源站 <768px 整组隐藏导航；首页承担站内导流，故移动端保留图标、隐藏文字 */
-@media (max-width: 767.98px) { .wb-nav-label { display: none; } .wb-nav-link { padding: 0.5rem; } }
+/* 偏离源站：源站 <768px 整组隐藏导航；首页承担站内导流，故窄屏保留图标、隐藏文字。
+   断点取 1024px：768~1023 时「品牌文字 + 四个带文字导航 + 语言 + CTA」总宽会顶破视口 */
+@media (max-width: 1023.98px) { .wb-nav-label { display: none; } .wb-nav-link { padding: 0.5rem; } }
 
 .wb-header-divider {
     margin-left: 0.5rem; padding-left: 0.5rem;
@@ -92,39 +100,54 @@
 .wb-cta:hover { filter: brightness(1.06); }
 @media (max-width: 639.98px) { .wb-cta-label { display: none; } .wb-cta { padding: 0.5rem; } }
 
-/* —— 层 2：主容器 —— */
-.wb-main {
-    flex: 1;
-    width: 100%;
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 1.5rem 1rem 5rem;
-}
-@media (min-width: 768px) { .wb-main { padding-bottom: 1.5rem; } }
+/* —— 层 2：主体（左栏 + 内容列），左右通到视口边缘 —— */
+.wb-body { display: flex; flex: 1 1 auto; align-items: stretch; min-height: 0; }
 
-/* —— 层 3：两栏（<768 纵排，≥768 横排） —— */
-.wb-layout { display: flex; flex-direction: column; gap: 1.5rem; min-height: calc(100vh - 120px); }
-@media (min-width: 768px) { .wb-layout { flex-direction: row; } }
-.wb-content { flex: 1; min-width: 0; }
-
-/* —— 层 3a：分类侧栏（≥768 显示） —— */
+/* —— 层 2a：分类侧栏（≥768px 显示；贴死左侧、整屏高、sticky、可收缩） —— */
 .wb-rail { display: none; }
 @media (min-width: 768px) {
     .wb-rail {
-        display: block;
-        width: 12rem; flex-shrink: 0;
-        padding: 1rem 1rem 1rem 0.75rem;
+        position: sticky;
+        top: var(--wb-header-h);
+        align-self: flex-start;
+        display: flex;
+        flex-direction: column;
+        width: var(--wb-rail-w);
+        height: calc(100dvh - var(--wb-header-h));
+        flex-shrink: 0;
+        padding: 0.75rem 0.75rem 1rem;
         border-right: 1px solid var(--color-border);
-        border-radius: 0.75rem 0 0 0.75rem;
-        background: color-mix(in srgb, var(--color-primary) 5%, transparent);
+        background: color-mix(in srgb, var(--color-primary) 7%, var(--color-surface-soft));
+        overflow-x: hidden;
+        overflow-y: auto;
+        transition: width 0.18s cubic-bezier(0.4, 0, 0.2, 1), padding 0.18s cubic-bezier(0.4, 0, 0.2, 1);
     }
+    .wb-rail.is-collapsed { width: var(--wb-rail-w-collapsed); padding-left: 0.5rem; padding-right: 0.5rem; }
+}
+
+.wb-rail-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+    padding: 0 0 0.5rem 0.5rem;
+    margin-bottom: 0.25rem;
 }
 .wb-rail-title {
-    padding: 0.5rem 0.75rem; margin-bottom: 0.5rem;
     font-size: 0.75rem; font-weight: 600; line-height: 1rem;
     text-transform: uppercase; letter-spacing: 0.05em;
     color: var(--color-text-muted);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+.wb-rail-toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 1.75rem; height: 1.75rem; flex-shrink: 0;
+    border-radius: 0.5rem;
+    color: var(--color-text-muted);
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+.wb-rail-toggle:hover { background: color-mix(in srgb, var(--color-primary) 12%, transparent); color: var(--color-primary); }
+.wb-rail.is-collapsed .wb-rail-head { justify-content: center; padding-left: 0; }
+.wb-rail.is-collapsed .wb-rail-title { display: none; }
+
+.wb-rail-nav { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
 .wb-cat {
     display: flex; align-items: center; gap: 0.5rem;
     width: 100%; padding: 0.5rem 0.75rem;
@@ -138,7 +161,14 @@
 .wb-cat.is-active { background: var(--color-primary); color: var(--color-on-primary); font-weight: 500; }
 .wb-cat-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .wb-cat-count { margin-left: auto; font-size: 0.75rem; font-weight: inherit; opacity: 0.7; }
-.wb-rail-cta { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--color-border); }
+
+/* 收缩态：只留图标，隐藏文案与计数 */
+.wb-rail.is-collapsed .wb-cat { justify-content: center; padding-left: 0; padding-right: 0; }
+.wb-rail.is-collapsed .wb-cat-label,
+.wb-rail.is-collapsed .wb-cat-count,
+.wb-rail.is-collapsed .wb-rail-btn-label { display: none; }
+
+.wb-rail-cta { margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--color-border); }
 .wb-rail-btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
     width: 100%; height: 2rem; padding: 0 0.625rem;
@@ -148,8 +178,9 @@
     transition: border-color 0.15s ease, color 0.15s ease;
 }
 .wb-rail-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.wb-rail.is-collapsed .wb-rail-btn { padding: 0; }
 
-/* —— 层 3b：移动端分类胶囊（<768 显示） —— */
+/* —— 层 2b：移动端分类胶囊（<768 显示） —— */
 .wb-pills {
     display: flex; gap: 0.5rem;
     overflow-x: auto; padding-bottom: 0.5rem; margin-bottom: 1rem;
@@ -168,7 +199,16 @@
 }
 .wb-pill.is-active { background: var(--color-primary); color: var(--color-on-primary); }
 
-/* —— 标题行 —— */
+/* —— 层 2c：内容列（占满左栏右侧全部宽度） —— */
+.wb-content {
+    --wb-pad: clamp(1rem, 1.8vw, 2rem);
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 1.5rem var(--wb-pad) 4rem;
+}
+@media (min-width: 768px) { .wb-content { padding-bottom: 1.5rem; } }
+
+/* —— 标题区 —— */
 .wb-head { display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; }
 .wb-title { font-size: 1.5rem; line-height: 2rem; font-weight: 700; letter-spacing: -0.025em; }
 .wb-sub { margin-top: 0.25rem; font-size: 0.875rem; line-height: 1.25rem; color: var(--color-text-muted); }
@@ -179,11 +219,8 @@
 .wb-tools-title { font-size: 1.125rem; line-height: 1.75rem; font-weight: 600; letter-spacing: -0.01em; }
 .wb-tools-sub { margin-top: 0.25rem; font-size: 0.8125rem; line-height: 1.25rem; color: var(--color-text-muted); }
 
-/* —— 工具卡网格：1 / 2 / 3 / 4 列 —— */
-.wb-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.75rem; }
-@media (min-width: 640px) { .wb-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (min-width: 1024px) { .wb-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (min-width: 1280px) { .wb-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+/* —— 工具卡网格：按可用宽度自动铺满（1440 时 4 列，宽屏自然增列） —— */
+.wb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0.75rem; }
 
 /* —— 工具卡 —— */
 .wb-card {
@@ -240,18 +277,38 @@
 .wb-card.is-soon .wb-card-title { color: var(--color-text-muted); }
 .wb-card.is-soon .wb-card-go { display: none; }
 
+/* —— 完整目录入口（网格下方通栏卡） —— */
+.wb-more {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    margin-top: 0.75rem; padding: 1rem 1.25rem;
+    border: 1px solid var(--color-border); border-radius: 0.75rem;
+    background: var(--color-surface);
+    transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.wb-more:hover {
+    border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
+    box-shadow: 0 10px 26px -12px color-mix(in srgb, var(--color-primary) 32%, transparent);
+}
+.wb-more-text { display: flex; flex-direction: column; min-width: 0; }
+.wb-more-tag { font-size: 0.8125rem; font-weight: 700; }
+.wb-more-desc { margin-top: 0.125rem; font-size: 0.75rem; line-height: 1.1rem; color: var(--color-text-muted); }
+.wb-more-cta { flex-shrink: 0; font-size: 0.8125rem; font-weight: 600; color: var(--color-primary); white-space: nowrap; }
+@media (max-width: 639.98px) {
+    .wb-more { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+}
+
 /* —— 广告位：工具网格下方（content 位 banner + native 卡） —— */
 .wb-ads { margin-top: 2.5rem; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
 .wb-ads-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 1.5rem; }
 
 /* —— SEO 内容区：工作台下方，原首页营销段落 1:1 恢复（保住正文体量、H2/H3 层级与内链） —— */
-.wb-seo { display: block; }
+.wb-seo { display: block; margin-inline: calc(var(--wb-pad) * -1); }
 
 /* —— 极简页脚（源站无页脚；OpenTavern 保留合规与导航链接） —— */
 .wb-footer { border-top: 1px solid var(--color-border); background: color-mix(in srgb, var(--color-surface-soft) 45%, transparent); }
 .wb-footer-inner {
     display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
-    max-width: 1280px; margin: 0 auto; padding: 1.5rem 1rem;
+    width: 100%; padding: 1.5rem clamp(0.75rem, 1.6vw, 1.5rem);
     font-size: 0.75rem; color: var(--color-text-faint);
 }
 @media (min-width: 768px) { .wb-footer-inner { flex-direction: row; justify-content: space-between; } }

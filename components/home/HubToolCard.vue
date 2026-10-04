@@ -25,7 +25,6 @@ const props = defineProps<{
 
 const { t } = useI18n();
 </script>
-
 <template>
   <div v-if="props.tool.status === 'soon'" class="wb-card is-soon">
     <div class="wb-card-top">

@@ -17,7 +17,9 @@ type IconName =
   | 'server'
   | 'compass'
   | 'arrow-right'
-  | 'upload';
+  | 'upload'
+  | 'panel-close'
+  | 'panel-open';
 
 withDefaults(defineProps<{ name: IconName; size?: number | string }>(), { size: '1em' });
 
@@ -37,6 +39,9 @@ const PATHS: Record<IconName, string> = {
   // 杂项
   'arrow-right': '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
   upload: '<path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>',
+  // 侧栏收缩/展开（lucide panel-left-close / panel-left-open）
+  'panel-close': '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m16 15-3-3 3-3"/>',
+  'panel-open': '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/>',
 };
 </script>
 

@@ -87,3 +87,27 @@
 | 组件 | `components/home/` |
 | 样式 | `assets/css/workbench.css` |
 | 页面 | `pages/index.vue` |
+
+---
+
+## v2：外壳改全幅应用布局（用户第二轮反馈）
+
+原站是**居中 1280px 容器**，宽屏下左右各留大片空白、左栏只占其中一列。
+用户要求「左侧空间不能浪费、左栏死死贴左、可收缩、顶栏也别浪费」，故外壳偏离原站：
+
+| 项 | 原站（v1 照抄） | 本仓 v2 |
+| --- | --- | --- |
+| 顶栏 | `max-width: 1280px; margin: 0 auto` | **通栏**，`padding: 0 clamp(12px, 1.6vw, 24px)` |
+| 左栏位置 | 容器内 `w-48`，左右都有外边距 | **贴死视口左边缘 `x=0`** |
+| 左栏高度 | 随内容列拉伸 | **整屏高** `height: calc(100dvh - 56px)`，`position: sticky; top: 56px` |
+| 左栏底色 | `muted/20` 灰色块 | `color-mix(primary 7%, surface-soft)` 暖色面板 |
+| 左栏收缩 | 无 | **可收缩** 232px ⇄ 64px（图标条），开关在栏头右侧，`localStorage` 记忆；<1024px 首次访问默认收起 |
+| 内容列 | 容器内一列 | 占满左栏右侧**全部宽度**（`flex: 1; min-width: 0`） |
+| 工具网格 | 固定 1/2/3/4 列 | `repeat(auto-fill, minmax(250px, 1fr))` —— 1440 时 4 列，1920 时 6 列，宽屏自然增列 |
+| SEO 段落 | 页面根级整幅 | 移入 `.wb-content`，用 `margin-inline: calc(var(--wb-pad) * -1)` 反向出血对齐 |
+
+实测（`qa-prod.json`）：1920/1440/768 三档 `rail.x = 0`、`header-inner.w = 视口宽`、`content.right = 视口宽`、无横向溢出；
+`768` 档因「品牌文字 + 4 个带文字导航 + 语言 + CTA」会顶破视口，导航文字隐藏断点由 768px 上调到 **1024px**。
+
+SEO 未受影响：`H1` 文本、`H2/H3` 数量与顺序、`FAQ` 条数、19 条内链集合、`title`/`canonical`/`ld+json` 与改造前**逐项一致**
+（`seo/old-live.json` vs `seo/final-text.json`）；旧首页直接引用的 88 个 i18n key 100% 仍被渲染。
