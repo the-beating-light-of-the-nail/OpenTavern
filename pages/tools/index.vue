@@ -29,8 +29,7 @@ const picks = computed(() => [t('tools_pick_1'), t('tools_pick_2'), t('tools_pic
 </script>
 
 <template>
-  <div class="min-h-[100dvh] bg-ivory text-plum">
-    <SiteHeader />
+  <WorkbenchShell active-cat="all">
 
     <!-- Hero -->
     <section class="rc-hero-bg relative overflow-hidden">
@@ -133,6 +132,5 @@ const picks = computed(() => [t('tools_pick_1'), t('tools_pick_2'), t('tools_pic
       </div>
     </section>
 
-    <SiteFooter />
-  </div>
+  </WorkbenchShell>
 </template>

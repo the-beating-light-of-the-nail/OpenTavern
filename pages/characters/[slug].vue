@@ -61,8 +61,7 @@ const related = computed(() =>
 </script>
 
 <template>
-  <div class="min-h-[100dvh] bg-ivory text-plum">
-    <SiteHeader />
+  <WorkbenchShell active-cat="play">
 
     <main class="mx-auto max-w-3xl px-5 py-12">
       <NuxtLink :to="localePath('/characters')" class="rc-nav-link mb-6 inline-flex">{{ t('char_all_characters') }}</NuxtLink>
@@ -158,5 +157,5 @@ const related = computed(() =>
         <NuxtLink :to="localePath(`/app?character=${c.slug}`)" class="rc-btn-primary mt-5 inline-flex">{{ t('char_start_private_chat') }}</NuxtLink>
       </section>
     </main>
-  </div>
+  </WorkbenchShell>
 </template>

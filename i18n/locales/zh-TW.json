@@ -1193,4 +1193,10 @@
   "home_hub_pl_desc": "視覺化 preset.json 編輯器：巨集分析、變數管理與無損 round-trip 匯出。",
   "home_hub_at_desc": "AI 產生器套件：人設、開場白、世界書條目、正規表示式腳本等一鍵生成。",
   "home_hub_sw_desc": "把長篇小說逐章轉成世界書條目，AI 輔助提煉設定。"
+,
+  "err_404_title": "找不到頁面",
+  "err_404_desc": "你造訪的頁面不存在或已被移動。",
+  "err_generic_title": "發生錯誤",
+  "err_generic_desc": "發生了意外錯誤，請再試一次。",
+  "err_back_home": "回到首頁"
 }

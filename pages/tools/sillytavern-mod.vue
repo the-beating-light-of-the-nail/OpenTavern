@@ -51,8 +51,7 @@ const faqs = computed(() =>
 </script>
 
 <template>
-  <div class="min-h-[100dvh] bg-ivory text-plum">
-    <SiteHeader />
+  <WorkbenchShell active-cat="local">
 
     <main class="mx-auto max-w-5xl px-5 py-12">
       <NuxtLink :to="localePath('/tools')" class="rc-nav-link mb-6 inline-flex">← {{ t('pt_back_tools') }}</NuxtLink>
@@ -174,6 +173,5 @@ const faqs = computed(() =>
       </section>
     </main>
 
-    <SiteFooter />
-  </div>
+  </WorkbenchShell>
 </template>

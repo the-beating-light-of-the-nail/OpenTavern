@@ -1193,4 +1193,10 @@
   "home_hub_pl_desc": "Visual preset.json editor with macro analysis, variable tools and lossless round-trip export.",
   "home_hub_at_desc": "AI generators for character sheets, greetings, worldbook entries, regex scripts and more.",
   "home_hub_sw_desc": "Turn long novels into worldbook entries, chapter by chapter, with AI assistance."
+,
+  "err_404_title": "Page not found",
+  "err_404_desc": "The page you are looking for does not exist or may have moved.",
+  "err_generic_title": "Something went wrong",
+  "err_generic_desc": "An unexpected error occurred. Please try again.",
+  "err_back_home": "Back to Home"
 }

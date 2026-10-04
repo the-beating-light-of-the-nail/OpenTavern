@@ -1,0 +1,89 @@
+{
+  "url": "https://www.rolechatai.com/",
+  "oldRev": "604a641",
+  "results": [
+    {
+      "item": "title 逐字一致",
+      "ok": true,
+      "detail": "Open Tavern · RoleChat AI — Private AI Character Roleplay"
+    },
+    {
+      "item": "meta description 逐字一致",
+      "ok": true,
+      "detail": "一致"
+    },
+    {
+      "item": "canonical 一致",
+      "ok": true,
+      "detail": "https://open-tavern.vercel.app/ → https://open-tavern.vercel.app/"
+    },
+    {
+      "item": "JSON-LD 结构化数据条数",
+      "ok": true,
+      "detail": "2 → 2"
+    },
+    {
+      "item": "H1 数量",
+      "ok": true,
+      "detail": "1 → 1"
+    },
+    {
+      "item": "H1 文本逐字一致",
+      "ok": true,
+      "detail": "[\"Open Tavern Pick your tavern.\"]"
+    },
+    {
+      "item": "H2 数量",
+      "ok": true,
+      "detail": "8 → 8"
+    },
+    {
+      "item": "H3 数量",
+      "ok": true,
+      "detail": "36 → 36"
+    },
+    {
+      "item": "旧页 H2/H3/H4 标题逐条保留",
+      "ok": true,
+      "detail": "44/44（忽略大小写，消除 CSS text-transform 干扰）"
+    },
+    {
+      "item": "FAQ 条数",
+      "ok": true,
+      "detail": "7 → 7"
+    },
+    {
+      "item": "FAQ 问题与源文件逐字一致",
+      "ok": true,
+      "detail": "7/7（旧基线因 <details> 收起读到空串，故以 i18n 源为准）"
+    },
+    {
+      "item": "FAQ 答案与源文件逐字一致",
+      "ok": true,
+      "detail": "7/7（同上）"
+    },
+    {
+      "item": "内链集合无缺失",
+      "ok": true,
+      "detail": "19 条全部在场"
+    },
+    {
+      "item": "改造前 88 个 i18n key 渲染值全覆盖",
+      "ok": true,
+      "detail": "88/88（含 head 层的 title/description）"
+    },
+    {
+      "item": "正文体量不减（body.innerText）",
+      "ok": true,
+      "detail": "6489 → 6583 字符（+94）"
+    },
+    {
+      "item": "内容级词覆盖",
+      "ok": true,
+      "detail": "293/293 个词（长度≥5）全部在场"
+    }
+  ],
+  "pass": 16,
+  "total": 16,
+  "measuredAt": "2026-10-04T16:56:43.959Z"
+}

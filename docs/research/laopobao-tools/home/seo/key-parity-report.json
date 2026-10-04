@@ -1,0 +1,549 @@
+{
+  "url": "https://www.rolechatai.com/",
+  "oldRev": "604a641",
+  "rows": [
+    {
+      "key": "home_badge",
+      "value": "Tavern tools for AI roleplay",
+      "status": "exact"
+    },
+    {
+      "key": "home_compat_badge",
+      "value": "SillyTavern compatible",
+      "status": "exact"
+    },
+    {
+      "key": "home_compat_cta_app",
+      "value": "Open the App",
+      "status": "exact"
+    },
+    {
+      "key": "home_compat_cta_cards",
+      "value": "Where to find more cards",
+      "status": "exact"
+    },
+    {
+      "key": "home_compat_desc",
+      "value": "Open Tavern fully follows the SillyTavern card spec. Your existing cards just work — drag, drop, chat.",
+      "status": "exact"
+    },
+    {
+      "key": "home_compat_point1_desc",
+      "value": "Reads V1, V2, V3 JSON and SillyTavern PNG cards with embedded data. Drop a file in and start chatting — no conversion, no plugins, no setup.",
+      "status": "exact"
+    },
+    {
+      "key": "home_compat_point1_title",
+      "value": "100% SillyTavern card compatible",
+      "status": "exact"
+    },
+    {
+      "key": "home_compat_point2_desc",
+      "value": "Already have cards from SillyTavern, RisuAI, or Janitor AI? Import them all. Preset prompts and world books come along too.",
+      "status": "exact"
+    },
+    {
+      "key": "home_compat_point2_title",
+      "value": "Bring your whole collection",
+      "status": "exact"
+    },
+    {
+      "key": "home_compat_point3_desc",
+      "value": "Don't want to learn card formats? You don't have to. The app handles every format automatically — you just pick a character and talk.",
+      "status": "exact"
+    },
+    {
+      "key": "home_compat_point3_title",
+      "value": "No need to make your own",
+      "status": "exact"
+    },
+    {
+      "key": "home_compat_point4_desc",
+      "value": "20 original romance and fantasy characters, written in-house. Browse the library, click anyone you like, and start in seconds.",
+      "status": "exact"
+    },
+    {
+      "key": "home_compat_point4_title",
+      "value": "Built-in handcrafted characters",
+      "status": "exact"
+    },
+    {
+      "key": "home_compat_title",
+      "value": "SillyTavern compatible, by design",
+      "status": "exact"
+    },
+    {
+      "key": "home_cta_explore",
+      "value": "Explore Characters",
+      "status": "exact"
+    },
+    {
+      "key": "home_cta_start",
+      "value": "Start Chatting",
+      "status": "exact"
+    },
+    {
+      "key": "home_cta_tools",
+      "value": "Browse Tavern Tools",
+      "status": "exact"
+    },
+    {
+      "key": "home_faq_a1",
+      "value": "No. RoleChat AI runs entirely in your browser. There is nothing to download or install — just open the page and start chatting.",
+      "status": "exact"
+    },
+    {
+      "key": "home_faq_a2",
+      "value": "Yes. Your API key and your conversations are stored locally in your browser. We do not run a server that reads your chats. You bring your own AI key, so your messages go directly between your browser and the AI provider you choose.",
+      "status": "exact"
+    },
+    {
+      "key": "home_faq_a3",
+      "value": "An API key is a secret string that lets the app talk to an AI provider. You can get one from any OpenAI-compatible service. Paste it into Settings inside the app and you're ready.",
+      "status": "exact"
+    },
+    {
+      "key": "home_faq_a4",
+      "value": "Yes. If you already have a character card (SillyTavern format), you can import it into the app. We're also building a library of original characters you can start with right away.",
+      "status": "exact"
+    },
+    {
+      "key": "home_faq_a5",
+      "value": "The app itself is free. You pay the AI provider you choose for the messages you generate, using your own key. There is no subscription and no middleman markup.",
+      "status": "exact"
+    },
+    {
+      "key": "home_faq_a6",
+      "value": "No. Sensible defaults are set for you. If you like, you can open the advanced options later — but you never have to in order to enjoy a great chat.",
+      "status": "exact"
+    },
+    {
+      "key": "home_faq_a7",
+      "value": "Yes. Besides the RoleChat AI web app, we feature PureTavern — a SillyTavern-compatible client you can self-host on any static hosting — SillyTavernMOD — a multi-user fork for running your own tavern site — and a directory of local tavern clients such as SillyTavern, RisuAI and AgnAI.",
+      "status": "exact"
+    },
+    {
+      "key": "home_faq_desc",
+      "value": "Everything you might want to know before you start.",
+      "status": "exact"
+    },
+    {
+      "key": "home_faq_q1",
+      "value": "Do I need to install anything?",
+      "status": "exact"
+    },
+    {
+      "key": "home_faq_q2",
+      "value": "Is my data private?",
+      "status": "exact"
+    },
+    {
+      "key": "home_faq_q3",
+      "value": "What is an API key and where do I get one?",
+      "status": "exact"
+    },
+    {
+      "key": "home_faq_q4",
+      "value": "Can I use my own character cards?",
+      "status": "exact"
+    },
+    {
+      "key": "home_faq_q5",
+      "value": "Is RoleChat AI free?",
+      "status": "exact"
+    },
+    {
+      "key": "home_faq_q6",
+      "value": "Do I need to understand model settings?",
+      "status": "exact"
+    },
+    {
+      "key": "home_faq_q7",
+      "value": "Are there other tavern tools on this site?",
+      "status": "exact"
+    },
+    {
+      "key": "home_faq_title",
+      "value": "FAQ",
+      "status": "exact"
+    },
+    {
+      "key": "home_featured_eyebrow",
+      "value": "Featured · RoleChat AI, the web tavern",
+      "status": "exact"
+    },
+    {
+      "key": "home_footer_ready_desc",
+      "value": "Open the app, pick a character, and say hello. It really is that easy.",
+      "status": "exact"
+    },
+    {
+      "key": "home_footer_ready_title",
+      "value": "Ready to start your story?",
+      "status": "exact"
+    },
+    {
+      "key": "home_footer_tagline",
+      "value": "Open Tavern · RoleChat AI",
+      "status": "exact"
+    },
+    {
+      "key": "home_guide1_desc",
+      "value": "A 2-minute walkthrough of grabbing a key from a popular provider and pasting it into Settings.",
+      "status": "exact"
+    },
+    {
+      "key": "home_guide1_title",
+      "value": "How to get an AI key",
+      "status": "exact"
+    },
+    {
+      "key": "home_guide2_desc",
+      "value": "From picking a character to your first reply — everything you need to begin in under 60 seconds.",
+      "status": "exact"
+    },
+    {
+      "key": "home_guide2_title",
+      "value": "Start your first chat",
+      "status": "exact"
+    },
+    {
+      "key": "home_guide3_desc",
+      "value": "Small habits that make characters feel more alive: tone, pacing, and how to steer the story.",
+      "status": "exact"
+    },
+    {
+      "key": "home_guide3_title",
+      "value": "Tips for better roleplay",
+      "status": "exact"
+    },
+    {
+      "key": "home_guides_desc",
+      "value": "New to AI roleplay? Start here.",
+      "status": "exact"
+    },
+    {
+      "key": "home_guides_title",
+      "value": "Beginner guides",
+      "status": "exact"
+    },
+    {
+      "key": "home_hero_desc",
+      "value": "Open Tavern is your toolbox for AI roleplay: chat instantly in the browser with RoleChat AI, self-host the no-backend PureTavern client, or browse local taverns like SillyTavern — all private by design.",
+      "status": "exact"
+    },
+    {
+      "key": "home_hero_title_1",
+      "value": "Open Tavern",
+      "status": "exact"
+    },
+    {
+      "key": "home_hero_title_2",
+      "value": "Pick your tavern.",
+      "status": "exact"
+    },
+    {
+      "key": "home_how_desc",
+      "value": "Three steps from zero to your first reply.",
+      "status": "exact"
+    },
+    {
+      "key": "home_how_step1_desc",
+      "value": "Choose an original romance or fantasy character with their own voice, backstory, and secrets.",
+      "status": "exact"
+    },
+    {
+      "key": "home_how_step1_title",
+      "value": "Pick a character",
+      "status": "exact"
+    },
+    {
+      "key": "home_how_step2_desc",
+      "value": "Paste your own OpenAI-compatible API key. It stays in your browser — we never see or store it on a server.",
+      "status": "exact"
+    },
+    {
+      "key": "home_how_step2_title",
+      "value": "Add your AI key",
+      "status": "exact"
+    },
+    {
+      "key": "home_how_step3_desc",
+      "value": "Type your first message and the story begins. No installs, no setup wizard, no jargon.",
+      "status": "exact"
+    },
+    {
+      "key": "home_how_step3_title",
+      "value": "Start chatting",
+      "status": "exact"
+    },
+    {
+      "key": "home_how_title",
+      "value": "How it works",
+      "status": "exact"
+    },
+    {
+      "key": "home_hub_cats",
+      "value": "Tool categories",
+      "status": "exact"
+    },
+    {
+      "key": "home_hub_desc",
+      "value": "Pick a tool and start creating — everything runs in your browser, and your keys and data stay local. Tools marked as coming soon are on the roadmap.",
+      "status": "exact"
+    },
+    {
+      "key": "home_hub_soon",
+      "value": "Coming soon",
+      "status": "exact"
+    },
+    {
+      "key": "home_hub_title",
+      "value": "Explore the tools",
+      "status": "exact"
+    },
+    {
+      "key": "home_popular_desc",
+      "value": "Original male leads, each with their own voice, story, and secrets. Pick one and start a private chat in seconds.",
+      "status": "exact"
+    },
+    {
+      "key": "home_popular_title",
+      "value": "Popular Romance Characters",
+      "status": "exact"
+    },
+    {
+      "key": "home_private_desc",
+      "value": "Your conversations are yours. We built it that way from the start.",
+      "status": "exact"
+    },
+    {
+      "key": "home_private_point1_desc",
+      "value": "Your API key is stored locally on your device. There is no server in the middle reading your conversations.",
+      "status": "exact"
+    },
+    {
+      "key": "home_private_point1_title",
+      "value": "Your key never leaves your browser",
+      "status": "exact"
+    },
+    {
+      "key": "home_private_point2_desc",
+      "value": "Nothing to sign up for. Nothing to log into. Open the app and start.",
+      "status": "exact"
+    },
+    {
+      "key": "home_private_point2_title",
+      "value": "No account required",
+      "status": "exact"
+    },
+    {
+      "key": "home_private_point3_desc",
+      "value": "Conversations are saved to your browser's storage — not uploaded to a cloud we control.",
+      "status": "exact"
+    },
+    {
+      "key": "home_private_point3_title",
+      "value": "Your chats stay on your device",
+      "status": "exact"
+    },
+    {
+      "key": "home_private_point4_desc",
+      "value": "Use any OpenAI-compatible provider you trust. You pick the model, you pay only for what you use.",
+      "status": "exact"
+    },
+    {
+      "key": "home_private_point4_title",
+      "value": "Bring your own key",
+      "status": "exact"
+    },
+    {
+      "key": "home_private_title",
+      "value": "Private by design",
+      "status": "exact"
+    },
+    {
+      "key": "home_see_all",
+      "value": "See all characters",
+      "status": "exact"
+    },
+    {
+      "key": "home_seo_desc",
+      "value": "Open Tavern is a toolbox for AI roleplay: chat in seconds with the RoleChat AI web tavern (no install, bring your own key), meet PureTavern for free static self-hosting, and compare local tavern clients.",
+      "status": "MISSING"
+    },
+    {
+      "key": "home_seo_title",
+      "value": "Open Tavern · RoleChat AI — Private AI Character Roleplay",
+      "status": "MISSING"
+    },
+    {
+      "key": "home_tools_more_cta",
+      "value": "All Tavern Tools",
+      "status": "exact"
+    },
+    {
+      "key": "home_tools_more_desc",
+      "value": "SillyTavern, RisuAI, AgnAI and more local tavern clients, side by side.",
+      "status": "exact"
+    },
+    {
+      "key": "home_tools_more_tag",
+      "value": "Directory",
+      "status": "exact"
+    },
+    {
+      "key": "nav_about",
+      "value": "About",
+      "status": "exact"
+    },
+    {
+      "key": "nav_characters",
+      "value": "Characters",
+      "status": "exact"
+    },
+    {
+      "key": "nav_contact",
+      "value": "Contact",
+      "status": "exact"
+    },
+    {
+      "key": "nav_faq",
+      "value": "FAQ",
+      "status": "exact"
+    },
+    {
+      "key": "nav_guides",
+      "value": "Guides",
+      "status": "exact"
+    },
+    {
+      "key": "nav_how_it_works",
+      "value": "How it works",
+      "status": "exact"
+    },
+    {
+      "key": "nav_open_app",
+      "value": "Open App",
+      "status": "exact"
+    },
+    {
+      "key": "nav_privacy",
+      "value": "Privacy",
+      "status": "exact"
+    },
+    {
+      "key": "nav_terms",
+      "value": "Terms",
+      "status": "exact"
+    },
+    {
+      "key": "nav_tools",
+      "value": "Tools",
+      "status": "exact"
+    }
+  ],
+  "exact": 86,
+  "caseOnly": 0,
+  "missing": [
+    {
+      "key": "home_seo_desc",
+      "value": "Open Tavern is a toolbox for AI roleplay: chat in seconds with the RoleChat AI web tavern (no install, bring your own key), meet PureTavern for free static self-hosting, and compare local tavern clients.",
+      "status": "MISSING"
+    },
+    {
+      "key": "home_seo_title",
+      "value": "Open Tavern · RoleChat AI — Private AI Character Roleplay",
+      "status": "MISSING"
+    }
+  ],
+  "skipped": [],
+  "lostWords": [
+    "Japanese",
+    "Korean",
+    "Italian",
+    "Dutch",
+    "Swedish",
+    "Norwegian",
+    "Danish",
+    "Finnish",
+    "Polish",
+    "Turkish",
+    "Hindi",
+    "Indonesian",
+    "Vietnamese",
+    "Malay",
+    "Tagalog",
+    "works",
+    "design.",
+    "CATEGORIES",
+    "side.",
+    "Explore",
+    "roadmap.",
+    "chatting.",
+    "Studio",
+    "Create",
+    "export.",
+    "Converter",
+    "Convert",
+    "Forge",
+    "preview.",
+    "Visual",
+    "Toolkit",
+    "more.",
+    "assistance.",
+    "storage.",
+    "guides.",
+    "tools.",
+    "Beginner",
+    "Sources",
+    "taste.",
+    "FEATURED",
+    "seconds.",
+    "Boyfriend",
+    "heart.",
+    "Modern",
+    "Comfort",
+    "Hidden",
+    "Silas",
+    "Ashford",
+    "Detective",
+    "Sarcastic",
+    "Mystery",
+    "Banter",
+    "Elias",
+    "Thorn",
+    "Librarian",
+    "alone.",
+    "Marcus",
+    "Bodyguard",
+    "Sworn",
+    "Protector",
+    "Damian",
+    "Sterling",
+    "design",
+    "collection",
+    "Three",
+    "reply.",
+    "server.",
+    "jargon.",
+    "required",
+    "device",
+    "here.",
+    "Settings.",
+    "Small",
+    "story.",
+    "anything?",
+    "private?",
+    "cards?",
+    "free?",
+    "settings?",
+    "site?",
+    "story?",
+    "easy.",
+    "Contact",
+    "Privacy",
+    "Terms"
+  ],
+  "measuredAt": "2026-10-04T16:53:26.766Z"
+}

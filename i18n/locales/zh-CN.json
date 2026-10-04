@@ -1193,4 +1193,10 @@
   "home_hub_pl_desc": "可视化 preset.json 编辑器：宏分析、变量管理与无损 round-trip 导出。",
   "home_hub_at_desc": "AI 生成器套件：人设、开场白、世界书条目、正则脚本等一键生成。",
   "home_hub_sw_desc": "把长篇小说逐章转成世界书条目，AI 辅助提炼设定。"
+,
+  "err_404_title": "页面不存在",
+  "err_404_desc": "你访问的页面不存在或已被移动。",
+  "err_generic_title": "出了点问题",
+  "err_generic_desc": "发生了意外错误，请重试。",
+  "err_back_home": "回到首页"
 }

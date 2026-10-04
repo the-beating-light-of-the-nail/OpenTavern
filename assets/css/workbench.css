@@ -4,7 +4,7 @@
    外壳按全幅应用布局调整：顶栏通栏、左栏贴死左侧边缘且整屏高、可收缩成图标条。
    配色/圆角/阴影一律走现有 --color-* token，不引入目标站 coffee 主题。
    规格来源：docs/research/laopobao-tools/home/{PAGE_TOPOLOGY,BEHAVIORS}.md
-   —— 本文件只被 pages/index.vue + components/home/* 使用，其他页面零影响。
+   —— 全站外壳：components/home/WorkbenchShell.vue 供所有页面共用（/app 应用本体除外）。
    ============================================================ */
 
 :root {

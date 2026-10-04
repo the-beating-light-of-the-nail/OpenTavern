@@ -5,7 +5,7 @@
  * 规格：docs/research/laopobao-tools/home/components/workbench-header.spec.md
  * 样式：类名全部来自 assets/css/workbench.css（本组件不写 <style>，不改 CSS）
  * 图标：<HubIcon>（components/home/HubIcon.vue，Nuxt 自动注册 pathPrefix:false，不做 import）
- * 语言切换：复制 components/SiteHeader.vue 的 langOptions 构造 + setLocale 处理（源文件未改动）
+ * 语言切换：原 SiteHeader.vue（已随全站外壳化删除）的 langOptions 构造 + setLocale 处理
  */
 import { useAppStore } from '~/stores/app';
 import { useLocale } from '~/composables/useLocale';

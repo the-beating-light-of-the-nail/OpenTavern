@@ -29,8 +29,7 @@ const members = computed(() =>
 </script>
 
 <template>
-  <div class="min-h-[100dvh] bg-ivory text-plum">
-    <SiteHeader />
+  <WorkbenchShell active-cat="play">
 
     <main class="mx-auto max-w-3xl px-5 py-12">
       <NuxtLink :to="localePath('/characters')" class="rc-nav-link mb-6 inline-flex">{{ t('collection_all_characters') }}</NuxtLink>
@@ -63,5 +62,5 @@ const members = computed(() =>
         </div>
       </section>
     </main>
-  </div>
+  </WorkbenchShell>
 </template>

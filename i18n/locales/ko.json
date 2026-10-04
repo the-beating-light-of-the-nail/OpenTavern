@@ -1193,4 +1193,10 @@
   "home_hub_pl_desc": "비주얼 preset.json 에디터: 매크로 분석, 변수 관리, 무손실 round-trip 내보내기.",
   "home_hub_at_desc": "AI 생성기 모음: 캐릭터 시트, 오프닝, 월드북 항목, 정규식 스크립트 등을 원클릭 생성.",
   "home_hub_sw_desc": "장편 소설을 챕터별로 월드북 항목으로 변환. AI가 설정을 추출합니다."
+,
+  "err_404_title": "페이지를 찾을 수 없습니다",
+  "err_404_desc": "찾으시는 페이지가 없거나 이동되었을 수 있습니다.",
+  "err_generic_title": "문제가 발생했습니다",
+  "err_generic_desc": "예기치 않은 오류가 발생했습니다. 다시 시도해 주세요.",
+  "err_back_home": "홈으로 돌아가기"
 }

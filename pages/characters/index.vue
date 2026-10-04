@@ -99,8 +99,7 @@ const charGrid = computed(() => withAdCards(filtered.value, (c) => c.slug));
 </script>
 
 <template>
-  <div class="min-h-[100dvh] bg-ivory text-plum">
-    <SiteHeader />
+  <WorkbenchShell active-cat="play">
 
     <main class="mx-auto max-w-5xl px-5 py-14">
       <div class="mb-10 text-center">
@@ -174,5 +173,5 @@ const charGrid = computed(() => withAdCards(filtered.value, (c) => c.slug));
         <NuxtLink :to="localePath('/app')" class="rc-btn-primary">{{ t('characters_start_now') }}</NuxtLink>
       </div>
     </main>
-  </div>
+  </WorkbenchShell>
 </template>

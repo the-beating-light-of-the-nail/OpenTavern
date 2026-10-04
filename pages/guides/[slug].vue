@@ -54,8 +54,7 @@ useHead({ script: jsonLd });
 </script>
 
 <template>
-  <div class="min-h-[100dvh] bg-ivory text-plum">
-    <SiteHeader />
+  <WorkbenchShell active-cat="resource">
 
     <main class="mx-auto max-w-2xl px-5 py-12">
       <NuxtLink :to="localePath('/guides')" class="rc-nav-link mb-6 inline-flex">{{ t('guide_all_guides') }}</NuxtLink>
@@ -86,5 +85,5 @@ useHead({ script: jsonLd });
         </div>
       </section>
     </main>
-  </div>
+  </WorkbenchShell>
 </template>

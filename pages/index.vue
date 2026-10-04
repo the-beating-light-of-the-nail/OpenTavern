@@ -2,7 +2,8 @@
 /**
  * 首页 —— 应用工作台布局 + 原首页 SEO 内容
  *
- * 结构参照 https://tools.laopobao.online/ ：顶栏 + 左分类栏 + 工具卡网格（见 wb-layout）。
+ * 外壳（顶栏/左栏/页脚）已抽成全站共用组件 components/home/WorkbenchShell.vue，
+ * 本页 rail-mode="filter"：左栏分类点击只过滤网格、不导航（与改造前行为一致）。
  * 网格下方 1:1 恢复改造前的营销段落（.wb-seo）——H1/正文体量/H2·H3 层级/FAQ/内链与旧版首页一致，
  * 不做 SEO 取舍。原 H1 文案回到工作台标题位，原 tools hub 的 H2 作为网格上方小节标题。
  *
@@ -16,6 +17,7 @@ import { useAdPanel } from '~/composables/useAdPanel';
 
 const { t } = useI18n();
 const localePath = useLocalePath();
+const route = useRoute();
 
 useSeoMeta({
   title: () => t('home_seo_title'),
@@ -27,21 +29,18 @@ useSeoMeta({
 /* ================= 工作台：分类筛选（click-driven，不导航、不改 URL） ================= */
 const activeCat = ref<HubCategory | 'all'>('all');
 
-const categories = computed(() =>
-  HUB_CATEGORIES.map((c) => ({
-    id: c.id as string,
-    label: t(c.labelKey),
-    count: c.id === 'all' ? HOME_HUB.length : HOME_HUB.filter((x) => x.category === c.id).length,
-  })),
-);
+/* 内页左栏导航过来的深链 /?cat=<id>：静态预渲染 HTML 恒为 all，挂载后再读 query，
+   避免 SSR 标记与客户端状态不一致的 hydration mismatch */
+onMounted(() => {
+  const cat = route.query.cat;
+  if (typeof cat === 'string' && HUB_CATEGORIES.some((c) => c.id === cat)) {
+    activeCat.value = cat as HubCategory | 'all';
+  }
+});
 
 const filteredHub = computed(() =>
   activeCat.value === 'all' ? HOME_HUB : HOME_HUB.filter((x) => x.category === activeCat.value),
 );
-
-function setCat(id: string) {
-  activeCat.value = id as HubCategory | 'all';
-}
 
 function catLabelOf(id: HubCategory): string {
   return t(HUB_CATEGORIES.find((c) => c.id === id)?.labelKey ?? 'home_hub_cat_all');
@@ -101,68 +100,10 @@ const faqs = computed(() => [
   { q: t('home_faq_q6'), a: t('home_faq_a6') },
   { q: t('home_faq_q7'), a: t('home_faq_a7') },
 ]);
-
-const footerLinks = computed(() => [
-  { to: localePath('/tools'), label: t('nav_tools') },
-  { to: localePath('/characters'), label: t('nav_characters') },
-  { to: localePath('/guides'), label: t('nav_guides') },
-  { to: localePath('/about'), label: t('nav_about') },
-  { to: localePath('/contact'), label: t('nav_contact') },
-  { to: localePath('/privacy'), label: t('nav_privacy') },
-  { to: localePath('/terms'), label: t('nav_terms') },
-  { to: localePath('/app'), label: t('nav_open_app') },
-]);
-
-/* ================= 左栏收缩状态（本地记忆；窄屏首次访问默认收起） ================= */
-const RAIL_KEY = 'wb_rail_collapsed';
-const railCollapsed = ref(false);
-
-onMounted(() => {
-  let stored: string | null = null;
-  try {
-    stored = localStorage.getItem(RAIL_KEY);
-  } catch {
-    /* 隐私模式下 localStorage 可能不可用，忽略即可 */
-  }
-  // 用户手动选过就尊重其选择；否则 <1024（平板）默认收起，避免 232px 左栏吃掉三分之一屏宽
-  railCollapsed.value = stored !== null ? stored === '1' : window.innerWidth < 1024;
-});
-
-function toggleRail() {
-  railCollapsed.value = !railCollapsed.value;
-  try {
-    localStorage.setItem(RAIL_KEY, railCollapsed.value ? '1' : '0');
-  } catch {
-    /* 同上 */
-  }
-}
 </script>
 
 <template>
-  <div class="wb-shell">
-    <WorkbenchHeader />
-
-    <!-- 全幅主体：左栏贴死左侧边缘 + 内容列占满其余宽度 -->
-    <div class="wb-body">
-      <!-- 桌面：分类侧栏（≥768px 显示，可收缩成图标条） -->
-      <HubCategoryNav
-        variant="rail"
-        :categories="categories"
-        :model-value="activeCat"
-        :collapsed="railCollapsed"
-        @update:model-value="setCat"
-        @toggle-collapse="toggleRail"
-      />
-
-      <main class="wb-content">
-        <!-- 移动端：分类胶囊（<768px 显示） -->
-        <HubCategoryNav
-          variant="pills"
-          :categories="categories"
-          :model-value="activeCat"
-          @update:model-value="setCat"
-        />
-
+  <WorkbenchShell rail-mode="filter" v-model="activeCat">
         <!-- 页面 H1：沿用改造前的 hero 文案，SEO 主标题不变 -->
         <div class="wb-head">
           <div>
@@ -364,23 +305,5 @@ function toggleRail() {
             </div>
           </section>
         </div>
-      </main>
-    </div>
-
-    <!-- 极简页脚 -->
-    <footer class="wb-footer">
-      <div class="wb-footer-inner">
-        <NuxtLink :to="localePath('/')" class="wb-footer-brand">
-          <span class="wb-brand-mark">OT</span>
-          <span>Open Tavern</span>
-        </NuxtLink>
-        <nav class="wb-footer-nav">
-          <NuxtLink v-for="l in footerLinks" :key="l.to" :to="l.to">{{ l.label }}</NuxtLink>
-          <a href="#how">{{ t('nav_how_it_works') }}</a>
-          <a href="#faq">{{ t('nav_faq') }}</a>
-        </nav>
-        <p>{{ t('home_footer_tagline') }}</p>
-      </div>
-    </footer>
-  </div>
+  </WorkbenchShell>
 </template>

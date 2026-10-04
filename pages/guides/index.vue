@@ -14,8 +14,7 @@ const guides = useGuides();
 </script>
 
 <template>
-  <div class="min-h-[100dvh] bg-ivory text-plum">
-    <SiteHeader />
+  <WorkbenchShell active-cat="resource">
 
     <main class="mx-auto max-w-3xl px-5 py-14">
       <div class="mb-10 text-center">
@@ -43,5 +42,5 @@ const guides = useGuides();
         <NuxtLink :to="localePath('/characters')" class="rc-btn-primary">{{ t('guides_browse_characters') }}</NuxtLink>
       </div>
     </main>
-  </div>
+  </WorkbenchShell>
 </template>
