@@ -27,9 +27,9 @@
   - [ ] Discover
   - [ ] 各类角色扮演卡平台
 - [ ] 为角色卡配套擦边图片
-- [ ] 增加角色分类/标签系统
+- [x] 增加角色分类/标签系统（早已上线：/characters 分类 + 标签筛选，2026-10-07 台账核对时勾选）
 - [ ] 优化角色卡片展示
-- [ ] 角色搜索/筛选功能
+- [x] 角色搜索/筛选功能（早已上线：pages/characters/index.vue 搜索框 + 分类 + 标签筛选）
 
 ## 对话体验
 - [ ] 优化对话流交互
@@ -40,7 +40,7 @@
 ## UI/UX
 - [ ] 增加更多主题/配色方案
 - [ ] 响应式布局优化
-- [ ] 暗色模式完善
+- [x] 暗色模式完善（2026-10-06：全站默认切 laopobao 同款 coffee 深色，/app 可切浅色）
 - [ ] 动画/过渡效果增强
 
 ## SEO & 营销
@@ -49,18 +49,20 @@
 - [ ] 完善 OG 图片覆盖
 - [ ] 性能优化（LCP/FID/CLS）
 - [ ] 结构化数据（JSON-LD）
-- [ ] **角色卡下载功能（抢 "download character cards for SillyTavern" 意图，GSC 簇 C 的下载分支）**
-  - 现状：`public/cards/` 已有每角色 `.json` 卡文件（113 个），但全站**无任何下载入口**；簇 C 里 "sillytavern free character cards download" 这类查询目前完全没在服务。
-  - 待评估：(1) 确认 `.json` 为合法角色卡 v2 格式；(2) 这些角色多是**蔚蓝档案等二次元 IP**，公开发布下载有版权风险 —— **建议仅对原创角色开放下载**；(3) 角色详情页加下载按钮 + 可能新增 `/cards` 下载索引页。
-- [ ] **竞品对比页（抢 GSC 簇 B 的导航流量）**
-  - 簇 B（rolechat / botbooru / sillytavern，96 展现 / 1 点击）多为想去竞品官网的裸品牌搜索，直接优化现有页捞不回；可另起 "alternatives to rolechat" / "sites like botbooru" / "OpenTavern vs SillyTavern" 对比页，吃另一组对比查询。
+- [x] **角色卡下载功能（抢 "download character cards for SillyTavern" 意图，GSC 簇 C 的下载分支）**（2026-10-06 完成）
+  - 实现：角色详情页「下载角色卡 (.json)」按钮——客户端即时把该原创角色数据组装成 SillyTavern V3 卡下载（`pages/characters/[slug].vue`），零托管、不上传。
+  - 版权处理：按原评估仅对**原创角色**开放；`public/cards/` 下 16 张蔚蓝档案 IP 卡不提供下载入口（其 webp/avif 仅作头像图用）。`/cards` 下载索引页暂缓，待有更多原创卡再做。
+- [x] **首页 5 个「即将上线」工具全部转正**（2026-10-06 完成）
+  - Card Converter（`/tools/card-converter`）、Worldbook Forge（`/tools/worldbook-forge`）、Preset Lab（`/tools/preset-lab`）、AI Toolkit（`/tools/ai-toolkit`）、Story to Worldbook（`/tools/story-to-worldbook`）全部上线并加入 `/tools` 目录。
+- [x] ShaderBackground WebGL 渲染（2026-10-06：classic 主题动态背景 + reduced-motion/低功耗降级）
+- [x] **竞品对比页（抢 GSC 簇 B 的导航流量）**（2026-10-07 完成：/compare——OpenTavern vs SillyTavern/RisuAI/AgnAI 对比表 + 选型指南 + FAQ，5 语言，已入首页中枢 resource 分类）
 
 ## 功能扩展
-- [ ] 用户系统（注册/登录）
-- [ ] 收藏/点赞功能
-- [ ] 分享功能
-- [ ] 离线/PWA 支持
-- [ ] API 文档
+- [ ] 用户系统（注册/登录）——需后端/认证方案决策（可用 Supabase），且与"无账号、本地优先"的产品定位有张力，动工前需拍板
+- [x] 收藏/点赞功能（2026-10-07 完成：本地版——localStorage 收藏（stores/favorites），角色卡心标 + 详情页收藏 + /characters 收藏筛选；跨设备同步留待用户系统）
+- [x] 分享功能（2026-10-07 完成：角色详情页分享行——原生 Web Share / 复制链接 / X / Telegram / Reddit）
+- [x] 离线/PWA 支持（2026-10-07 完成：manifest + 图标 + service worker（页面 network-first、静态 cache-first）+ 离线页；SW 版本号 ot-v1，改缓存策略需升版本）
+- [ ] API 文档（现状：站内无公开 API，先挂起）
 
 ## 工程化
 - [ ] 添加测试（单元/集成/e2e）
