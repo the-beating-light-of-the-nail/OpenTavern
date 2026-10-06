@@ -40,7 +40,7 @@ const b = ADS.native;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #d8cabb;
+  color: color-mix(in srgb, var(--color-accent, #d8cabb) 90%, var(--color-text, #fff));
   background: color-mix(in srgb, var(--color-primary, #b65c7a) 22%, transparent);
   border-radius: 999px;
 }

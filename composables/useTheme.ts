@@ -10,7 +10,7 @@ const VALID_THEMES = ['classic', 'new-light', 'new-dark'] as const;
 type UiTheme = (typeof VALID_THEMES)[number];
 
 function normalizeUiTheme(t: string | undefined | null): UiTheme {
-  return (VALID_THEMES as readonly string[]).includes(t as string) ? (t as UiTheme) : 'new-light';
+  return (VALID_THEMES as readonly string[]).includes(t as string) ? (t as UiTheme) : 'new-dark';
 }
 
 export function useTheme() {

@@ -83,7 +83,7 @@ export function defaultSettings(): Settings {
     summaryPrompt: '',
     worldInfoBudgetEnabled: true,
     worldInfoBudget: 2048,
-    uiTheme: 'new-light',
+    uiTheme: 'new-dark',
     lowPowerMode: false,
     summarizeUseMainAPI: true,
     summarizeApiEndpoint: '',
