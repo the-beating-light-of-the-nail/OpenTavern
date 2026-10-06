@@ -7,7 +7,10 @@ const props = withDefaults(defineProps<{
   accept?: string;
   multiple?: boolean;
   compact?: boolean;
-}>(), { accept: '.json,.png', multiple: false, compact: false });
+  /** 提示文案 i18n key（不传用 Card Studio 默认） */
+  hintKey?: string;
+  subKey?: string;
+}>(), { accept: '.json,.png', multiple: false, compact: false, hintKey: 'cs_drop_hint', subKey: 'cs_drop_local' });
 
 const emit = defineEmits<{ (e: 'files', files: File[]): void }>();
 
@@ -52,7 +55,7 @@ function onDrop(e: DragEvent) {
     :class="{ 'tool-drop--drag': dragging, 'tool-drop--compact': compact }"
     role="button"
     tabindex="0"
-    :aria-label="t('cs_drop_hint')"
+    :aria-label="t(hintKey)"
     @click="pick"
     @keydown.enter.prevent="pick"
     @dragover.prevent="dragging = true"
@@ -62,8 +65,8 @@ function onDrop(e: DragEvent) {
     <input ref="inputEl" type="file" :accept="accept" :multiple="multiple" class="hidden" @change="onInput">
     <div class="pointer-events-none flex flex-col items-center gap-1 text-center">
       <span class="text-xl leading-none" aria-hidden="true">⇪</span>
-      <span class="text-sm font-semibold">{{ t('cs_drop_hint') }}</span>
-      <span v-if="!compact" class="text-xs text-plum-muted">{{ t('cs_drop_local') }}</span>
+      <span class="text-sm font-semibold">{{ t(hintKey) }}</span>
+      <span v-if="!compact" class="text-xs text-plum-muted">{{ t(subKey) }}</span>
     </div>
   </div>
 </template>
