@@ -69,11 +69,13 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      htmlAttrs: { lang: 'en', class: 'theme-new-light' },
+      htmlAttrs: { lang: 'en' },
       title: 'Open Tavern · RoleChat AI — Private AI Character Roleplay',
       meta: [
         { charset: 'UTF-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1.0, viewport-fit=cover' },
+        // PWA：coffee 主题色（manifest + iOS 图标 + SW 注册见 app.vue / public/sw.js）
+        { name: 'theme-color', content: '#121212' },
         {
           name: 'description',
           content:
@@ -81,6 +83,8 @@ export default defineNuxtConfig({
         },
       ],
       link: [
+        { rel: 'manifest', href: '/manifest.webmanifest' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
         // 乙女向展示衬线字体（display=swap + 系统宋体兜底，加载失败不影响渲染）
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },

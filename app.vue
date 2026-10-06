@@ -72,4 +72,10 @@ useHead(
   })),
 );
 onMounted(() => load());
+
+// PWA：注册 service worker（离线支持；不可用时静默降级，不影响站点）
+onMounted(() => {
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.register('/sw.js').catch(() => { /* 注册失败不影响正常浏览 */ });
+});
 </script>
