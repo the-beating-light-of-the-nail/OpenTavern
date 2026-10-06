@@ -12,7 +12,7 @@
 
 export interface SiteTool {
   /** 稳定 id */
-  slug: 'rolechat' | 'pure-tavern' | 'sillytavern-mod' | 'card-studio';
+  slug: string;
   /** 专有名词不译 */
   name: string;
   /** 卡片主 CTA 的站内路由 */
@@ -57,6 +57,36 @@ export const SITE_TOOLS: SiteTool[] = [
     name: 'Card Studio',
     to: '/tools/card-studio',
     copy: { tag: 'home_tools_cs_tag', desc: 'home_tools_cs_desc', cta: 'home_tools_cs_cta' },
+  },
+  {
+    slug: 'card-converter',
+    name: 'Card Converter',
+    to: '/tools/card-converter',
+    copy: { tag: 'home_tools_cc_tag', desc: 'home_hub_cc_desc', cta: 'home_tools_cc_cta' },
+  },
+  {
+    slug: 'worldbook-forge',
+    name: 'Worldbook Forge',
+    to: '/tools/worldbook-forge',
+    copy: { tag: 'home_tools_wb_tag', desc: 'home_hub_wb_desc', cta: 'home_tools_wb_cta' },
+  },
+  {
+    slug: 'preset-lab',
+    name: 'Preset Lab',
+    to: '/tools/preset-lab',
+    copy: { tag: 'home_tools_pl_tag', desc: 'home_hub_pl_desc', cta: 'home_tools_pl_cta' },
+  },
+  {
+    slug: 'ai-toolkit',
+    name: 'AI Toolkit',
+    to: '/tools/ai-toolkit',
+    copy: { tag: 'home_tools_at_tag', desc: 'home_hub_at_desc', cta: 'home_tools_at_cta' },
+  },
+  {
+    slug: 'story-to-worldbook',
+    name: 'Story to Worldbook',
+    to: '/tools/story-to-worldbook',
+    copy: { tag: 'home_tools_sw_tag', desc: 'home_hub_sw_desc', cta: 'home_tools_sw_cta' },
   },
   {
     slug: 'sillytavern-mod',
@@ -124,11 +154,11 @@ export const HOME_HUB: HubTool[] = [
   { slug: 'characters', name: 'Characters', category: 'play', status: 'live', to: '/characters', descKey: 'home_hub_ch_desc' },
   // 制作工具
   { slug: 'card-studio', name: 'Card Studio', category: 'craft', status: 'live', to: '/tools/card-studio', descKey: 'home_tools_cs_desc' },
-  { slug: 'card-converter', name: 'Card Converter', category: 'craft', status: 'soon', descKey: 'home_hub_cc_desc' },
-  { slug: 'worldbook-forge', name: 'Worldbook Forge', category: 'craft', status: 'soon', descKey: 'home_hub_wb_desc' },
-  { slug: 'preset-lab', name: 'Preset Lab', category: 'craft', status: 'soon', descKey: 'home_hub_pl_desc' },
-  { slug: 'ai-toolkit', name: 'AI Toolkit', category: 'craft', status: 'soon', descKey: 'home_hub_at_desc' },
-  { slug: 'story-to-worldbook', name: 'Story to Worldbook', category: 'craft', status: 'soon', descKey: 'home_hub_sw_desc' },
+  { slug: 'card-converter', name: 'Card Converter', category: 'craft', status: 'live', to: '/tools/card-converter', descKey: 'home_hub_cc_desc' },
+  { slug: 'worldbook-forge', name: 'Worldbook Forge', category: 'craft', status: 'live', to: '/tools/worldbook-forge', descKey: 'home_hub_wb_desc' },
+  { slug: 'preset-lab', name: 'Preset Lab', category: 'craft', status: 'live', to: '/tools/preset-lab', descKey: 'home_hub_pl_desc' },
+  { slug: 'ai-toolkit', name: 'AI Toolkit', category: 'craft', status: 'live', to: '/tools/ai-toolkit', descKey: 'home_hub_at_desc' },
+  { slug: 'story-to-worldbook', name: 'Story to Worldbook', category: 'craft', status: 'live', to: '/tools/story-to-worldbook', descKey: 'home_hub_sw_desc' },
   // 本地酒馆
   { slug: 'pure-tavern', name: 'PureTavern', category: 'local', status: 'live', to: '/tools/pure-tavern', license: 'AGPL-3.0', descKey: 'home_tools_pt_desc' },
   { slug: 'sillytavern-mod', name: 'SillyTavernMOD', category: 'local', status: 'live', to: '/tools/sillytavern-mod', license: 'AGPL-3.0', descKey: 'home_tools_stm_desc' },
@@ -138,4 +168,5 @@ export const HOME_HUB: HubTool[] = [
   // 资源指南
   { slug: 'guides', name: 'Guides', category: 'resource', status: 'live', to: '/guides', descKey: 'home_hub_gd_desc' },
   { slug: 'card-sources', name: 'Card Sources', category: 'resource', status: 'live', to: '/where-to-find-character-cards', descKey: 'home_hub_wf_desc' },
+  { slug: 'compare', name: 'Compare Taverns', category: 'resource', status: 'live', to: '/compare', descKey: 'home_hub_cmp_desc' },
 ];
