@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { getCharacterBySlug } from '~/data';
+import { downloadJson, safeFilename } from '~/utils/st/export';
+import { useFavoritesStore } from '~/stores/favorites';
 const { t } = useI18n();
 const localePath = useLocalePath();
 const { $i18n } = useNuxtApp();
@@ -58,6 +60,78 @@ const related = computed(() =>
     .map((s) => getCharacterBySlug(s, $i18n.locale.value))
     .filter((x): x is NonNullable<typeof x> => !!x),
 );
+
+// 展示标签：tags + personalityTags 去重，并剔除与 category 同名的标签（分类徽标单独渲染）
+const allTags = computed(() =>
+  [...new Set([...c.value.tags, ...c.value.personalityTags])].filter((t) => t !== c.value.category),
+);
+
+/* ------------------------------ 收藏与分享（纯本地，无账号体系） ------------------------------ */
+
+const favs = useFavoritesStore();
+onMounted(() => favs.load());
+const isFav = computed(() => favs.has(c.value.slug));
+
+const canNativeShare = ref(false);
+onMounted(() => {
+  canNativeShare.value = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+});
+
+const shareUrl = computed(() => charUrl.value);
+const copied = ref(false);
+let copiedTimer: ReturnType<typeof setTimeout> | null = null;
+
+async function copyLink() {
+  try {
+    await navigator.clipboard.writeText(shareUrl.value);
+    copied.value = true;
+    if (copiedTimer) clearTimeout(copiedTimer);
+    copiedTimer = setTimeout(() => (copied.value = false), 2000);
+  } catch { /* 剪贴板权限被拒时静默 */ }
+}
+
+async function nativeShare() {
+  try {
+    await navigator.share({ title: c.value.name, text: c.value.tagline, url: shareUrl.value });
+  } catch { /* 用户取消分享 */ }
+}
+
+const shareLinks = computed(() => {
+  const u = encodeURIComponent(shareUrl.value);
+  const txt = encodeURIComponent(`${c.value.name} — ${c.value.tagline}`);
+  return {
+    x: `https://twitter.com/intent/tweet?url=${u}&text=${txt}`,
+    telegram: `https://t.me/share/url?url=${u}&text=${txt}`,
+    reddit: `https://www.reddit.com/submit?url=${u}&title=${txt}`,
+  };
+});
+
+// 角色卡下载：客户端即时生成 SillyTavern V3 卡（原创角色数据，无 IP 版权问题；全程本地不联网）
+function downloadCard() {
+  const ch = c.value;
+  const card = {
+    spec: 'chara_card_v3',
+    spec_version: '3.0',
+    create_date: new Date().toISOString().slice(0, 10),
+    data: {
+      name: ch.name,
+      description: ch.description,
+      personality: ch.personality,
+      scenario: `${ch.scenario}\n\n${ch.relationshipSetup}`.trim(),
+      first_mes: ch.openingMessage,
+      mes_example: '',
+      creator_notes: ch.tagline,
+      system_prompt: '',
+      post_history_instructions: '',
+      alternate_greetings: [],
+      tags: [...ch.tags, ...ch.personalityTags],
+      creator: 'Open Tavern',
+      character_version: '1.0',
+      extensions: {},
+    },
+  };
+  downloadJson(`${safeFilename(ch.name)}.json`, card);
+}
 </script>
 
 <template>
@@ -81,13 +155,33 @@ const related = computed(() =>
       <div class="mt-5 flex flex-wrap items-center gap-1.5">
         <span class="ui-chip-success rounded-full px-2.5 py-0.5 text-xs font-bold">{{ c.safetyLevel }}</span>
         <span class="rc-tag">{{ c.category }}</span>
-        <span v-for="t in c.tags" :key="t" class="rc-tag">{{ t }}</span>
+        <span v-for="t in allTags" :key="t" class="rc-tag">{{ t }}</span>
       </div>
 
       <!-- CTA -->
       <div class="mt-8 flex flex-wrap gap-3">
         <NuxtLink :to="localePath(`/app?character=${c.slug}`)" class="rc-btn-primary">{{ t('char_start_private_chat') }}</NuxtLink>
+        <button type="button" class="rc-btn-ghost" :title="t('char_download_card_note')" @click="downloadCard">⬇ {{ t('char_download_card') }}</button>
         <NuxtLink :to="localePath('/characters')" class="rc-btn-ghost">{{ t('char_browse_others') }}</NuxtLink>
+      </div>
+      <p class="mt-2 text-xs text-plum-faint">{{ t('char_download_card_note') }}</p>
+
+      <!-- Favorite + share -->
+      <div class="mt-4 flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          class="rc-btn-ghost rc-btn-compact"
+          :class="isFav ? '!border-rose-accent/60 !text-rose-accent' : ''"
+          @click="favs.toggle(c.slug)"
+        >{{ isFav ? '♥' : '♡' }} {{ isFav ? t('char_fav_on') : t('char_fav_off') }}</button>
+        <button v-if="canNativeShare" type="button" class="rc-btn-ghost rc-btn-compact" @click="nativeShare">⎄ {{ t('char_share') }}</button>
+        <button type="button" class="rc-btn-ghost rc-btn-compact" @click="copyLink">
+          {{ copied ? '✓ ' + t('share_copied') : '⎘ ' + t('share_copy') }}
+        </button>
+        <span class="mx-1 h-4 w-px bg-border-warm" aria-hidden="true" />
+        <a :href="shareLinks.x" target="_blank" rel="noopener" class="text-xs font-semibold text-plum-muted transition-colors hover:text-rose-accent">X</a>
+        <a :href="shareLinks.telegram" target="_blank" rel="noopener" class="text-xs font-semibold text-plum-muted transition-colors hover:text-rose-accent">Telegram</a>
+        <a :href="shareLinks.reddit" target="_blank" rel="noopener" class="text-xs font-semibold text-plum-muted transition-colors hover:text-rose-accent">Reddit</a>
       </div>
 
       <!-- Description -->

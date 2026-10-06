@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { useCharacters, useCollections } from '~/data';
 import { withAdCards } from '~/utils/ads';
+import { useFavoritesStore } from '~/stores/favorites';
 import type { CharacterSeo, CharacterCategory } from '~/types/seo';
 const { t, locale } = useI18n();
 const localePath = useLocalePath();
+
+const favs = useFavoritesStore();
+onMounted(() => favs.load());
+const showFavs = ref(false);
 
 useSeoMeta({
   title: () => t('characters_seo_title'),
@@ -77,6 +82,7 @@ const search = ref('');
 const filtered = computed<CharacterSeo[]>(() => {
   const q = search.value.trim().toLowerCase();
   return characters.value.filter((c) => {
+    if (showFavs.value && !favs.has(c.slug)) return false;
     if (activeCategory.value !== 'All' && c.category !== activeCategory.value) return false;
     if (activeTag.value && !c.tags.includes(activeTag.value)) return false;
     if (!q) return true;
@@ -128,6 +134,13 @@ const charGrid = computed(() => withAdCards(filtered.value, (c) => c.slug));
           :class="activeCategory === cat ? 'bg-rose-accent/15 text-rose-accent ring-1 ring-amber-400/50' : 'bg-rose-tint text-plum-muted hover:bg-rose-tint'"
           @click="activeCategory = cat"
         >{{ catLabel(cat) }}</button>
+        <button
+          v-if="favs.count"
+          class="ml-1 rounded-lg px-3 py-1 text-xs font-semibold transition-all"
+          :class="showFavs ? 'bg-rose-accent/15 text-rose-accent ring-1 ring-amber-400/50' : 'bg-rose-tint text-plum-muted hover:bg-rose-tint'"
+          :title="t('characters_fav_filter_hint')"
+          @click="showFavs = !showFavs"
+        >♥ {{ t('characters_fav_filter') }} ({{ favs.filterFaved(characters.map((x) => x.slug)).length }})</button>
       </div>
 
       <!-- Tag filter -->

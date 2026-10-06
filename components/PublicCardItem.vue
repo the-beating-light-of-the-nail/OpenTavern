@@ -20,6 +20,8 @@ const props = withDefaults(defineProps<{
 
 const { t } = useI18n();
 const localePath = useLocalePath();
+const favs = useFavoritesStore();
+onMounted(() => favs.load());
 
 /** 去重 + 截断：过滤 category 重复，取前 3 */
 const displayTags = computed(() => {
@@ -35,8 +37,17 @@ const isApp = computed(() => props.mode === 'app');
 
 <template>
   <!-- seo 模式 -->
-  <div v-if="isSeo" class="rc-card flex flex-col overflow-hidden">
+  <div v-if="isSeo" class="rc-card relative flex flex-col overflow-hidden">
     <div class="rc-card-accent" />
+    <!-- 收藏心标（本地存储，无账号） -->
+    <button
+      type="button"
+      class="absolute right-2.5 top-2.5 z-10 text-lg leading-none transition-transform hover:scale-110"
+      :class="favs.has(c.slug) ? 'text-rose-accent' : 'text-plum-faint/70 hover:text-plum-muted'"
+      :aria-label="t('char_fav_aria')"
+      :aria-pressed="favs.has(c.slug)"
+      @click.stop.prevent="favs.toggle(c.slug)"
+    >{{ favs.has(c.slug) ? '♥' : '♡' }}</button>
     <div class="flex flex-col p-5">
       <div class="flex items-center gap-3.5">
         <CharAvatar :avatar="c.avatar" :initial="c.initial" size="lg" />
