@@ -8,10 +8,6 @@ const route = useRoute();
 const router = useRouter();
 const { $i18n } = useNuxtApp();
 
-// 主题 / 效能模式应用（客户端，响应式跟随 settings）
-const { watch: watchTheme } = useTheme();
-onMounted(() => watchTheme());
-
 /**
  * 处理 ?character=<slug>：从 SEO 角色页 / 角色卡 "Start Chat" 跳入。
  * 同时监听 store.ready 与 route.query.character：

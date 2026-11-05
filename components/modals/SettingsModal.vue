@@ -365,9 +365,10 @@ const langOptions = computed(() => [
           <div>
             <label class="label-base">{{ t('settings_ui_theme_label') }}</label>
             <select v-model="s.uiTheme" class="ui-input ui-input-compact mt-2" @change="persist">
+              <option value="system">{{ t('theme_system') }}</option>
+              <option value="new-light">{{ t('theme_light') }}</option>
+              <option value="new-dark">{{ t('theme_dark') }}</option>
               <option value="classic">{{ t('settings_ui_theme_classic') }}</option>
-              <option value="new-light">{{ t('settings_ui_theme_new_light') }}</option>
-              <option value="new-dark">{{ t('settings_ui_theme_new_dark') }}</option>
             </select>
           </div>
 

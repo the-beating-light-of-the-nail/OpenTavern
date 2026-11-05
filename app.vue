@@ -12,6 +12,10 @@
 // 解决审计发现的全站缺失项：canonical、OG/Twitter、Organization/WebSite JSON-LD
 import { ADS } from '~/utils/ads';
 import { useAdPanel } from '~/composables/useAdPanel';
+
+// 主题 / 效能模式全局应用（含营销页；system 跟随 prefers-color-scheme）
+const { watch: watchTheme } = useTheme();
+onMounted(() => watchTheme());
 // SITE_URL / 绝对 URL 统一来自 composables/useSeo.ts（单一来源）
 const canonicalUrl = useCanonicalUrl();
 const hreflangLinks = useHreflang();
@@ -21,6 +25,24 @@ useHead({
   link: [
     { rel: 'canonical', href: canonicalUrl },
     ...hreflangLinks.value,
+  ],
+});
+
+// 首屏主题兜底：在 body 开始处读取缓存，避免等待 store 加载时闪一下暗色
+useHead({
+  script: [
+    {
+      key: 'theme-init',
+      tagPosition: 'bodyOpen',
+      innerHTML:
+        "(function(){try{var m=localStorage.getItem('opentavern-ui-theme')||'system';" +
+        "var r=m==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'new-dark':'new-light'):m;" +
+        "if(r!=='new-light'&&r!=='new-dark'&&r!=='classic')r='new-light';" +
+        "document.body.classList.add('theme-'+r);" +
+        "var meta=document.querySelector('meta[name=theme-color]');" +
+        "if(meta)meta.setAttribute('content',r==='new-light'?'#f7f7f7':(r==='classic'?'#0a0908':'#121212'));" +
+        "}catch(e){}})();",
+    },
   ],
 });
 

@@ -47,7 +47,7 @@ export interface Settings {
   summaryPrompt: string;
   worldInfoBudgetEnabled: boolean;
   worldInfoBudget: number;
-  uiTheme: 'classic' | 'new-light' | 'new-dark' | string;
+  uiTheme: 'classic' | 'new-light' | 'new-dark' | 'system' | string;
   lowPowerMode: boolean;
   summarizeUseMainAPI: boolean;
   summarizeApiEndpoint: string;

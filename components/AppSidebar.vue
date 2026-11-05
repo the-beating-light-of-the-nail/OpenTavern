@@ -144,6 +144,7 @@ async function onImportFile(e: Event) {
     <div class="px-3 py-2 flex items-center gap-1 border-b border-[var(--color-border)]">
       <NuxtLink :to="localePath('/characters')" class="ui-button ui-button-xs flex-1">{{ t('nav_characters') }}</NuxtLink>
       <NuxtLink :to="localePath('/guides')" class="ui-button ui-button-xs flex-1">{{ t('nav_guides') }}</NuxtLink>
+      <ThemeMenu />
     </div>
 
     <!-- New Chat -->

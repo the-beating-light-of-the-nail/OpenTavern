@@ -19,7 +19,10 @@ type IconName =
   | 'arrow-right'
   | 'upload'
   | 'panel-close'
-  | 'panel-open';
+  | 'panel-open'
+  | 'sun'
+  | 'moon'
+  | 'check';
 
 withDefaults(defineProps<{ name: IconName; size?: number | string }>(), { size: '1em' });
 
@@ -42,6 +45,10 @@ const PATHS: Record<IconName, string> = {
   // 侧栏收缩/展开（lucide panel-left-close / panel-left-open）
   'panel-close': '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m16 15-3-3 3-3"/>',
   'panel-open': '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/>',
+  // 主题切换（lucide sun / moon / check）
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+  moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
 };
 </script>
 

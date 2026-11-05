@@ -65,7 +65,7 @@ body.theme-new-dark #vignetteOverlay { display: none; }
 }
 .glass-hover:hover,
 .glass:hover {
-    background: var(--color-surface-soft);
+    background: var(--color-accent-surface);
     border-color: var(--color-border-strong);
 }
 .glass-active {
@@ -81,7 +81,7 @@ body.theme-new-dark #vignetteOverlay { display: none; }
 /* —— 会话列表项 —— */
 .conv-item { transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1); border-left: 2px solid transparent; color: var(--color-text-muted); }
 .conv-item.active { border-left-color: var(--color-primary); background: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface)); color: var(--color-text); }
-.conv-item:hover:not(.active) { background: color-mix(in srgb, var(--color-text) 4%, transparent); }
+.conv-item:hover:not(.active) { background: var(--color-sidebar-soft); }
 
 /* —— 消息气泡 —— */
 .msg-user .msg-bubble { background: var(--color-surface-soft); border: 1px solid var(--color-border); border-radius: 20px 20px 4px 20px; }
@@ -110,7 +110,7 @@ body.theme-new-dark #vignetteOverlay { display: none; }
     color: var(--color-text-faint); font-size: 12px; cursor: pointer;
     transition: all 0.2s ease;
 }
-.msg-action-btn:hover { background: var(--color-surface-soft); border-color: var(--color-border-strong); color: var(--color-text-muted); }
+.msg-action-btn:hover { background: var(--color-accent-surface); border-color: var(--color-border-strong); color: var(--color-text-muted); }
 .msg-action-btn.copy-btn:hover { color: var(--color-info); border-color: color-mix(in srgb, var(--color-info) 30%, transparent); background: color-mix(in srgb, var(--color-info) 8%, transparent); }
 .msg-action-btn.retry-btn:hover { color: var(--color-primary); border-color: color-mix(in srgb, var(--color-primary) 30%, transparent); background: color-mix(in srgb, var(--color-primary) 8%, transparent); }
 .msg-action-btn.del-btn:hover { color: var(--color-danger); border-color: color-mix(in srgb, var(--color-danger) 30%, transparent); background: color-mix(in srgb, var(--color-danger) 8%, transparent); }
@@ -174,7 +174,7 @@ body.theme-new-dark #vignetteOverlay { display: none; }
     align-items: center; justify-content: center;
     transition: all 0.2s ease; flex-shrink: 0;
 }
-.hamburger-btn:hover { background: var(--color-surface-soft); color: var(--color-text); }
+.hamburger-btn:hover { background: var(--color-accent-surface); color: var(--color-text); }
 .hamburger-btn svg { width: 18px; height: 18px; }
 .hamburger-close-btn { display: none; }
 @media (max-width: 767px) {
@@ -242,11 +242,9 @@ body.low-power .modal-overlay {
 
 /* —— 主题应用：工作区侧栏/顶栏/消息区背景（token 驱动，无 !important）—— */
 body.theme-classic #main-layout,
-body.theme-new-dark #main-layout {
-    background: linear-gradient(90deg, var(--color-surface-soft) 0 270px, var(--color-bg) 270px 100%), var(--color-bg);
-}
+body.theme-new-dark #main-layout,
 body.theme-new-light #main-layout {
-    background: linear-gradient(90deg, var(--color-surface-soft) 0 270px, var(--color-bg) 270px 100%), var(--color-bg);
+    background: linear-gradient(90deg, var(--color-sidebar) 0 270px, var(--color-bg) 270px 100%), var(--color-bg);
 }
 
 /* 移动端视口高度修正 */

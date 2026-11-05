@@ -17,12 +17,13 @@
 | secondary-foreground | `#fcdec0` | **新增 `--color-on-secondary`** |
 | muted | `#212121` | `--color-surface-soft` ✅ |
 | muted-foreground | `#b5b5b5` | `--color-text-soft` ✅ |
-| accent | `#2b2b2b` | 语义=悬停灰面，OpenTavern 由 surface-soft 承担；`--color-accent` 保留蜜桃 `#ffdfb3`（=源浅色 secondary，咖啡家族，历史决定） |
+| accent | `#2b2b2b` | 悬停灰面，映射到 `--color-accent-surface`；`--color-accent` 保留蜜桃 `#ffdfb3`（=源浅色 secondary，历史决定） |
 | destructive | `#e55134` | `--color-danger` ✅ |
 | border | `#22201b` | `--color-border` ✅ |
 | input | `#474747` | **新增 `--color-input`** |
 | ring | `#fcdec0` | **新增 `--color-ring`** |
-| sidebar 系 | `#17171c / #26262b / #f5f5f5 / #d2d2da` | 与 surface 近似，暂不引入（无消费方） |
+| sidebar / sidebar-accent | `#17171c / #26262b` | `--color-sidebar` / `--color-sidebar-soft` ✅ |
+| sidebar-foreground / border / ring | `#f5f5f5 / #26262b / #d2d2da` | `--color-sidebar-text` / `--color-sidebar-border` / `--color-sidebar-ring` ✅ |
 | chart-1..5 | `#fcdec0 / #393028 / #2b2b2b / #41382f / #fcdec0` | 无图表，不引入 |
 
 OpenTavern 独有分层（源站无对应，保留）：`text-muted #9a9a9a`、`text-faint #7d7d7d`、`border-strong #2e2c27`、`primary-hover #edcfb0`、success/info。
@@ -37,7 +38,9 @@ OpenTavern 独有分层（源站无对应，保留）：`text-muted #9a9a9a`、`
 | primary / primary-foreground | `#644a40` / `#fff` | ✅ |
 | secondary / secondary-foreground | `#ffdfb3` / `#592d1c` | accent ✅ / **新增 on-secondary** |
 | muted / muted-foreground | `#ededed` / `#636363` | ✅ |
-| accent | `#e8e8e8` | 悬停灰面，surface-soft 承担 |
+| accent | `#e8e8e8` | 悬停灰面，映射到 `--color-accent-surface` ✅ |
+| sidebar / sidebar-accent | `#fcfcfc / #f7f7f7` | `--color-sidebar` / `--color-sidebar-soft` ✅ |
+| sidebar-foreground / border / ring | `#242424 / #ebebeb / #b5b5b5` | `--color-sidebar-text` / `--color-sidebar-border` / `--color-sidebar-ring` ✅ |
 | destructive | `#e55134` | ✅ |
 | border / input / ring | `#d6d6d6` / `#d6d6d6` / `#644a40` | ✅ / 新增 / 新增 |
 
@@ -60,3 +63,10 @@ OpenTavern 独有分层（源站无对应，保留）：`text-muted #9a9a9a`、`
 `:root` 与 `theme-new-dark` 新增：`--color-secondary #393028`、`--color-on-secondary #fcdec0`、`--color-input #474747`、`--color-ring #fcdec0`（含 secondary 的 `-rgb` 三元组）。
 `theme-new-light` 新增：`--color-secondary #ffdfb3`、`--color-on-secondary #592d1c`、`--color-input #d6d6d6`、`--color-ring #644a40`。
 `theme-classic` 不动（继承 :root 深色新槽位即可）。
+
+## 2026-11-06 追加（sidebar / accent 落地）
+
+- `:root` 与 `theme-new-dark`：`--color-sidebar #17171c`、`--color-sidebar-soft #26262b`、`--color-sidebar-text #f5f5f5`、`--color-sidebar-border #26262b`、`--color-sidebar-ring #d2d2da`、`--color-accent-surface #2b2b2b`。
+- `theme-new-light`：`--color-sidebar #fcfcfc`、`--color-sidebar-soft #f7f7f7`、`--color-sidebar-text #242424`、`--color-sidebar-border #ebebeb`、`--color-sidebar-ring #b5b5b5`、`--color-accent-surface #e8e8e8`。
+- `theme-classic`：sidebar/accent 沿用原 `surface-soft` 玻璃值，视觉不变。
+- 消费方：`.ui-sidebar`、`#main-layout` 侧栏色带、`.ui-topbar`（对齐源站 header 的 `bg-background/60 + backdrop-blur`）、各 hover 态。

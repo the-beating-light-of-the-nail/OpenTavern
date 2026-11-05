@@ -36,6 +36,13 @@
     --color-border-strong: #2e2c27;
     --color-input: #474747;
     --color-ring: #fcdec0;
+    /* —— 源站 shadcn 槽位（theme-coffee 深色）：--accent=悬停灰面，--sidebar-* 对应侧栏 —— */
+    --color-accent-surface: #2b2b2b;
+    --color-sidebar: #17171c;
+    --color-sidebar-soft: #26262b;
+    --color-sidebar-text: #f5f5f5;
+    --color-sidebar-border: #26262b;
+    --color-sidebar-ring: #d2d2da;
     --color-danger: #e55134;
     --color-on-danger: #1c0803;
     --color-success: #10b981;
@@ -89,6 +96,13 @@ body.theme-new-light {
     --color-border-strong: #bdbdbd;
     --color-input: #d6d6d6;
     --color-ring: #644a40;
+    /* —— 源站 shadcn 槽位（theme-coffee 浅色）：--accent=悬停灰面，--sidebar-* 对应侧栏 —— */
+    --color-accent-surface: #e8e8e8;
+    --color-sidebar: #fcfcfc;
+    --color-sidebar-soft: #f7f7f7;
+    --color-sidebar-text: #242424;
+    --color-sidebar-border: #ebebeb;
+    --color-sidebar-ring: #b5b5b5;
     --color-danger: #e55134;
     --color-on-danger: #ffffff;
     --color-success: #16a34a;
@@ -130,6 +144,12 @@ body.theme-new-dark {
     --color-border-strong: #2e2c27;
     --color-input: #474747;
     --color-ring: #fcdec0;
+    --color-accent-surface: #2b2b2b;
+    --color-sidebar: #17171c;
+    --color-sidebar-soft: #26262b;
+    --color-sidebar-text: #f5f5f5;
+    --color-sidebar-border: #26262b;
+    --color-sidebar-ring: #d2d2da;
     --color-danger: #e55134;
     --color-on-danger: #1c0803;
     --color-success: #10b981;
@@ -166,6 +186,13 @@ body.theme-classic {
     --color-border: rgba(252, 222, 192, 0.10);
     --color-border-rgb: 252 222 192;
     --color-border-strong: rgba(252, 222, 192, 0.18);
+    /* classic 保持原玻璃层次：sidebar/accent 沿用原 surface-soft 值 */
+    --color-accent-surface: rgba(28, 25, 22, 0.52);
+    --color-sidebar: rgba(28, 25, 22, 0.52);
+    --color-sidebar-soft: rgba(28, 25, 22, 0.52);
+    --color-sidebar-text: #ece7e2;
+    --color-sidebar-border: rgba(252, 222, 192, 0.10);
+    --color-sidebar-ring: #fcdec0;
     --color-danger: #f87171;
     --color-on-danger: #2b0b0b;
     --color-success: #34d399;

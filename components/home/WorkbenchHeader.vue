@@ -96,7 +96,7 @@ function inSection(section: string) {
           </NuxtLink>
         </nav>
 
-        <div class="wb-header-divider">
+        <div class="wb-header-divider wb-header-tools">
           <select
             class="wb-lang"
             :value="store.settings.lang"
@@ -105,6 +105,7 @@ function inSection(section: string) {
           >
             <option v-for="o in langOptions" :key="o.code" :value="o.code">{{ o.label }}</option>
           </select>
+          <ThemeMenu />
         </div>
 
         <NuxtLink :to="localePath('/app')" class="wb-cta">
