@@ -24,6 +24,7 @@ export default <Partial<Config>>{
           deep: 'rgb(var(--color-primary-hover-rgb) / <alpha-value>)',
         },
         champagne: 'rgb(var(--color-accent-rgb) / <alpha-value>)',
+        mocha: 'rgb(var(--color-secondary-rgb) / <alpha-value>)',
         lavender: 'rgb(var(--color-lavender-rgb) / <alpha-value>)',
         'border-warm': 'rgb(var(--color-border-rgb) / <alpha-value>)',
       },

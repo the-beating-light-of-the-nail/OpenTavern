@@ -20,6 +20,9 @@
     --color-on-primary: #0a191a;
     --color-accent: #ffdfb3;
     --color-accent-rgb: 255 223 179;
+    --color-secondary: #393028;
+    --color-secondary-rgb: 57 48 40;
+    --color-on-secondary: #fcdec0;
     --color-text: #ededed;
     --color-text-rgb: 237 237 237;
     --color-text-soft: #b5b5b5;
@@ -31,6 +34,8 @@
     --color-border: #22201b;
     --color-border-rgb: 34 32 27;
     --color-border-strong: #2e2c27;
+    --color-input: #474747;
+    --color-ring: #fcdec0;
     --color-danger: #e55134;
     --color-on-danger: #1c0803;
     --color-success: #10b981;
@@ -68,6 +73,9 @@ body.theme-new-light {
     --color-on-primary: #ffffff;
     --color-accent: #ffdfb3;
     --color-accent-rgb: 255 223 179;
+    --color-secondary: #ffdfb3;
+    --color-secondary-rgb: 255 223 179;
+    --color-on-secondary: #592d1c;
     --color-text: #1f1f1f;
     --color-text-rgb: 31 31 31;
     --color-text-soft: #4a4a4a;
@@ -79,6 +87,8 @@ body.theme-new-light {
     --color-border: #d6d6d6;
     --color-border-rgb: 214 214 214;
     --color-border-strong: #bdbdbd;
+    --color-input: #d6d6d6;
+    --color-ring: #644a40;
     --color-danger: #e55134;
     --color-on-danger: #ffffff;
     --color-success: #16a34a;
@@ -104,6 +114,9 @@ body.theme-new-dark {
     --color-on-primary: #0a191a;
     --color-accent: #ffdfb3;
     --color-accent-rgb: 255 223 179;
+    --color-secondary: #393028;
+    --color-secondary-rgb: 57 48 40;
+    --color-on-secondary: #fcdec0;
     --color-text: #ededed;
     --color-text-rgb: 237 237 237;
     --color-text-soft: #b5b5b5;
@@ -115,6 +128,8 @@ body.theme-new-dark {
     --color-border: #22201b;
     --color-border-rgb: 34 32 27;
     --color-border-strong: #2e2c27;
+    --color-input: #474747;
+    --color-ring: #fcdec0;
     --color-danger: #e55134;
     --color-on-danger: #1c0803;
     --color-success: #10b981;
