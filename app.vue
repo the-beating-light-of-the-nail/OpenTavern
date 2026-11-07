@@ -12,6 +12,17 @@
 // 解决审计发现的全站缺失项：canonical、OG/Twitter、Organization/WebSite JSON-LD
 import { ADS } from '~/utils/ads';
 import { useAdPanel } from '~/composables/useAdPanel';
+import { mergeAiToolkitI18n } from '~/utils/st/regex-script';
+import { mergeToolPagesI18n } from '~/utils/tool-pages-i18n';
+
+// at_* / 复刻工具页文案片段全局合并（首页宫格与 /tools 也会用到卡片文案）
+const i18n = useI18n();
+mergeAiToolkitI18n(i18n);
+mergeToolPagesI18n(i18n);
+watch(() => i18n.locale.value, () => {
+  mergeAiToolkitI18n(i18n);
+  mergeToolPagesI18n(i18n);
+});
 
 // 主题 / 效能模式全局应用（含营销页；system 跟随 prefers-color-scheme）
 const { watch: watchTheme } = useTheme();

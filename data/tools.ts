@@ -89,6 +89,36 @@ export const SITE_TOOLS: SiteTool[] = [
     copy: { tag: 'home_tools_sw_tag', desc: 'home_hub_sw_desc', cta: 'home_tools_sw_cta' },
   },
   {
+    slug: 'style-generator',
+    name: 'Style Generator',
+    to: '/tools/style-generator',
+    copy: { tag: 'home_tools_stg_tag', desc: 'home_tools_stg_desc', cta: 'home_tools_stg_cta' },
+  },
+  {
+    slug: 'card-doctor',
+    name: 'Card Doctor',
+    to: '/tools/doctor',
+    copy: { tag: 'home_tools_doc_tag', desc: 'home_tools_doc_desc', cta: 'home_tools_doc_cta' },
+  },
+  {
+    slug: 'preset-tutor',
+    name: 'Preset Tutor',
+    to: '/tools/student',
+    copy: { tag: 'home_tools_stu_tag', desc: 'home_tools_stu_desc', cta: 'home_tools_stu_cta' },
+  },
+  {
+    slug: 'abstract-content',
+    name: 'Abstract Content',
+    to: '/tools/abstract-content',
+    copy: { tag: 'home_tools_abs_tag', desc: 'home_tools_abs_desc', cta: 'home_tools_abs_cta' },
+  },
+  {
+    slug: 'quick-reply-generator',
+    name: 'Quick Reply Generator',
+    to: '/tools/quick-reply-generator',
+    copy: { tag: 'home_tools_qr_tag', desc: 'home_tools_qr_desc', cta: 'home_tools_qr_cta' },
+  },
+  {
     slug: 'sillytavern-mod',
     name: 'SillyTavernMOD',
     to: '/tools/sillytavern-mod',
@@ -159,6 +189,11 @@ export const HOME_HUB: HubTool[] = [
   { slug: 'preset-lab', name: 'Preset Lab', category: 'craft', status: 'live', to: '/tools/preset-lab', descKey: 'home_hub_pl_desc' },
   { slug: 'ai-toolkit', name: 'AI Toolkit', category: 'craft', status: 'live', to: '/tools/ai-toolkit', descKey: 'home_hub_at_desc' },
   { slug: 'story-to-worldbook', name: 'Story to Worldbook', category: 'craft', status: 'live', to: '/tools/story-to-worldbook', descKey: 'home_hub_sw_desc' },
+  { slug: 'style-generator', name: 'Style Generator', category: 'craft', status: 'live', to: '/tools/style-generator', descKey: 'home_tools_stg_desc' },
+  { slug: 'card-doctor', name: 'Card Doctor', category: 'craft', status: 'live', to: '/tools/doctor', descKey: 'home_tools_doc_desc' },
+  { slug: 'preset-tutor', name: 'Preset Tutor', category: 'craft', status: 'live', to: '/tools/student', descKey: 'home_tools_stu_desc' },
+  { slug: 'abstract-content', name: 'Abstract Content', category: 'craft', status: 'live', to: '/tools/abstract-content', descKey: 'home_tools_abs_desc' },
+  { slug: 'quick-reply-generator', name: 'Quick Reply Generator', category: 'craft', status: 'live', to: '/tools/quick-reply-generator', descKey: 'home_tools_qr_desc' },
   // 本地酒馆
   { slug: 'pure-tavern', name: 'PureTavern', category: 'local', status: 'live', to: '/tools/pure-tavern', license: 'AGPL-3.0', descKey: 'home_tools_pt_desc' },
   { slug: 'sillytavern-mod', name: 'SillyTavernMOD', category: 'local', status: 'live', to: '/tools/sillytavern-mod', license: 'AGPL-3.0', descKey: 'home_tools_stm_desc' },
