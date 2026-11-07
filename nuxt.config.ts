@@ -63,6 +63,9 @@ export default defineNuxtConfig({
     preset: 'vercel',
     prerender: {
       crawlLinks: true,
+      // /app 为纯客户端 SPA，爬虫偶发抓取其 _payload.json 会返回 500；
+      // 该页不索引也不需要 payload，失败不应阻断整体静态构建与部署。
+      failOnError: false,
       routes: ['/sitemap.xml', '/zh-CN/sitemap.xml', '/zh-TW/sitemap.xml', '/es/sitemap.xml', '/ar/sitemap.xml', '/pt/sitemap.xml', '/ru/sitemap.xml', '/fr/sitemap.xml', '/de/sitemap.xml', '/ja/sitemap.xml', '/ko/sitemap.xml', '/it/sitemap.xml', '/nl/sitemap.xml', '/sv/sitemap.xml', '/no/sitemap.xml', '/da/sitemap.xml', '/fi/sitemap.xml', '/pl/sitemap.xml', '/tr/sitemap.xml', '/hi/sitemap.xml', '/id/sitemap.xml', '/vi/sitemap.xml', '/th/sitemap.xml', '/ms/sitemap.xml', '/tl/sitemap.xml'],
     },
   },
