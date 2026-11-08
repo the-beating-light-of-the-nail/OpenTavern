@@ -3,7 +3,7 @@ const { t } = useI18n();
 const localePath = useLocalePath();
 
 useSeoMeta({
-  title: () => t('wfc_title') + ' — Open Tavern',
+  title: () => t('wfc_title') + ' — RoleChat AI',
   description: () => t('wfc_subtitle'),
   ogTitle: () => t('wfc_title'),
   ogDescription: () => t('wfc_subtitle'),
@@ -41,7 +41,7 @@ const individual = [
       <!-- 本站自己的角色库才是首选源：在列出外部资源之前，先把 C 簇「character database / cards」意图收回站内 -->
       <section class="mt-8 rounded-2xl border border-border-warm bg-rose-tint p-6">
         <p class="text-sm leading-relaxed text-plum-muted">{{ t('characters_desc') }}</p>
-        <NuxtLink :to="localePath('/characters')" class="rc-btn-primary mt-4 inline-flex">{{ t('home_cta_explore') }}</NuxtLink>
+        <NuxtLink to="/characters" class="rc-btn-primary mt-4 inline-flex">{{ t('home_cta_explore') }}</NuxtLink>
       </section>
 
       <!-- Quick explanation for beginners -->
@@ -110,7 +110,7 @@ const individual = [
         <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('wfc_cta_body') }}</p>
         <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
           <NuxtLink :to="localePath('/app')" class="rc-btn-primary">{{ t('wfc_open_app') }}</NuxtLink>
-          <NuxtLink :to="localePath('/characters')" class="rc-btn-ghost">{{ t('wfc_browse_characters') }}</NuxtLink>
+          <NuxtLink to="/characters" class="rc-btn-ghost">{{ t('wfc_browse_characters') }}</NuxtLink>
         </div>
       </section>
     </main>

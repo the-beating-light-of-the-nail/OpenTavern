@@ -19,7 +19,8 @@ export type ModalName =
   | 'announce'
   | 'newChatPicker'
   | 'quickNewChat'
-  | 'groupMention';
+  | 'groupMention'
+  | 'authorNote';
 
 export const useUiStore = defineStore('ui', {
   state: () => ({

@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "nuxt dev",
+    "prebuild": "node -e \"const fs=require('fs');for(const p of ['.nuxt','.output','.vercel/output'])fs.rmSync(p,{recursive:true,force:true})\"",
     "build": "nuxt build",
     "generate": "nuxt generate",
     "preview": "nuxt preview",

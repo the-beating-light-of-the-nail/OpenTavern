@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useCharacters, useCollections } from '~/data';
+import { useCharacters } from '~/data';
 import { withAdCards } from '~/utils/ads';
 import { useFavoritesStore } from '~/stores/favorites';
 import type { CharacterSeo, CharacterCategory } from '~/types/seo';
@@ -27,9 +27,16 @@ function catLabel(cat: CharacterCategory | 'All'): string {
   return t(`category_${key}`);
 }
 
-// 数据随当前 locale 响应式切换
-const characters = useCharacters();
-const collections = useCollections();
+// 数据随当前 locale 响应式切换；只展示保留的收录角色，避免 hub 链接到已 410 的详情页
+const KEPT_CHARACTER_SLUGS = new Set([
+  'the-dragon-prince',
+  'the-sharp-tongued-detective',
+  'the-time-traveler',
+  'the-witchs-familiar',
+  'the-protective-bodyguard',
+]);
+const allCharacters = useCharacters();
+const characters = computed(() => allCharacters.value.filter((c) => KEPT_CHARACTER_SLUGS.has(c.slug)));
 
 // 结构化数据：CollectionPage + ItemList（向搜索引擎声明这是一个角色条目目录/数据库，
 // 即簇 C 的核心信号 —— 让 "AI character cards / database" 类查询能命中本页）
@@ -170,20 +177,10 @@ const charGrid = computed(() => withAdCards(filtered.value, (c) => c.slug));
         <p>{{ t('no_characters_match') }}</p>
       </div>
 
-      <!-- Collections -->
-      <section class="mt-14">
-        <h2 class="text-lg font-bold">{{ t('characters_browse_collections') }}</h2>
-        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <NuxtLink v-for="col in collections" :key="col.slug" :to="localePath(`/collections/${col.slug}`)" class="rc-card group block p-5">
-            <h3 class="text-base font-bold group-hover:text-rose-accent">{{ col.title }}</h3>
-            <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-plum-muted">{{ col.intro }}</p>
-            <p class="mt-3 text-xs font-semibold text-rose-accent/70">{{ col.characterSlugs.length }} {{ t('characters_count_suffix') }}</p>
-          </NuxtLink>
-        </div>
-      </section>
+      <!-- Collections 已随路由收敛下线（/collections/* 统一 410） -->
 
       <div class="mt-14 text-center">
-        <NuxtLink :to="localePath('/app')" class="rc-btn-primary">{{ t('characters_start_now') }}</NuxtLink>
+        <NuxtLink to="/opentavern" class="rc-btn-primary">{{ t('characters_start_now') }}</NuxtLink>
       </div>
     </main>
   </WorkbenchShell>

@@ -39,7 +39,7 @@ const guides = useGuides();
       </div>
 
       <div class="mt-12 text-center">
-        <NuxtLink :to="localePath('/characters')" class="rc-btn-primary">{{ t('guides_browse_characters') }}</NuxtLink>
+        <NuxtLink to="/characters" class="rc-btn-primary">{{ t('guides_browse_characters') }}</NuxtLink>
       </div>
     </main>
   </WorkbenchShell>

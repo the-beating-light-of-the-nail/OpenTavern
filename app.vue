@@ -1,10 +1,14 @@
 <template>
-  <NuxtPage />
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
   <CookieConsent />
-  <AdSidebar side="right" ad-id="banner160x600" :src="ADS.banner160x600.html" :width="ADS.banner160x600.width" :height="ADS.banner160x600.height" />
-  <AdSidebar side="left" ad-id="banner160x300" :src="ADS.banner160x300.html" :width="ADS.banner160x300.width" :height="ADS.banner160x300.height" />
-  <AdFooter ad-id="banner300" :src="ADS.banner300.html" :width="ADS.banner300.width" :height="ADS.banner300.height" />
-  <AdPanel />
+  <template v-if="!hideAds">
+    <AdSidebar side="right" ad-id="banner160x600" :src="ADS.banner160x600.html" :width="ADS.banner160x600.width" :height="ADS.banner160x600.height" />
+    <AdSidebar side="left" ad-id="banner160x300" :src="ADS.banner160x300.html" :width="ADS.banner160x300.width" :height="ADS.banner160x300.height" />
+    <AdFooter ad-id="banner300" :src="ADS.banner300.html" :width="ADS.banner300.width" :height="ADS.banner300.height" />
+    <AdPanel />
+  </template>
 </template>
 
 <script setup lang="ts">
@@ -29,13 +33,18 @@ const { watch: watchTheme } = useTheme();
 onMounted(() => watchTheme());
 // SITE_URL / 绝对 URL 统一来自 composables/useSeo.ts（单一来源）
 const canonicalUrl = useCanonicalUrl();
-const hreflangLinks = useHreflang();
 const ogImage = absUrl('/og-default.png');
+const { locale } = useI18n();
+const route = useRoute();
+const isOtApp = computed(() => route.path.startsWith('/opentavern'));
+// 首页工作台是 cardplus 风格的全屏浅色布局，不叠加全站广告位
+const isDashboard = computed(() => route.path === '/' || route.path === '/zh-CN');
+const hideAds = computed(() => isOtApp.value || isDashboard.value);
 
 useHead({
+  htmlAttrs: { lang: computed(() => localeToHtmlLang(locale.value)) },
   link: [
-    { rel: 'canonical', href: canonicalUrl },
-    ...hreflangLinks.value,
+    { rel: 'canonical', key: 'canonical', href: canonicalUrl },
   ],
 });
 
@@ -62,7 +71,7 @@ useSeoMeta({
   ogSiteName: BRAND,
   ogUrl: canonicalUrl,
   ogImage,
-  ogImageAlt: 'Open Tavern · RoleChat AI — Private AI Character Roleplay',
+  ogImageAlt: 'RoleChat AI — private AI character roleplay in your browser',
   twitterCard: 'summary_large_image',
   twitterImage: ogImage,
 });
@@ -86,11 +95,11 @@ useHead({
       innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'Organization',
-        name: 'Open Tavern',
+        name: BRAND,
         alternateName: BRAND_ALTERNATE_NAMES,
         url: absUrl('/'),
         description:
-          'Open Tavern (RoleChat AI) is an easy private AI roleplay platform with original romance and fantasy characters. Bring your own AI key.',
+          'RoleChat AI (also known as Open Tavern) is a private AI roleplay platform with original romance and fantasy characters. Bring your own AI key.',
       }),
     },
   ],
@@ -101,7 +110,7 @@ useHead({
 const { state, load } = useAdPanel();
 useHead(
   computed(() => ({
-    script: state.value.socialBar ? [{ src: ADS.socialBar, async: true, body: true }] : [],
+    script: !hideAds.value && state.value.socialBar ? [{ src: ADS.socialBar, async: true, body: true }] : [],
   })),
 );
 onMounted(() => load());

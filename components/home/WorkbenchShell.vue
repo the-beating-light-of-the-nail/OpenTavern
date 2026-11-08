@@ -29,8 +29,16 @@ const props = withDefaults(
 
 const emit = defineEmits<{ 'update:modelValue': [string] }>();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const localePath = useLocalePath();
+
+/** 只有 en / zh-CN 有本地化 hub；其余保留页统一回根路径，避免指向 410。 */
+const localizedHub = computed(() => locale.value === 'en' || locale.value === 'zh-CN');
+function navTo(path: string) {
+  // 角色 hub 只有英文版
+  if (path === '/characters') return '/characters';
+  return localizedHub.value ? localePath(path) : path;
+}
 
 const categories = computed(() =>
   HUB_CATEGORIES.map((c) => ({
@@ -48,44 +56,20 @@ function onCat(id: string) {
     emit('update:modelValue', id);
     return;
   }
-  if (id === 'all') navigateTo(localePath('/'));
-  else navigateTo({ path: localePath('/'), query: { cat: id }, hash: '#tools-hub' });
+  if (id === 'all') navigateTo(navTo('/'));
+  else navigateTo({ path: navTo('/'), query: { cat: id }, hash: '#tools-hub' });
 }
 
-/* ================= 左栏收缩状态（localStorage 全站共享；窄屏首次访问默认收起） ================= */
-const RAIL_KEY = 'wb_rail_collapsed';
-const railCollapsed = ref(false);
-
-onMounted(() => {
-  let stored: string | null = null;
-  try {
-    stored = localStorage.getItem(RAIL_KEY);
-  } catch {
-    /* 隐私模式下 localStorage 可能不可用，忽略即可 */
-  }
-  // 用户手动选过就尊重其选择；否则 <1024（平板）默认收起，避免 232px 左栏吃掉三分之一屏宽
-  railCollapsed.value = stored !== null ? stored === '1' : window.innerWidth < 1024;
-});
-
-function toggleRail() {
-  railCollapsed.value = !railCollapsed.value;
-  try {
-    localStorage.setItem(RAIL_KEY, railCollapsed.value ? '1' : '0');
-  } catch {
-    /* 同上 */
-  }
-}
-
-/* ================= 极简页脚（原 index.vue 页脚原样迁入，全站统一） ================= */
+/* ================= 极简页脚（路由收敛后只保留白名单链接） ================= */
 const footerLinks = computed(() => [
-  { to: localePath('/tools'), label: t('nav_tools') },
-  { to: localePath('/characters'), label: t('nav_characters') },
-  { to: localePath('/guides'), label: t('nav_guides') },
-  { to: localePath('/about'), label: t('nav_about') },
-  { to: localePath('/contact'), label: t('nav_contact') },
-  { to: localePath('/privacy'), label: t('nav_privacy') },
-  { to: localePath('/terms'), label: t('nav_terms') },
-  { to: localePath('/app'), label: t('nav_open_app') },
+  { to: navTo('/tools'), label: t('nav_tools') },
+  { to: navTo('/characters'), label: t('nav_characters') },
+  { to: navTo('/guides'), label: t('nav_guides') },
+  { to: navTo('/about'), label: t('nav_about') },
+  { to: navTo('/contact'), label: t('nav_contact') },
+  { to: navTo('/privacy'), label: t('nav_privacy') },
+  { to: navTo('/terms'), label: t('nav_terms') },
+  { to: '/opentavern', label: t('nav_open_app') },
 ]);
 </script>
 
@@ -94,27 +78,9 @@ const footerLinks = computed(() => [
     <WorkbenchHeader />
     <SiteAd />
 
-    <!-- 全幅主体：左栏贴死左侧边缘 + 内容列占满其余宽度 -->
+    <!-- 全幅主体：路由收敛后旧分类栏/分类页已下线，只保留内容列 -->
     <div class="wb-body">
-      <!-- 桌面：分类侧栏（≥768px 显示，可收缩成图标条） -->
-      <HubCategoryNav
-        variant="rail"
-        :categories="categories"
-        :model-value="currentCat"
-        :collapsed="railCollapsed"
-        @update:model-value="onCat"
-        @toggle-collapse="toggleRail"
-      />
-
       <main class="wb-content">
-        <!-- 移动端：分类胶囊（<768px 显示） -->
-        <HubCategoryNav
-          variant="pills"
-          :categories="categories"
-          :model-value="currentCat"
-          @update:model-value="onCat"
-        />
-
         <slot />
       </main>
     </div>
@@ -122,14 +88,13 @@ const footerLinks = computed(() => [
     <!-- 极简页脚 -->
     <footer class="wb-footer">
       <div class="wb-footer-inner">
-        <NuxtLink :to="localePath('/')" class="wb-footer-brand">
-          <span class="wb-brand-mark">OT</span>
-          <span>Open Tavern</span>
+        <NuxtLink :to="navTo('/')" class="wb-footer-brand">
+          <span class="wb-brand-mark">RC</span>
+          <span>RoleChat AI</span>
         </NuxtLink>
         <nav class="wb-footer-nav">
           <NuxtLink v-for="l in footerLinks" :key="l.to" :to="l.to">{{ l.label }}</NuxtLink>
-          <NuxtLink :to="localePath('/#how')">{{ t('nav_how_it_works') }}</NuxtLink>
-          <NuxtLink :to="localePath('/#faq')">{{ t('nav_faq') }}</NuxtLink>
+          <NuxtLink to="/#faq">{{ t('nav_faq') }}</NuxtLink>
         </nav>
         <p>{{ t('home_footer_tagline') }}</p>
       </div>

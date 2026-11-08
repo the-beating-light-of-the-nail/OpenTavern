@@ -1,23 +1,22 @@
 // Nuxt configuration — RoleChat AI (Vercel, hybrid SSR/SPA)
 export default defineNuxtConfig({
-  // 混合渲染：营销首页 (/) 与 /characters 预渲染为静态 HTML（SEO）；聊天工具 (/app) 保持 SPA
+  // 混合渲染：新首页、保留的收录页与 /opentavern 预渲染；其余旧路由由 server/middleware/route-guard 返回 410
   ssr: true,
 
-  // 路由级渲染控制：营销页与 SEO 页预渲染为静态 HTML（含动态 [slug] 页），聊天 App 锁回纯客户端 SPA
+  // 路由级渲染控制：只预渲染白名单页面，禁止 crawlLinks 把已下线页面重新带回构建产物
+  // @ts-expect-error 双 @nuxt/schema（hoisted 4.x / nested 3.17.7）导致的 routeRules 幻影类型错误；运行时有效
   routeRules: {
     '/': { prerender: true },
-    '/tools': { prerender: true },
-    '/tools/**': { prerender: true },
-    '/characters': { prerender: true },
-    '/characters/**': { prerender: true },
-    '/collections/**': { prerender: true },
+    '/zh-CN': { prerender: true },
+    '/opentavern': { prerender: true },
     '/guides': { prerender: true },
-    '/guides/**': { prerender: true },
+    '/tools': { prerender: true },
+    '/characters': { prerender: true },
     '/about': { prerender: true },
     '/contact': { prerender: true },
     '/privacy': { prerender: true },
     '/terms': { prerender: true },
-    '/app': { ssr: false, headers: { 'X-Robots-Tag': 'noindex' } },
+    '/where-to-find-character-cards': { prerender: true },
     // 全站安全响应头（审计 Phase 2）；CSP 留待渲染回归测试后再加，避免误伤内联 hydration 脚本
     '/**': {
       headers: {
@@ -31,7 +30,7 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
-  modules: ['@nuxtjs/i18n', '@pinia/nuxt', '@nuxtjs/sitemap'],
+  modules: ['@nuxtjs/i18n', '@pinia/nuxt'],
 
   // 组件按文件名注册（禁用路径前缀）：components/modals/SettingsModal.vue → <SettingsModal />
   // 否则 Nuxt 默认加目录前缀注册为 ModalsSettingsModal，与 <SettingsModal /> 用法不匹配，
@@ -47,6 +46,10 @@ export default defineNuxtConfig({
     '~/assets/css/marketing.css',
     // 首页工作台布局（顶栏 + 分类栏 + 工具卡网格）；仅 pages/index.vue 使用
     '~/assets/css/workbench.css',
+    // /opentavern 应用主题（opentavern.app 浅暖色）
+    '~/assets/css/opentavern.css',
+    // 首页工作台主题（cardplus 风格浅色 Element Plus）
+    '~/assets/css/dashboard.css',
   ],
 
   postcss: {
@@ -56,24 +59,71 @@ export default defineNuxtConfig({
     },
   },
 
-  // Vercel 部署目标（预渲染路由生成静态 HTML，/app SPA 由路由 fallback 处理）
-  // crawlLinks: 从已预渲染页面爬取 <NuxtLink> 自动发现动态 [slug] 路由并一并预渲染
-  // routes 显式列入 /sitemap.xml：@nuxtjs/sitemap 注册的是运行时路由，crawlLinks 不会自动预渲染它
+  // Vercel 部署目标（白名单路由预渲染为静态 HTML）
+  // crawlLinks: false —— 保留页里可能仍有指向旧路由的链接，禁止构建期自动把下线页重新预渲染。
   nitro: {
     preset: 'vercel',
     prerender: {
-      crawlLinks: true,
-      // /app 为纯客户端 SPA，爬虫偶发抓取其 _payload.json 会返回 500；
-      // 该页不索引也不需要 payload，失败不应阻断整体静态构建与部署。
+      crawlLinks: false,
+      // 动态 [slug] 页只预渲染白名单；未列出的旧页不进入产物，由 route-guard 返回 410。
       failOnError: false,
-      routes: ['/sitemap.xml', '/zh-CN/sitemap.xml', '/zh-TW/sitemap.xml', '/es/sitemap.xml', '/ar/sitemap.xml', '/pt/sitemap.xml', '/ru/sitemap.xml', '/fr/sitemap.xml', '/de/sitemap.xml', '/ja/sitemap.xml', '/ko/sitemap.xml', '/it/sitemap.xml', '/nl/sitemap.xml', '/sv/sitemap.xml', '/no/sitemap.xml', '/da/sitemap.xml', '/fi/sitemap.xml', '/pl/sitemap.xml', '/tr/sitemap.xml', '/hi/sitemap.xml', '/id/sitemap.xml', '/vi/sitemap.xml', '/th/sitemap.xml', '/ms/sitemap.xml', '/tl/sitemap.xml'],
+      routes: [
+        '/',
+        '/zh-CN',
+        '/opentavern',
+        '/guides',
+        '/guides/how-to-start-ai-roleplay',
+        '/guides/how-to-get-an-api-key',
+        '/guides/tips-for-better-roleplay',
+        '/guides/how-to-use-openrouter-for-roleplay',
+        '/guides/what-is-a-character-card',
+        '/guides/sillytavern-vs-web-tavern',
+        '/guides/best-ai-roleplay-prompts',
+        '/zh-CN/guides',
+        '/zh-CN/guides/how-to-start-ai-roleplay',
+        '/zh-CN/guides/how-to-get-an-api-key',
+        '/zh-CN/guides/tips-for-better-roleplay',
+        '/zh-CN/guides/how-to-use-openrouter-for-roleplay',
+        '/zh-CN/guides/what-is-a-character-card',
+        '/zh-CN/guides/sillytavern-vs-web-tavern',
+        '/zh-CN/guides/best-ai-roleplay-prompts',
+        '/contact',
+        '/zh-CN/contact',
+        '/about',
+        '/zh-CN/about',
+        '/privacy',
+        '/zh-CN/privacy',
+        '/terms',
+        '/zh-CN/terms',
+        '/where-to-find-character-cards',
+        '/zh-CN/where-to-find-character-cards',
+        '/characters',
+        '/characters/the-dragon-prince',
+        '/ja/characters/the-sharp-tongued-detective',
+        '/da/characters/the-time-traveler',
+        '/no/characters/the-witchs-familiar',
+        '/ar/characters/the-protective-bodyguard',
+        '/tools',
+        '/zh-CN/tools',
+        '/tools/card-studio',
+        '/tools/worldbook-forge',
+        '/tools/preset-lab',
+        '/tools/card-converter',
+        '/tools/pure-tavern',
+        '/zh-CN/tools/card-studio',
+        '/zh-CN/tools/worldbook-forge',
+        '/zh-CN/tools/preset-lab',
+        '/zh-CN/tools/card-converter',
+        '/da/tools/pure-tavern',
+        '/pt/tools/card-studio',
+      ],
     },
   },
 
   app: {
     head: {
       htmlAttrs: { lang: 'en' },
-      title: 'Open Tavern · RoleChat AI — Private AI Character Roleplay',
+      title: 'RoleChat AI — Private AI Character Roleplay',
       meta: [
         { charset: 'UTF-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1.0, viewport-fit=cover' },
@@ -82,7 +132,7 @@ export default defineNuxtConfig({
         {
           name: 'description',
           content:
-            'Open Tavern (also known as RoleChat AI) is an easy private AI roleplay platform. Chat with original romance and fantasy characters in seconds. No installation. No complicated setup. Bring your own AI key.',
+            'RoleChat AI (also known as Open Tavern) is an easy private AI roleplay platform. Chat with original romance and fantasy characters in seconds. No installation. No complicated setup. Bring your own AI key.',
         },
       ],
       link: [
@@ -128,65 +178,34 @@ export default defineNuxtConfig({
     defaultLocale: 'en',
     langDir: 'locales',
     lazy: true,
-    detectBrowserLanguage: {
-      useCookie: true,
-      cookieKey: 'rolechat_locale',
-      alwaysRedirect: true,
-      fallbackLocale: 'en',
-    },
+    // 关闭浏览器语言自动跳转：Googlebot 抓取 / 时必须稳定拿到英文首页，
+    // 中文首页固定由 /zh-CN/ 承载（canonical + hreflang 由首页自行声明）。
+    detectBrowserLanguage: false,
     bundle: { optimizeTranslationDirective: false },
     compilation: { strictMessage: false, escapeHtml: false },
+    // 只保留有收录页的语言 + 应用 UI 需要的 zh-TW（简/繁/EN 三语切换）
     locales: [
       { code: 'en', language: 'en-US', name: 'English', file: 'en.json' },
       { code: 'zh-CN', language: 'zh-CN', name: '简体中文', file: 'zh-CN.json' },
       { code: 'zh-TW', language: 'zh-TW', name: '繁體中文', file: 'zh-TW.json' },
-      { code: 'es', language: 'es-ES', name: 'Español', file: 'es.json' },
       { code: 'ar', language: 'ar-SA', name: 'العربية', file: 'ar.json' },
       { code: 'pt', language: 'pt-PT', name: 'Português', file: 'pt.json' },
-      { code: 'ru', language: 'ru-RU', name: 'Русский', file: 'ru.json' },
       { code: 'fr', language: 'fr-FR', name: 'Français', file: 'fr.json' },
-      { code: 'de', language: 'de-DE', name: 'Deutsch', file: 'de.json' },
       { code: 'ja', language: 'ja-JP', name: '日本語', file: 'ja.json' },
-      { code: 'ko', language: 'ko-KR', name: '한국어', file: 'ko.json' },
-      { code: 'it', language: 'it-IT', name: 'Italiano', file: 'it.json' },
-      { code: 'nl', language: 'nl-NL', name: 'Nederlands', file: 'nl.json' },
-      { code: 'sv', language: 'sv-SE', name: 'Svenska', file: 'sv.json' },
       { code: 'no', language: 'nb-NO', name: 'Norsk', file: 'no.json' },
       { code: 'da', language: 'da-DK', name: 'Dansk', file: 'da.json' },
-      { code: 'fi', language: 'fi-FI', name: 'Suomi', file: 'fi.json' },
-      { code: 'pl', language: 'pl-PL', name: 'Polski', file: 'pl.json' },
-      { code: 'tr', language: 'tr-TR', name: 'Türkçe', file: 'tr.json' },
-      { code: 'hi', language: 'hi-IN', name: 'हिन्दी', file: 'hi.json' },
-      { code: 'id', language: 'id-ID', name: 'Bahasa Indonesia', file: 'id.json' },
-      { code: 'vi', language: 'vi-VN', name: 'Tiếng Việt', file: 'vi.json' },
-      { code: 'th', language: 'th-TH', name: 'ไทย', file: 'th.json' },
-      { code: 'ms', language: 'ms-MY', name: 'Bahasa Melayu', file: 'ms.json' },
-      { code: 'tl', language: 'tl-PH', name: 'Filipino', file: 'tl.json' },
     ],
     customRoutes: 'config',
     pages: {},
   },
 
-  // 站点 URL — sitemap.xml 生成 <loc> 绝对路径所需
+  // 站点 URL — 绝对 URL / canonical / schema 的单一来源
   site: {
     url: 'https://www.rolechatai.com',
   },
 
-  sitemap: {
-    // /app 是纯客户端 SPA，不索引；其余预渲染路由由模块从 nitro prerender 自动发现
-    exclude: ['/app/**', '/app', '/zh-CN/app', '/zh-TW/app', '/es/app', '/ar/app', '/pt/app', '/ru/app', '/fr/app', '/de/app', '/ja/app', '/ko/app', '/it/app', '/nl/app', '/sv/app', '/no/app', '/da/app', '/fi/app', '/pl/app', '/tr/app', '/hi/app', '/id/app', '/vi/app', '/th/app', '/ms/app', '/tl/app'],
-    // 与 i18n 集成：自动生成 <xhtml:link rel="alternate" hreflang="..."> 备选语言链接
-    // （注：@nuxtjs/sitemap v8 的 ModuleOptions 类型无 i18n 手动选项——此键为历史遗留，
-    //   运行时被忽略、hreflang 由模块自动探测 @nuxtjs/i18n 生成；类型报错为预存问题，勿删，
-    //   删除会暴露本仓库双 @nuxt/schema（hoisted 4.x / nested 3.17.7）导致的 routeRules 幻影错误）
-    autoLastmod: true,
-    i18n: true,
-    // 关闭 sitemap 运行时缓存：模块默认用 Nitro defineCachedFunction(swr + 600s) 在生产环境
-    // 缓存 sitemap，命中即写入 Vercel Data Cache（Vercel 计费口径 = "ISR Writes"）。
-    // 26 语言 × 多个 sitemap 端点 × 爬虫反复抓取 → ISR Writes 配额被快速耗尽。
-    // 设 0 后运行时不再写缓存；sitemap 仍由 prerender 输出为静态 XML，经 CDN 提供，SEO 不受影响。
-    cacheMaxAgeSeconds: 0,
-  },
+  // sitemap 改为 public/sitemap.xml 静态白名单：只提交新首页 + 保留的收录页，
+  // 不再让模块从预渲染路由自动生成，避免把已下线页面重新带回 sitemap。
 
   compatibilityDate: '2024-11-01',
 });

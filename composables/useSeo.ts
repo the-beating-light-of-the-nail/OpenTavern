@@ -2,12 +2,11 @@
 // SITE_URL 与 nuxt.config 的 site.url 保持一致；换域名时只改这里 + nuxt.config
 
 export const SITE_URL = 'https://www.rolechatai.com';
-// 全部支持的 locale —— hreflang 必须覆盖所有语言，否则非中英文 locale 的 alternate 链断裂
-export const LOCALES = ['en', 'zh-CN', 'zh-TW', 'es', 'ar', 'pt', 'ru', 'fr', 'de', 'ja', 'ko', 'it', 'nl', 'sv', 'no', 'da', 'fi', 'pl', 'tr', 'hi', 'id', 'vi', 'th', 'ms', 'tl'] as const;
+// 收縮后仍保留独立页面的语言。hreflang 不再全站批量输出，只在首页声明 en + zh-CN + x-default。
+export const LOCALES = ['en', 'zh-CN', 'zh-TW', 'ar', 'pt', 'fr', 'ja', 'no', 'da'] as const;
 
-// 站点品牌规范名（与 nuxt.config 的 title / og:site_name 保持一致；换名时只改这里 + nuxt.config）
-// 两个品牌名都是自有品牌：Open Tavern 与 RoleChat AI。
-export const BRAND = 'Open Tavern · RoleChat AI';
+// 站点品牌规范名：RoleChat AI 为主品牌；Open Tavern 作为 /opentavern 承接页与 alternateName。
+export const BRAND = 'RoleChat AI';
 
 // 品牌 alternateName 列表 —— 注入 WebSite/Organization 结构化数据的 alternateName（数组）。
 // 仅放"规范别名 + 高频拼写变体"，用于品牌防守（簇 A）：本项目是开源 fork、竞品众多，
@@ -25,6 +24,22 @@ export const BRAND_ALTERNATE_NAMES = [
 export function absUrl(path = ''): string {
   const p = path || '/';
   return `${SITE_URL}${p.startsWith('/') ? p : `/${p}`}`;
+}
+
+/** i18n locale → <html lang> 值（修掉中文页仍输出 lang="en" 的问题） */
+export function localeToHtmlLang(locale: string): string {
+  const map: Record<string, string> = {
+    en: 'en',
+    'zh-CN': 'zh-CN',
+    'zh-TW': 'zh-TW',
+    ar: 'ar',
+    pt: 'pt',
+    fr: 'fr',
+    ja: 'ja',
+    no: 'nb',
+    da: 'da',
+  };
+  return map[locale] || 'en';
 }
 
 /** 当前路由的规范绝对 URL（去掉 query，避免 ?utm_source= 等参数产生重复页） */

@@ -35,8 +35,8 @@ const jsonLd = computed(() => [
       inLanguage: $i18n.locale.value,
       datePublished: g.value.datePublished,
       dateModified: g.value.datePublished,
-      author: { '@type': 'Organization', name: 'Open Tavern' },
-      publisher: { '@type': 'Organization', name: 'Open Tavern' },
+      author: { '@type': 'Organization', name: 'RoleChat AI' },
+      publisher: { '@type': 'Organization', name: 'RoleChat AI' },
     }),
   },
   {

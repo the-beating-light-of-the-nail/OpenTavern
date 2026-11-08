@@ -91,6 +91,9 @@ export function useChat() {
     const userDesc = (store.settings.userDescription || '').trim();
     if (userDesc) parts.push("User's Persona: " + replacePlaceholders(userDesc, 'Assistant', userName));
 
+    const groupAuthorNote = String(c?.authorNote || '').trim();
+    if (groupAuthorNote) parts.push("Author's Note: " + replacePlaceholders(groupAuthorNote, charName, userName));
+
     parts.push(groupInstructionFor(lang));
 
     if (c.group?.scenarioOverride && String(c.group.scenarioOverride).trim()) {
@@ -145,6 +148,9 @@ export function useChat() {
 
     const userDesc = (store.settings.userDescription || '').trim();
     if (userDesc) parts.push("User's Persona: " + replacePlaceholders(userDesc, charName, userName));
+
+    const authorNote = String((conv.value as any)?.authorNote || '').trim();
+    if (authorNote) parts.push("Author's Note: " + replacePlaceholders(authorNote, charName, userName));
 
     const postHistory = (store.settings.postHistoryInstructions || '').trim() || (char?.post_history_instructions || '');
     if (postHistory) parts.push(replacePlaceholders(postHistory, charName, userName));

@@ -64,7 +64,7 @@ const faqs = computed(() =>
   <WorkbenchShell active-cat="local">
 
     <main class="mx-auto max-w-5xl px-5 py-12">
-      <NuxtLink :to="localePath('/tools')" class="rc-nav-link mb-6 inline-flex">← {{ t('pt_back_tools') }}</NuxtLink>
+      <NuxtLink to="/tools" class="rc-nav-link mb-6 inline-flex">← {{ t('pt_back_tools') }}</NuxtLink>
 
       <!-- Hero -->
       <section class="rc-hero-bg rounded-2xl border border-border-warm px-6 py-14 text-center sm:px-10">
@@ -187,7 +187,7 @@ const faqs = computed(() =>
         <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('pt_cta_body') }}</p>
         <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
           <NuxtLink :to="localePath('/app')" class="rc-btn-primary">{{ t('home_cta_start') }}</NuxtLink>
-          <NuxtLink :to="localePath('/characters')" class="rc-btn-ghost">{{ t('home_cta_explore') }}</NuxtLink>
+          <NuxtLink to="/characters" class="rc-btn-ghost">{{ t('home_cta_explore') }}</NuxtLink>
         </div>
       </section>
     </main>

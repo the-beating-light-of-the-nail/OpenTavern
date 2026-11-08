@@ -4,7 +4,7 @@ const { t } = useI18n();
 const localePath = useLocalePath();
 const { $i18n } = useNuxtApp();
 
-const seoTitle = computed(() => t('contact_title') + ' · ' + 'Open Tavern · RoleChat AI');
+const seoTitle = computed(() => t('contact_title') + ' · ' + 'RoleChat AI');
 const seoDesc = computed(() => t('contact_subtitle'));
 
 useSeoMeta({
@@ -25,7 +25,7 @@ const jsonLd = computed(() => [
       inLanguage: $i18n.locale.value,
       mainEntity: {
         '@type': 'Organization',
-        name: 'Open Tavern',
+        name: 'RoleChat AI',
         email: `mailto:${SUPPORT_EMAIL}`,
         url: absUrl('/'),
       },

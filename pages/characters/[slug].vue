@@ -55,10 +55,17 @@ const jsonLd = computed(() => [
 ]);
 useHead({ script: jsonLd });
 
+const KEPT_RELATED_SLUGS = new Set([
+  'the-dragon-prince',
+  'the-sharp-tongued-detective',
+  'the-time-traveler',
+  'the-witchs-familiar',
+  'the-protective-bodyguard',
+]);
 const related = computed(() =>
   c.value.relatedSlugs
     .map((s) => getCharacterBySlug(s, $i18n.locale.value))
-    .filter((x): x is NonNullable<typeof x> => !!x),
+    .filter((x): x is NonNullable<typeof x> => !!x && KEPT_RELATED_SLUGS.has(x.slug)),
 );
 
 // 展示标签：tags + personalityTags 去重，并剔除与 category 同名的标签（分类徽标单独渲染）
@@ -125,7 +132,7 @@ function downloadCard() {
       post_history_instructions: '',
       alternate_greetings: [],
       tags: [...ch.tags, ...ch.personalityTags],
-      creator: 'Open Tavern',
+      creator: 'RoleChat AI',
       character_version: '1.0',
       extensions: {},
     },
@@ -138,7 +145,7 @@ function downloadCard() {
   <WorkbenchShell active-cat="play">
 
     <main class="mx-auto max-w-3xl px-5 py-12">
-      <NuxtLink :to="localePath('/characters')" class="rc-nav-link mb-6 inline-flex">{{ t('char_all_characters') }}</NuxtLink>
+      <NuxtLink to="/characters" class="rc-nav-link mb-6 inline-flex">{{ t('char_all_characters') }}</NuxtLink>
 
       <!-- Character header -->
       <div class="flex items-center gap-4">
@@ -162,7 +169,7 @@ function downloadCard() {
       <div class="mt-8 flex flex-wrap gap-3">
         <NuxtLink :to="localePath(`/app?character=${c.slug}`)" class="rc-btn-primary">{{ t('char_start_private_chat') }}</NuxtLink>
         <button type="button" class="rc-btn-ghost" :title="t('char_download_card_note')" @click="downloadCard">⬇ {{ t('char_download_card') }}</button>
-        <NuxtLink :to="localePath('/characters')" class="rc-btn-ghost">{{ t('char_browse_others') }}</NuxtLink>
+        <NuxtLink to="/characters" class="rc-btn-ghost">{{ t('char_browse_others') }}</NuxtLink>
       </div>
       <p class="mt-2 text-xs text-plum-faint">{{ t('char_download_card_note') }}</p>
 
@@ -223,7 +230,7 @@ function downloadCard() {
       <section v-if="related.length" class="mt-10">
         <h2 class="font-display text-lg font-semibold tracking-wide">{{ t('char_related') }}</h2>
         <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <NuxtLink v-for="r in related" :key="r.slug" :to="localePath(`/characters/${r.slug}`)" class="rc-card group flex items-center gap-3 p-4">
+          <NuxtLink v-for="r in related" :key="r.slug" :to="`/characters/${r.slug}`" class="rc-card group flex items-center gap-3 p-4">
             <CharAvatar :avatar="r.avatar" :initial="r.initial" size="sm" />
             <div class="min-w-0">
               <p class="truncate text-sm font-bold group-hover:text-rose-accent">{{ r.name }}</p>

@@ -102,6 +102,7 @@ function onSelectMyCard(cardVm: CardVM) {
             </button>
             <h2 class="text-lg font-bold">{{ t('library_title') }}</h2>
           </div>
+          <OtHomeButton />
         </div>
       <!-- Tabs -->
       <div class="mt-3 flex gap-1 border-b border-[var(--color-border)]">

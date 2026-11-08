@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { SITE_TOOLS, LOCAL_TAVERNS } from '~/data/tools';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const localePath = useLocalePath();
 
 useSeoMeta({
@@ -26,6 +26,17 @@ useHead({
 });
 
 const picks = computed(() => [t('tools_pick_1'), t('tools_pick_2'), t('tools_pick_3'), t('tools_pick_4')]);
+
+// 路由收敛后只展示仍保留的站内工具，避免 hub 链接到已 410 的工具页
+const KEPT_TOOL_SLUGS = new Set(['card-studio', 'worldbook-forge', 'preset-lab', 'card-converter', 'pure-tavern']);
+const keptTools = computed(() =>
+  SITE_TOOLS.filter((tool) => {
+    if (!KEPT_TOOL_SLUGS.has(tool.slug)) return false;
+    // /zh-CN/tools/pure-tavern 未保留；中文 hub 不展示，避免死链
+    if (locale.value === 'zh-CN' && tool.slug === 'pure-tavern') return false;
+    return true;
+  }),
+);
 </script>
 
 <template>
@@ -52,7 +63,7 @@ const picks = computed(() => [t('tools_pick_1'), t('tools_pick_2'), t('tools_pic
       </div>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <NuxtLink
-          v-for="tool in SITE_TOOLS"
+          v-for="tool in keptTools"
           :key="tool.slug"
           :to="localePath(tool.to)"
           class="rc-card group flex flex-col p-6"
@@ -127,7 +138,7 @@ const picks = computed(() => [t('tools_pick_1'), t('tools_pick_2'), t('tools_pic
         <p class="mx-auto mt-3 max-w-xl text-plum-muted">{{ t('tools_cta_body') }}</p>
         <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
           <NuxtLink :to="localePath('/app')" class="rc-btn-primary">{{ t('home_cta_start') }}</NuxtLink>
-          <NuxtLink :to="localePath('/characters')" class="rc-btn-ghost">{{ t('home_cta_explore') }}</NuxtLink>
+          <NuxtLink to="/characters" class="rc-btn-ghost">{{ t('home_cta_explore') }}</NuxtLink>
         </div>
       </div>
     </section>

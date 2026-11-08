@@ -33,6 +33,16 @@ const displayTags = computed(() => {
 
 const isSeo = computed(() => props.mode === 'seo');
 const isApp = computed(() => props.mode === 'app');
+
+// 路由收敛后只保留 5 个角色详情页；其余卡片不展示 profile 链接（仍可 Start Chat）
+const KEPT_CHARACTER_SLUGS = new Set([
+  'the-dragon-prince',
+  'the-sharp-tongued-detective',
+  'the-time-traveler',
+  'the-witchs-familiar',
+  'the-protective-bodyguard',
+]);
+const canShowProfile = computed(() => props.showProfileButton && KEPT_CHARACTER_SLUGS.has(props.c.slug));
 </script>
 
 <template>
@@ -63,7 +73,7 @@ const isApp = computed(() => props.mode === 'app');
         <span v-if="displayTags.extra" class="rc-tag opacity-70">{{ displayTags.extra }}</span>
       </div>
       <div v-if="showProfileButton || showStartButton" class="mt-4 flex gap-2">
-        <NuxtLink v-if="showProfileButton" :to="localePath(`/characters/${c.slug}`)" class="rc-btn-ghost rc-btn-compact flex-1">
+        <NuxtLink v-if="canShowProfile" :to="`/characters/${c.slug}`" class="rc-btn-ghost rc-btn-compact flex-1">
           {{ t('view_profile') }}
         </NuxtLink>
         <NuxtLink v-if="showStartButton" :to="localePath(`/app?character=${c.slug}`)" class="rc-btn-primary rc-btn-compact flex-1">
@@ -91,7 +101,7 @@ const isApp = computed(() => props.mode === 'app');
         <span v-if="displayTags.extra" class="char-tag opacity-70">{{ displayTags.extra }}</span>
       </div>
       <div v-if="showProfileButton || showStartButton" class="mt-4 flex gap-2">
-        <NuxtLink v-if="showProfileButton" :to="localePath(`/characters/${c.slug}`)" class="ui-button-ghost ui-button-sm flex-1">
+        <NuxtLink v-if="canShowProfile" :to="`/characters/${c.slug}`" class="ui-button-ghost ui-button-sm flex-1">
           {{ t('view_profile') }}
         </NuxtLink>
         <NuxtLink v-if="showStartButton" :to="localePath(`/app?character=${c.slug}`)" class="ui-button-primary ui-button-sm flex-1">

@@ -8,8 +8,10 @@ import { nextTick } from 'vue';
 
 const store = useAppStore();
 const ui = useUiStore();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const localePath = useLocalePath();
+const isOtApp = computed(() => useRoute().path.startsWith('/opentavern'));
+const appMark = computed(() => (isOtApp.value ? 'OT' : 'RC'));
 const { sendMessage, stopGeneration, regenerate, isGenerating, streamingContent, streamingCot } = useChat();
 const groupMention = useGroupMention();
 const comfy = useComfy();
@@ -50,6 +52,16 @@ const currentSlug = computed(() => {
   const id = conv.value?.characterId;
   return id?.startsWith('seo-') ? id.slice(4) : null;
 });
+
+/** 只给仍保留的收录角色页展示 profile 链接，避免跳到已 410 的角色页 */
+const KEPT_CHARACTER_SLUGS = new Set([
+  'the-dragon-prince',
+  'the-sharp-tongued-detective',
+  'the-time-traveler',
+  'the-witchs-familiar',
+  'the-protective-bodyguard',
+]);
+const showProfileLink = computed(() => !!currentSlug.value && KEPT_CHARACTER_SLUGS.has(currentSlug.value));
 
 function openMenu() { store.sidebarOpen = true; }
 function backToLibrary() { store.currentView = 'library'; }
@@ -119,7 +131,7 @@ function onComfyGenerate() {
         </div>
       </div>
       <div class="flex items-center gap-2 flex-shrink-0 topbar-actions">
-        <NuxtLink v-if="currentSlug" :to="localePath(`/characters/${currentSlug}`)" class="ui-button ui-button-sm" :title="t('profile')">
+        <NuxtLink v-if="showProfileLink" :to="`/characters/${currentSlug}`" class="ui-button ui-button-sm" :title="t('profile')">
           <span class="hidden sm:inline">{{ t('profile') }}</span>
           <span class="sm:hidden text-[10px] font-semibold uppercase leading-none">{{ t('profile_short') }}</span>
         </NuxtLink>
@@ -129,6 +141,7 @@ function onComfyGenerate() {
         </button>
         <button id="topConnectBtn" class="ui-button ui-button-icon-sm text-[10px] font-bold" :title="t('connect_your_ai')" @click="ui.open('settings')">{{ t('ai_short') }}</button>
         <button id="topClearChatBtn" v-if="hasActiveConv" class="ui-button ui-button-icon-sm text-[10px]" :title="t('clear_chat')" @click="confirmClear">{{ t('clear_short') }}</button>
+        <OtHomeButton v-if="isOtApp" />
 
       </div>
     </div>
@@ -136,8 +149,10 @@ function onComfyGenerate() {
     <!-- Messages -->
     <div id="messagesContainer" ref="messagesContainer" class="flex-1 overflow-y-auto px-4 py-4 space-y-4" style="background:var(--color-bg)">
       <div v-if="!messages.length && !streamingContent" id="emptyState" class="flex flex-col items-center justify-center h-full text-center">
-        <div class="w-20 h-20 rounded-3xl ui-panel flex items-center justify-center text-3xl mb-4">RC</div>
-        <p class="text-sm font-medium mb-1" style="color:var(--color-text-muted)">{{ t('welcome_title') }}</p>
+        <div class="w-20 h-20 rounded-3xl ui-panel flex items-center justify-center text-3xl mb-4">{{ appMark }}</div>
+        <p class="text-sm font-medium mb-1" style="color:var(--color-text-muted)">
+          {{ isOtApp ? (locale === 'zh-CN' || locale === 'zh-TW' ? '欢迎使用 OpenTavern' : 'Welcome to OpenTavern') : t('welcome_title') }}
+        </p>
         <p class="text-xs max-w-xs" style="color:var(--color-text-faint)">{{ t('welcome_hint') }}</p>
       </div>
       <MessageBubble

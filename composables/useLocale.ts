@@ -12,7 +12,7 @@ import { useAppStore } from '~/stores/app';
  * 生产构建表现为 SyntaxError: 26。改用 useNuxtApp().$i18n，插件与 setup 两种上下文均可用，
  * 且 $i18n.setLocale 是 @nuxtjs/i18n 扩展过的异步方法（处理 lazy locale 加载）。
  */
-const SUPPORTED = ['en', 'zh-CN', 'zh-TW', 'es', 'ar', 'pt', 'ru', 'fr', 'de', 'ja', 'ko', 'it', 'nl', 'sv', 'no', 'da', 'fi', 'pl', 'tr', 'hi', 'id', 'vi', 'th', 'ms', 'tl'] as const;
+const SUPPORTED = ['en', 'zh-CN', 'zh-TW', 'ar', 'pt', 'fr', 'ja', 'no', 'da'] as const;
 type SupportedLang = (typeof SUPPORTED)[number];
 
 function isSupported(lang: string | undefined | null): lang is SupportedLang {
@@ -31,28 +31,13 @@ function mapBrowserLang(raw: string): SupportedLang {
     // 其他中文（含简体、新加坡、通用 zh）→ zh-CN
     return 'zh-CN';
   }
-  if (lang.startsWith('es')) return 'es';
   if (lang.startsWith('ar')) return 'ar';
   if (lang.startsWith('pt')) return 'pt';
-  if (lang.startsWith('ru')) return 'ru';
   if (lang.startsWith('fr')) return 'fr';
-  if (lang.startsWith('de')) return 'de';
   if (lang.startsWith('ja')) return 'ja';
-  if (lang.startsWith('ko')) return 'ko';
-  if (lang.startsWith('it')) return 'it';
-  if (lang.startsWith('nl')) return 'nl';
-  if (lang.startsWith('sv')) return 'sv';
   if (lang.startsWith('nb') || lang.startsWith('no')) return 'no';
   if (lang.startsWith('da')) return 'da';
-  if (lang.startsWith('fi')) return 'fi';
-  if (lang.startsWith('pl')) return 'pl';
-  if (lang.startsWith('tr')) return 'tr';
-  if (lang.startsWith('hi')) return 'hi';
-  if (lang.startsWith('id')) return 'id';
-  if (lang.startsWith('vi')) return 'vi';
-  if (lang.startsWith('th')) return 'th';
-  if (lang.startsWith('ms')) return 'ms';
-  if (lang.startsWith('tl') || lang.startsWith('fil')) return 'tl';
+  // 已下线的语言统一回英文
   return 'en';
 }
 
@@ -84,6 +69,14 @@ export function useLocale() {
     store.persist(true);
     if (typeof document !== 'undefined') {
       document.documentElement.lang = lang;
+    }
+    // /opentavern 固定在根路径：只切 UI 语言，不能让 $i18n.setLocale 加 locale 前缀（会 410）
+    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/opentavern')) {
+      try {
+        await ($i18n as any).loadLocaleMessages?.(lang);
+      } catch { /* 语言包加载失败时保持当前语言 */ }
+      $i18n.locale.value = lang;
+      return;
     }
     if ($i18n.locale.value !== lang) {
       await $i18n.setLocale(lang);

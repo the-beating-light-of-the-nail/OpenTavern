@@ -1,0 +1,205 @@
+/* /opentavern — OpenTavern 浅暖色应用主题（从 opentavern.app 计算样式提取） */
+.ot-app {
+  --color-bg: #f5f2ed;
+  --color-bg-rgb: 245 242 237;
+  --color-surface: #ffffff;
+  --color-surface-rgb: 255 255 255;
+  --color-surface-soft: #e8e2d8;
+  --color-surface-soft-rgb: 232 226 216;
+  --color-primary: #d87557;
+  --color-primary-rgb: 216 117 87;
+  --color-primary-hover: #c46b50;
+  --color-primary-hover-rgb: 196 107 80;
+  --color-on-primary: #ffffff;
+  --color-accent: #d87557;
+  --color-accent-rgb: 216 117 87;
+  --color-secondary: #e8e2d8;
+  --color-secondary-rgb: 232 226 216;
+  --color-on-secondary: #3c3c3c;
+  --color-text: #3c3c3c;
+  --color-text-rgb: 60 60 60;
+  --color-text-soft: #5a534c;
+  --color-text-soft-rgb: 90 83 76;
+  --color-text-muted: #8e8e8e;
+  --color-text-muted-rgb: 142 142 142;
+  --color-text-faint: #a1a1aa;
+  --color-text-faint-rgb: 161 161 170;
+  --color-border: #d1c9bc;
+  --color-border-rgb: 209 201 188;
+  --color-border-strong: #c4b9a8;
+  --color-input: #ffffff;
+  --color-ring: #d87557;
+  --color-accent-surface: #f0ece4;
+  --color-sidebar: #e8e2d8;
+  --color-sidebar-soft: #f0ece4;
+  --color-sidebar-text: #3c3c3c;
+  --color-sidebar-border: #d1c9bc;
+  --color-sidebar-ring: #b5a99a;
+  --color-danger: #e55134;
+  --color-on-danger: #ffffff;
+  --color-success: #16a34a;
+  --color-on-success: #ffffff;
+  --color-info: #2563eb;
+  --color-lavender: #a08cd0;
+  --color-lavender-rgb: 160 140 208;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --shadow-card: 0 8px 28px rgba(60, 45, 35, 0.12);
+  --shadow-focus: 0 0 0 3px rgba(216, 117, 87, 0.24);
+  --blur-intensity: 0px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: "SF Pro Display", "SF Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+.ot-app .ot-sidebar {
+  width: 270px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: #e8e2d8;
+  border-right: 1px solid #d1c9bc;
+}
+
+.ot-app .ot-panel {
+  background: #ffffff;
+  border: 1px solid #d1c9bc;
+  border-radius: 12px;
+}
+
+.ot-app .ot-chip {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid #d1c9bc;
+  color: #5a534c;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.ot-app .ot-chip:hover {
+  background: #ffffff;
+  color: #c46b50;
+  border-color: #c4b9a8;
+}
+
+.ot-app .ot-chip.is-active {
+  background: #d87557;
+  border-color: #d87557;
+  color: #ffffff;
+}
+
+.ot-app .ot-logo {
+  background: linear-gradient(135deg, #f59e0b, #f43f5e);
+  color: #ffffff;
+}
+
+.ot-app .ui-topbar {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: #d1c9bc;
+  backdrop-filter: blur(12px);
+}
+
+.ot-app .ui-panel {
+  background: #ffffff;
+  border-color: #d1c9bc;
+}
+
+.ot-app .ui-button {
+  background: #ffffff;
+  border-color: #d1c9bc;
+  color: #3c3c3c;
+}
+
+.ot-app .ui-button:hover {
+  background: #f0ece4;
+  border-color: #c4b9a8;
+  color: #3c3c3c;
+}
+
+.ot-app .ui-button-primary {
+  background: #d87557;
+  border-color: #d87557;
+  color: #ffffff;
+}
+
+.ot-app .ui-button-primary:hover {
+  background: #c46b50;
+  border-color: #c46b50;
+}
+
+.ot-app .ui-input,
+.ot-app .ui-input-chat {
+  background: #ffffff;
+  border-color: #d1c9bc;
+  color: #3c3c3c;
+}
+
+.ot-app .ui-input::placeholder,
+.ot-app .ui-input-chat::placeholder {
+  color: #a1a1aa;
+}
+
+.ot-app .msg-user .msg-bubble {
+  background: #e8e2d8;
+  border-color: #d1c9bc;
+  color: #3c3c3c;
+}
+
+.ot-app .msg-assistant .msg-bubble {
+  background: #ffffff;
+  border-color: #e4dcd0;
+  color: #3c3c3c;
+}
+
+.ot-app .msg-bubble {
+  white-space: pre-wrap;
+}
+
+.ot-app .conv-item {
+  color: #5a534c;
+}
+
+.ot-app .conv-item:hover {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.ot-app .conv-item.active {
+  background: rgba(216, 117, 87, 0.12);
+  color: #3c3c3c;
+}
+
+.ot-app .tab-btn.active {
+  color: #d87557;
+  border-color: #d87557;
+}
+
+.ot-app .rc-tag,
+.ot-app .ui-chip {
+  background: #ffffff;
+  border-color: #d1c9bc;
+  color: #5a534c;
+}
+
+.ot-app .ui-chip.active {
+  background: #d87557;
+  border-color: #d87557;
+  color: #ffffff;
+}
+
+.ot-app .hamburger-btn {
+  color: #5a534c;
+}
+
+@media (max-width: 767px) {
+  .ot-app .ot-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 60;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+  }
+
+  .ot-app .ot-sidebar.is-open {
+    transform: translateX(0);
+  }
+}
