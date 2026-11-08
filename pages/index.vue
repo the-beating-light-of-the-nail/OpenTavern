@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { useCharacters, useGuides } from '~/data';
+import { useCharacters, useGuides, KEPT_CHARACTER_SLUGS } from '~/data';
+import { HOME_CONTENT } from '~/data/homepage';
 
 definePageMeta({ layout: 'dashboard' });
 
@@ -14,11 +15,15 @@ function toggleLocale() {
   setLocale(isZh.value ? 'en' : 'zh-CN');
 }
 
-const characters = useCharacters();
+// 六板块内容（zh-CN / en 双语，见 data/homepage.ts；其余 locale 回退 en）
+const content = computed(() => (isZh.value ? HOME_CONTENT['zh-CN'] : HOME_CONTENT.en));
+
+const allCharacters = useCharacters();
 const guides = useGuides();
+// 只展示收录白名单内的角色，与 /characters 列表页一致（避免链到 410 详情页）
+const characters = computed(() => allCharacters.value.filter((c) => KEPT_CHARACTER_SLUGS.has(c.slug)));
 
 const KEPT_TOOLS = 5;
-const KEPT_PAGES = 12;
 
 const stats = computed(() => [
   {
@@ -27,7 +32,7 @@ const stats = computed(() => [
     value: characters.value.length,
     icon: 'users',
     color: 'blue',
-    to: '/characters',
+    to: localePath('/characters'),
   },
   {
     key: 'guides',
@@ -45,68 +50,13 @@ const stats = computed(() => [
     color: 'orange',
     to: localePath('/tools'),
   },
-  {
-    key: 'pages',
-    label: isZh.value ? '保留页' : 'Kept pages',
-    value: KEPT_PAGES,
-    icon: 'server',
-    color: 'red',
-    to: localePath('/about'),
-  },
-]);
-
-const tips = computed(() =>
-  isZh.value
-    ? [
-        '本站只保留 Google 已收录的页面，旧页面统一返回 410。',
-        '聊天记录默认存在浏览器，不上传；可以用自己的 API Key。',
-        '角色卡支持 SillyTavern V2/V3 的 JSON 和 PNG。',
-        '教程和榜单都会写最后验证日期。',
-      ]
-    : [
-        'Only pages already indexed by Google are kept; old pages return 410.',
-        'Chats stay in your browser. Bring your own API key.',
-        'Character cards support SillyTavern V2/V3 JSON and PNG.',
-        'Guides and lists publish a last-verified date.',
-      ],
-);
-
-const tools = computed(() => [
-  {
-    title: isZh.value ? '角色卡编辑' : 'Card editor',
-    desc: isZh.value ? 'Card Studio' : 'Card Studio',
-    icon: 'users',
-    color: 'blue',
-    to: localePath('/tools/card-studio'),
-  },
-  {
-    title: isZh.value ? '世界书编辑' : 'World book',
-    desc: isZh.value ? 'Worldbook Forge' : 'Worldbook Forge',
-    icon: 'book',
-    color: 'green',
-    to: localePath('/tools/worldbook-forge'),
-  },
-  {
-    title: isZh.value ? '预设对比' : 'Preset diff',
-    desc: isZh.value ? 'Preset Lab' : 'Preset Lab',
-    icon: 'tools',
-    color: 'orange',
-    to: localePath('/tools/preset-lab'),
-  },
-  {
-    title: isZh.value ? '角色卡转换' : 'Card converter',
-    desc: isZh.value ? 'Card Converter' : 'Card Converter',
-    icon: 'server',
-    color: 'red',
-    to: localePath('/tools/card-converter'),
-  },
 ]);
 
 const tipIndex = ref(0);
-const currentTip = computed(() => tips.value[tipIndex.value % tips.value.length]);
+const currentTip = computed(() => content.value.tips[tipIndex.value % content.value.tips.length]);
 
 function nextTip() {
-  tipIndex.value = (tipIndex.value + 1) % tips.value.length;
+  tipIndex.value = (tipIndex.value + 1) % content.value.tips.length;
 }
 
 const welcomeVisible = ref(false);
@@ -129,20 +79,45 @@ const canonicalUrl = computed(() =>
   isZh.value ? 'https://www.rolechatai.com/zh-CN/' : 'https://www.rolechatai.com/',
 );
 
+// 首页内容橱窗的结构化数据：角色卡 + 教程两个 ItemList，帮助搜索引擎理解首页聚合的是哪类实体
+const itemListJsonLd = computed(() => [
+  {
+    type: 'application/ld+json',
+    innerHTML: JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: content.value.charactersTitle,
+      numberOfItems: characters.value.length,
+      itemListElement: characters.value.map((c, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `https://www.rolechatai.com${localePath(`/characters/${c.slug}`)}`,
+        name: c.name,
+      })),
+    }),
+  },
+  {
+    type: 'application/ld+json',
+    innerHTML: JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: content.value.guidesTitle,
+      numberOfItems: guides.value.length,
+      itemListElement: guides.value.map((g, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `https://www.rolechatai.com${localePath(`/guides/${g.slug}`)}`,
+        name: g.title,
+      })),
+    }),
+  },
+]);
+
 useSeoMeta({
-  title: () =>
-    isZh.value
-      ? 'RoleChat AI 工作台｜酒馆AI 开聊、SillyTavern 教程与工具'
-      : 'RoleChat AI — AI Roleplay Workbench',
-  description: () =>
-    isZh.value
-      ? 'RoleChat AI 工作台：直接开聊、SillyTavern 中文教程、角色卡网站与酒馆工具入口。免安装，聊天记录留在浏览器。'
-      : 'Start chatting, browse SillyTavern guides, character card sites and tavern tools from one workbench. No install, local-first.',
-  ogTitle: () => (isZh.value ? 'RoleChat AI 工作台' : 'RoleChat AI — AI Roleplay Workbench'),
-  ogDescription: () =>
-    isZh.value
-      ? '直接开聊、SillyTavern 教程、角色卡与工具，一个工作台全部搞定。'
-      : 'Chat, guides, character cards and tools — one local-first workbench.',
+  title: () => content.value.seo.title,
+  description: () => content.value.seo.description,
+  ogTitle: () => content.value.seo.ogTitle,
+  ogDescription: () => content.value.seo.ogDescription,
   ogType: 'website',
   ogUrl: () => canonicalUrl.value,
 });
@@ -155,20 +130,19 @@ useHead({
     { rel: 'alternate', hreflang: 'zh-CN', href: 'https://www.rolechatai.com/zh-CN/' },
     { rel: 'alternate', hreflang: 'x-default', href: 'https://www.rolechatai.com/' },
   ]),
+  script: itemListJsonLd,
 });
 </script>
 
 <template>
   <div class="cp-page">
-    <h1 class="sr-only">{{ isZh ? 'RoleChat AI 工作台' : 'RoleChat AI workbench' }}</h1>
-
     <header class="cp-toolbar">
       <div class="cp-brand">
         <span class="cp-brand-mark">RC</span>
         <span class="cp-brand-name">RoleChat AI</span>
         <span class="cp-status">
           <i class="cp-status-dot" />
-          {{ isZh ? '免登录 · 本地数据' : 'No login · Local data' }}
+          {{ content.badge }}
         </span>
       </div>
       <div class="cp-toolbar-actions">
@@ -180,7 +154,9 @@ useHead({
         >
           {{ isZh ? 'English' : '中文' }}
         </button>
-        <NuxtLink to="/opentavern" class="cp-btn cp-btn-primary">{{ isZh ? '直接开聊' : 'Start chatting' }}</NuxtLink>
+        <NuxtLink to="/opentavern" class="cp-btn cp-btn-primary">
+          {{ isZh ? '在线网页酒馆 (OpenTavern)' : 'Online Tavern (OpenTavern)' }}
+        </NuxtLink>
         <NuxtLink :to="localePath('/guides')" class="cp-btn">{{ isZh ? '打开教程' : 'Guides' }}</NuxtLink>
       </div>
     </header>
@@ -210,7 +186,7 @@ useHead({
         <div class="cp-quick">
           <h3>{{ isZh ? '快速入口' : 'Quick links' }}</h3>
           <NuxtLink to="/opentavern">
-            <span>{{ isZh ? '直接开聊' : 'Start chatting' }}</span><span>→</span>
+            <span>{{ isZh ? '在线网页酒馆' : 'Online tavern' }}</span><span>→</span>
           </NuxtLink>
           <NuxtLink :to="localePath('/where-to-find-character-cards')">
             <span>{{ isZh ? '角色卡网站' : 'Card sites' }}</span><span>→</span>
@@ -219,18 +195,30 @@ useHead({
             <span>{{ isZh ? '云酒馆' : 'Cloud taverns' }}</span><span>→</span>
           </NuxtLink>
         </div>
+
+        <div class="cp-quick">
+          <h3>{{ isZh ? 'API 入门' : 'API quick start' }}</h3>
+          <NuxtLink :to="localePath('/guides/how-to-get-an-api-key')">
+            <span>{{ isZh ? '获取 API Key' : 'Get an API key' }}</span><span>→</span>
+          </NuxtLink>
+          <NuxtLink :to="localePath('/guides/how-to-use-openrouter-for-roleplay')">
+            <span>{{ isZh ? 'OpenRouter 教程' : 'OpenRouter guide' }}</span><span>→</span>
+          </NuxtLink>
+        </div>
       </aside>
 
-      <!-- 中：工作台 -->
-      <section class="cp-panel">
+      <!-- 中：六板块内容橱窗 -->
+      <section class="cp-panel cp-showcase">
+        <!-- M1 首屏主视觉 -->
         <div class="cp-hero">
-          <h2>{{ isZh ? '欢迎使用 RoleChat AI' : 'Welcome to RoleChat AI' }}</h2>
-          <p class="cp-subtitle">{{ isZh ? '你今天要创造些什么？' : 'What will you create today?' }}</p>
-          <p class="cp-hint">{{ isZh ? '从左侧选择工具，或直接开聊。' : 'Pick a tool on the left, or start chatting.' }}</p>
+          <h1>{{ content.h1 }}</h1>
+          <p class="cp-subtitle">{{ content.subtitle }}</p>
+          <p class="cp-hint">{{ content.intro }}</p>
           <div class="cp-hero-actions">
-            <NuxtLink to="/opentavern" class="cp-btn cp-btn-primary">{{ isZh ? '直接开聊' : 'Start chatting' }}</NuxtLink>
-            <NuxtLink :to="localePath('/guides')" class="cp-btn">{{ isZh ? '看教程' : 'Read guides' }}</NuxtLink>
+            <NuxtLink to="/opentavern" class="cp-btn cp-btn-primary">{{ content.ctaPrimary }}</NuxtLink>
+            <NuxtLink :to="localePath('/guides')" class="cp-btn">{{ content.ctaSecondary }}</NuxtLink>
           </div>
+          <p class="cp-trust">{{ content.trust }}</p>
         </div>
 
         <div class="cp-stats">
@@ -247,36 +235,165 @@ useHead({
           <p class="cp-did-you-know-text">{{ currentTip }}</p>
         </div>
 
-        <div class="cp-tool-section">
-          <div class="cp-tool-head">
-            <h3>{{ isZh ? '常用工具' : 'Common tools' }}</h3>
-            <NuxtLink :to="localePath('/tools')" class="cp-tool-all">
-              {{ isZh ? '全部工具' : 'All tools' }} →
+        <!-- M2 SillyTavern 核心在线工具箱 -->
+        <section class="cp-section">
+          <h2>{{ content.toolsTitle }}</h2>
+          <p class="cp-section-desc">{{ content.toolsDesc }}</p>
+          <div class="cp-tool-grid cp-tool-grid-detail">
+            <NuxtLink v-for="tool in content.tools" :key="tool.to" :to="localePath(tool.to)" class="cp-tool-card">
+              <span class="cp-tool-card-head">
+                <span class="cp-tree-icon" :class="`is-${tool.color}`">
+                  <HubIcon :name="tool.icon as any" size="17" />
+                </span>
+                <strong>{{ isZh ? `${tool.title} (${tool.name})` : `${tool.title} — ${tool.name}` }}</strong>
+              </span>
+              <small>{{ tool.desc }}</small>
             </NuxtLink>
           </div>
-          <div class="cp-tool-grid">
-            <NuxtLink v-for="tool in tools" :key="tool.to" :to="tool.to" class="cp-tool-card">
-              <span class="cp-tree-icon" :class="`is-${tool.color}`">
-                <HubIcon :name="tool.icon as any" size="17" />
-              </span>
-              <span>
-                <strong>{{ tool.title }}</strong>
-                <small>{{ tool.desc }}</small>
+          <NuxtLink :to="localePath('/tools')" class="cp-section-cta">
+            {{ isZh ? '全部工具' : 'All tools' }} →
+          </NuxtLink>
+        </section>
+
+        <!-- M3 热门 AI 角色卡 + 角色卡网站导航 -->
+        <section class="cp-section">
+          <h2>{{ content.charactersTitle }}</h2>
+          <p class="cp-section-desc">{{ content.charactersDesc }}</p>
+          <div class="cp-char-grid">
+            <NuxtLink
+              v-for="c in characters"
+              :key="c.slug"
+              :to="localePath(`/characters/${c.slug}`)"
+              class="cp-char-card"
+            >
+              <span class="cp-char-avatar" :aria-hidden="true">{{ c.initial }}</span>
+              <span class="cp-char-info">
+                <strong>{{ c.name }}</strong>
+                <small>{{ c.tagline }}</small>
+                <span class="cp-char-tags">
+                  <em v-for="tag in c.tags.slice(0, 2)" :key="tag">{{ tag }}</em>
+                </span>
               </span>
             </NuxtLink>
           </div>
-        </div>
+          <NuxtLink :to="localePath('/characters')" class="cp-section-cta">
+            {{ content.charactersCta }} →
+          </NuxtLink>
+
+          <h3 class="cp-subsection-title">{{ content.cardSitesTitle }}</h3>
+          <p class="cp-section-desc">{{ content.cardSitesDesc }}</p>
+          <div class="cp-sites-grid">
+            <div v-for="site in content.cardSites" :key="site.name" class="cp-site-card">
+              <strong>{{ site.name }}</strong>
+              <em>{{ site.note }}</em>
+              <small>{{ site.desc }}</small>
+            </div>
+          </div>
+          <NuxtLink :to="localePath('/where-to-find-character-cards')" class="cp-section-cta">
+            {{ content.cardSitesCta }} →
+          </NuxtLink>
+        </section>
+
+        <!-- M4 酒馆插件、破限预设与正则资源 -->
+        <section class="cp-section">
+          <h2>{{ content.resourcesTitle }}</h2>
+          <p class="cp-section-desc">{{ content.resourcesDesc }}</p>
+          <div class="cp-res-grid">
+            <div v-for="res in content.resources" :key="res.to" class="cp-res-card">
+              <span class="cp-res-tag">{{ res.tag }}</span>
+              <strong>{{ res.title }}</strong>
+              <small>{{ res.desc }}</small>
+              <NuxtLink :to="localePath(res.to)" class="cp-res-cta">{{ res.cta }} →</NuxtLink>
+            </div>
+          </div>
+        </section>
+
+        <!-- M5a 云酒馆托管与在线开聊 -->
+        <section class="cp-section">
+          <h2>{{ content.cloudTitle }}</h2>
+          <p class="cp-section-desc">{{ content.cloudDesc }}</p>
+          <div class="cp-cloud-grid">
+            <NuxtLink
+              v-for="opt in content.cloud"
+              :key="opt.to"
+              :to="opt.to"
+              class="cp-cloud-card"
+              :class="{ 'is-highlight': opt.highlight }"
+            >
+              <strong>{{ opt.title }}</strong>
+              <small>{{ opt.desc }}</small>
+              <span class="cp-res-cta">{{ opt.cta }} →</span>
+            </NuxtLink>
+          </div>
+          <ul class="cp-criteria">
+            <li v-for="crit in content.cloudCriteria" :key="crit.title">
+              <strong>{{ crit.title }}</strong>
+              <span>{{ crit.desc }}</span>
+            </li>
+          </ul>
+          <p class="cp-section-note">{{ content.cloudNote }}</p>
+        </section>
+
+        <!-- M5b AI 角色扮演 API 推荐导航 -->
+        <section class="cp-section">
+          <h2>{{ content.apiTitle }}</h2>
+          <p class="cp-section-desc">{{ content.apiDesc }}</p>
+          <div class="cp-api-grid">
+            <div v-for="api in content.apiProviders" :key="api.name" class="cp-api-card">
+              <div class="cp-api-head">
+                <strong>{{ api.name }}</strong>
+                <a :href="api.href" target="_blank" rel="noopener noreferrer">{{ isZh ? '官网' : 'Official' }} ↗</a>
+              </div>
+              <small>{{ api.desc }}</small>
+              <dl class="cp-api-meta">
+                <div>
+                  <dt>{{ isZh ? '计费' : 'Pricing' }}</dt>
+                  <dd>{{ api.pricing }}</dd>
+                </div>
+                <div>
+                  <dt>{{ isZh ? '适合' : 'Best for' }}</dt>
+                  <dd>{{ api.bestFor }}</dd>
+                </div>
+              </dl>
+              <NuxtLink :to="localePath(api.to)" class="cp-res-cta">{{ isZh ? '看配置教程' : 'Setup guide' }} →</NuxtLink>
+            </div>
+          </div>
+          <NuxtLink :to="localePath('/guides/how-to-get-an-api-key')" class="cp-section-cta">
+            {{ content.apiCta }} →
+          </NuxtLink>
+        </section>
+
+        <!-- M6 酒馆角色扮演新手教程与常见问题 -->
+        <section class="cp-section">
+          <h2>{{ content.guidesTitle }}</h2>
+          <p class="cp-section-desc">{{ content.guidesDesc }}</p>
+          <ol class="cp-guide-list">
+            <li v-for="g in guides" :key="g.slug">
+              <NuxtLink :to="localePath(`/guides/${g.slug}`)">
+                <strong>{{ g.title }}</strong>
+                <small>{{ g.description }}</small>
+              </NuxtLink>
+            </li>
+          </ol>
+          <NuxtLink :to="localePath('/guides')" class="cp-section-cta">
+            {{ content.guidesCta }} →
+          </NuxtLink>
+        </section>
+
+        <p class="cp-updated">{{ content.updated }}</p>
       </section>
     </main>
 
-    <!-- 首次进入的欢迎浮层（对齐 cardplus 的 welcome overlay） -->
+    <!-- 首次进入的欢迎浮层（对齐 cardplus 的 welcome overlay；SSR 不渲染，不影响 SEO） -->
     <div v-if="welcomeVisible" class="cp-welcome-overlay">
       <div class="cp-welcome-card">
         <div class="cp-welcome-logo">RC</div>
-        <h2>{{ isZh ? '欢迎使用 RoleChat AI' : 'Welcome to RoleChat AI' }}</h2>
-        <p class="cp-subtitle">{{ isZh ? '你今天要创造些什么？' : 'What will you create today?' }}</p>
+        <h2>{{ content.h1 }}</h2>
+        <p class="cp-subtitle">{{ content.subtitle }}</p>
         <p class="cp-hint">
-          {{ isZh ? '从左侧选择工具，或直接开聊。所有数据默认留在你的浏览器。' : 'Pick a tool on the left, or start chatting. Everything stays in your browser by default.' }}
+          {{ isZh
+            ? '从左侧选择工具，或直接开聊。所有数据默认留在你的浏览器。'
+            : 'Pick a tool on the left, or start chatting. Everything stays in your browser by default.' }}
         </p>
 
         <div class="cp-welcome-stats">

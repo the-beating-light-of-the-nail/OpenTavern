@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useCharacters } from '~/data';
+import { useCharacters, KEPT_CHARACTER_SLUGS } from '~/data';
 import { withAdCards } from '~/utils/ads';
 import { useFavoritesStore } from '~/stores/favorites';
 import type { CharacterSeo, CharacterCategory } from '~/types/seo';
@@ -28,13 +28,7 @@ function catLabel(cat: CharacterCategory | 'All'): string {
 }
 
 // 数据随当前 locale 响应式切换；只展示保留的收录角色，避免 hub 链接到已 410 的详情页
-const KEPT_CHARACTER_SLUGS = new Set([
-  'the-dragon-prince',
-  'the-sharp-tongued-detective',
-  'the-time-traveler',
-  'the-witchs-familiar',
-  'the-protective-bodyguard',
-]);
+// （白名单常量已提升到 data/ 共享，首页橱窗与本页保持一致）
 const allCharacters = useCharacters();
 const characters = computed(() => allCharacters.value.filter((c) => KEPT_CHARACTER_SLUGS.has(c.slug)));
 

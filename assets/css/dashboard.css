@@ -355,6 +355,8 @@
   text-align: center;
 }
 
+/* H1 可见化（SEO）：主屏 hero 的 h1 与欢迎浮层的 h2 共用标题样式 */
+.cp-hero h1,
 .cp-hero h2 {
   margin: 0 0 8px;
   font-size: clamp(1.65rem, 3vw, 2.2rem);
@@ -717,5 +719,453 @@
 
   .cp-mobile-tab.is-active {
     color: var(--cp-primary);
+  }
+}
+
+/* ============================================================
+ * 首页六板块内容橱窗（SEO 内容区）
+ * ============================================================ */
+
+.cp-hero .cp-trust {
+  margin: 14px 0 0;
+  color: var(--cp-text-secondary);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+
+/* 区块骨架：每个板块 section = h2 + 描述 + 网格 + CTA */
+.cp-section {
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--cp-border-light);
+}
+
+.cp-section h2 {
+  margin: 0 0 6px;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.cp-subsection-title {
+  margin: 26px 0 6px;
+  font-size: 1.02rem;
+  font-weight: 700;
+}
+
+.cp-section-desc {
+  margin: 0 0 14px;
+  color: var(--cp-text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.cp-section-cta {
+  display: inline-block;
+  margin-top: 12px;
+  color: var(--cp-primary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.cp-section-cta:hover {
+  color: #337ecc;
+}
+
+.cp-section-note {
+  margin: 10px 0 0;
+  color: var(--cp-text-secondary);
+  font-size: 0.8rem;
+}
+
+/* M2 工具卡详情版：竖排布局容纳 40-60 字描述 */
+.cp-tool-grid-detail {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.cp-tool-grid-detail .cp-tool-card {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 14px;
+}
+
+.cp-tool-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cp-tool-card-head strong {
+  font-size: 0.92rem;
+}
+
+.cp-tool-grid-detail .cp-tool-card small {
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+/* M3 角色卡橱窗 */
+.cp-char-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.cp-char-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--cp-border-light);
+  border-radius: 12px;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.cp-char-card:hover {
+  border-color: #a0cfff;
+  background: #f5f9ff;
+}
+
+.cp-char-avatar {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #409eff, #67c23a);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.cp-char-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.cp-char-info strong {
+  font-size: 0.92rem;
+}
+
+.cp-char-info small {
+  color: var(--cp-text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.cp-char-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.cp-char-tags em {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #f5f7fa;
+  color: var(--cp-text-secondary);
+  font-size: 0.7rem;
+  font-style: normal;
+}
+
+/* M3 卡站导航小卡 */
+.cp-sites-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.cp-site-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--cp-border-light);
+  border-radius: 10px;
+  background: #fafbfc;
+}
+
+.cp-site-card strong {
+  font-size: 0.9rem;
+}
+
+.cp-site-card em {
+  width: fit-content;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #ecf5ff;
+  color: var(--cp-primary);
+  font-size: 0.7rem;
+  font-style: normal;
+}
+
+.cp-site-card small {
+  color: var(--cp-text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+/* M4 资源类别卡 */
+.cp-res-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.cp-res-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--cp-border-light);
+  border-radius: 12px;
+}
+
+.cp-res-card strong {
+  font-size: 0.95rem;
+}
+
+.cp-res-card small {
+  color: var(--cp-text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.cp-res-tag {
+  width: fit-content;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #fdf6ec;
+  color: #b88230;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.cp-res-cta {
+  margin-top: auto;
+  padding-top: 6px;
+  color: var(--cp-primary);
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.cp-res-cta:hover {
+  color: #337ecc;
+}
+
+/* M5a 云酒馆方案卡 */
+.cp-cloud-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.cp-cloud-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  border: 1px solid var(--cp-border-light);
+  border-radius: 12px;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.cp-cloud-card:hover {
+  border-color: #a0cfff;
+  background: #f5f9ff;
+}
+
+.cp-cloud-card.is-highlight {
+  border-color: #a0cfff;
+  background: #f5f9ff;
+}
+
+.cp-cloud-card strong {
+  font-size: 0.95rem;
+}
+
+.cp-cloud-card small {
+  color: var(--cp-text-regular);
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.cp-criteria {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cp-criteria li {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fafbfc;
+}
+
+.cp-criteria strong {
+  font-size: 0.84rem;
+}
+
+.cp-criteria span {
+  color: var(--cp-text-secondary);
+  font-size: 0.74rem;
+  line-height: 1.45;
+}
+
+/* M5b API 导航对比卡 */
+.cp-api-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.cp-api-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--cp-border-light);
+  border-radius: 12px;
+}
+
+.cp-api-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cp-api-head strong {
+  font-size: 0.95rem;
+}
+
+.cp-api-head a {
+  color: var(--cp-text-secondary);
+  font-size: 0.78rem;
+  text-decoration: none;
+}
+
+.cp-api-head a:hover {
+  color: var(--cp-primary);
+}
+
+.cp-api-card > small {
+  color: var(--cp-text-regular);
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.cp-api-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0;
+}
+
+.cp-api-meta dt {
+  color: var(--cp-text-secondary);
+  font-size: 0.72rem;
+}
+
+.cp-api-meta dd {
+  margin: 0 0 4px;
+  font-size: 0.8rem;
+}
+
+/* M6 教程列表 */
+.cp-guide-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: guide;
+}
+
+.cp-guide-list li {
+  counter-increment: guide;
+}
+
+.cp-guide-list a {
+  display: flex;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--cp-border-light);
+  border-radius: 10px;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.cp-guide-list a:hover {
+  border-color: #a0cfff;
+  background: #f5f9ff;
+}
+
+.cp-guide-list a::before {
+  content: counter(guide);
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: #ecf5ff;
+  color: var(--cp-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.cp-guide-list strong {
+  display: block;
+  font-size: 0.9rem;
+}
+
+.cp-guide-list small {
+  display: block;
+  color: var(--cp-text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.cp-updated {
+  margin: 28px 0 4px;
+  color: var(--cp-text-secondary);
+  font-size: 0.76rem;
+  text-align: center;
+}
+
+@media (max-width: 1023px) {
+  .cp-criteria {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .cp-tool-grid-detail,
+  .cp-char-grid,
+  .cp-sites-grid,
+  .cp-res-grid,
+  .cp-cloud-grid,
+  .cp-api-grid {
+    grid-template-columns: 1fr;
   }
 }

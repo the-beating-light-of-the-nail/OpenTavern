@@ -27,7 +27,8 @@ function navTo(path: string) {
 
 const navItems = computed(() => [
   { to: navTo('/'), label: isZh.value ? '首页' : 'Home', icon: 'house' },
-  { to: '/opentavern', label: isZh.value ? '直接开聊' : 'Chat', icon: 'chat' },
+  // 锚文本带业务词（在线网页酒馆），让 /opentavern 承接「在线酒馆」搜索意图
+  { to: '/opentavern', label: isZh.value ? '在线网页酒馆' : 'Online tavern', icon: 'chat' },
   { to: navTo('/guides'), label: isZh.value ? '教程' : 'Guides', icon: 'book' },
   { to: navTo('/tools'), label: isZh.value ? '工具' : 'Tools', icon: 'tools' },
   { to: navTo('/where-to-find-character-cards'), label: isZh.value ? '角色卡网站' : 'Card sites', icon: 'users' },
@@ -36,7 +37,7 @@ const navItems = computed(() => [
 
 const mobileNav = computed(() => [
   { to: navTo('/'), label: isZh.value ? '首页' : 'Home', icon: 'house' },
-  { to: '/opentavern', label: isZh.value ? '开聊' : 'Chat', icon: 'chat' },
+  { to: '/opentavern', label: isZh.value ? '网页酒馆' : 'Tavern', icon: 'chat' },
   { to: navTo('/guides'), label: isZh.value ? '教程' : 'Guides', icon: 'book' },
   { to: navTo('/tools'), label: isZh.value ? '工具' : 'Tools', icon: 'tools' },
   { to: navTo('/about'), label: isZh.value ? '关于' : 'About', icon: 'compass' },

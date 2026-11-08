@@ -149,6 +149,25 @@ function pick<T>(map: Record<string, T>, locale: string): T {
   return map[locale] ?? map.en;
 }
 
+/**
+ * 收录保留的角色卡 slug 白名单（首页 M3 橱窗与 /characters 列表页共用）。
+ * 扩充时必须四处同步，缺一处会出 410 / 缺预渲染：
+ * 1. 本常量
+ * 2. nuxt.config.ts nitro.prerender.routes（en + zh-CN 至少）
+ * 3. server/middleware/route-guard.ts ALLOW_EXACT
+ * 4. public/sitemap.xml 静态白名单
+ */
+export const KEPT_CHARACTER_SLUGS = new Set([
+  'the-dragon-prince',
+  'the-sharp-tongued-detective',
+  'the-time-traveler',
+  'the-witchs-familiar',
+  'the-protective-bodyguard',
+  'cold-doctor-boyfriend',
+  'the-brooding-vampire-lord',
+  'the-mafia-boss',
+]);
+
 /** 当前 locale 的角色列表(响应式,在 setup 中使用) */
 export function useCharacters() {
   const { $i18n } = useNuxtApp();
