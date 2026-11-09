@@ -5,14 +5,15 @@
  * 规格：docs/research/laopobao-tools/home/components/workbench-header.spec.md
  * 样式：类名全部来自 assets/css/workbench.css（本组件不写 <style>，不改 CSS）
  * 图标：<HubIcon>（components/home/HubIcon.vue，Nuxt 自动注册 pathPrefix:false，不做 import）
- * 语言切换：原 SiteHeader.vue（已随全站外壳化删除）的 langOptions 构造 + setLocale 处理
+ * 语言切换：en / zh-CN 双语互切按钮（.wb-lang，显示目标语言短标签），
+ * 复用 useLocale().setLocale（持久化 + $i18n.setLocale 导航到对应前缀路径）
  */
 import { useLocale } from '~/composables/useLocale';
 
 const { t, locale } = useI18n();
 const localePath = useLocalePath();
 const route = useRoute();
-const { supported } = useLocale();
+const { supported, setLocale } = useLocale();
 
 /** 只有 en / zh-CN 保留了本地化 hub；其余保留的收录页统一回英文根路径，避免指向 410。 */
 const localizedHub = computed(() => locale.value === 'en' || locale.value === 'zh-CN');
@@ -21,8 +22,6 @@ function navTo(path: string) {
   if (path === '/characters') return '/characters';
   return localizedHub.value ? localePath(path) : path;
 }
-
-/** 语言切换只保留在新首页（en / zh-CN）；内页语言下拉已随 25 语言路由下线移除。 */
 
 /**
  * 激活态判定：i18n 策略 prefix_except_default，路由 path 可能带 `/zh-CN` 前缀，
@@ -34,6 +33,17 @@ const activePath = computed(() => {
   if (first && (supported as readonly string[]).includes(first)) segs.shift();
   return `/${segs.join('/')}`;
 });
+
+/**
+ * 语言互切：25 语言路由下线后线上只保留 en（根路径）/ zh-CN 两个语言版本，
+ * 按钮显示目标语言短标签（en 页显示「简」、zh-CN 页显示「EN」），aria-label 给全称。
+ * /characters 是英文专属 hub（/zh-CN/characters 由 route-guard 返回 410），该页隐藏按钮。
+ */
+const nextLang = computed(() => (locale.value === 'zh-CN' ? 'en' : 'zh-CN'));
+const showLangToggle = computed(() => activePath.value !== '/characters');
+async function onToggleLang() {
+  await setLocale(nextLang.value);
+}
 
 /** 本段或子路径命中（/tools → 工具，/tools/xxx 亦命中） */
 function inSection(section: string) {
@@ -71,6 +81,16 @@ function inSection(section: string) {
         </nav>
 
         <div class="wb-header-divider wb-header-tools">
+          <button
+            v-if="showLangToggle"
+            type="button"
+            class="wb-lang"
+            :title="locale === 'zh-CN' ? 'Switch to English' : '切换到中文'"
+            :aria-label="locale === 'zh-CN' ? 'English' : '简体中文'"
+            @click="onToggleLang"
+          >
+            {{ locale === 'zh-CN' ? t('lang_en_short') : t('lang_zh_cn_short') }}
+          </button>
           <ThemeMenu />
         </div>
 

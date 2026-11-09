@@ -1,7 +1,6 @@
 <script setup lang="ts">
 const { locale } = useI18n();
 const localePath = useLocalePath();
-const switchLocalePath = useSwitchLocalePath();
 const route = useRoute();
 
 const isZh = computed(() => locale.value === 'zh-CN');
@@ -49,10 +48,6 @@ function isActive(to: string) {
   if (target === '/') return path === '/' || path === '/zh-CN';
   return path === target || path.startsWith(`${target}/`);
 }
-
-function toggleLocale() {
-  navigateTo(switchLocalePath(isZh.value ? 'en' : 'zh-CN'));
-}
 </script>
 
 <template>
@@ -77,11 +72,8 @@ function toggleLocale() {
         </NuxtLink>
       </nav>
 
+      <!-- 语言切换迁至页面顶栏（cp-btn-lang）：移动端侧栏隐藏、底部 tab 无语言项，顶栏是唯一全视口入口 -->
       <div class="cp-sidebar-footer">
-        <button class="cp-nav-item" type="button" :title="isZh ? 'Switch to English' : '切换到中文'" @click="toggleLocale">
-          <span class="cp-lang-mark">{{ isZh ? 'EN' : '中' }}</span>
-          <span v-if="expanded" class="cp-nav-label">{{ isZh ? 'English' : '中文' }}</span>
-        </button>
         <NuxtLink
           :to="navTo('/about')"
           class="cp-nav-item"

@@ -6,6 +6,13 @@ definePageMeta({ layout: 'dashboard' });
 const { locale } = useI18n();
 const localePath = useLocalePath();
 const isZh = computed(() => locale.value === 'zh-CN');
+const { setLocale } = useLocale();
+
+/** 语言互切：线上只保留 en（根路径）/ zh-CN 两个语言版本，按钮显示目标语言。
+ *  顶栏按钮全视口可见（移动端侧栏隐藏、底部 tab 无语言项，这里是唯一入口）。 */
+function toggleLocale() {
+  setLocale(isZh.value ? 'en' : 'zh-CN');
+}
 
 const characters = useCharacters();
 const guides = useGuides();
@@ -165,6 +172,14 @@ useHead({
         </span>
       </div>
       <div class="cp-toolbar-actions">
+        <button
+          type="button"
+          class="cp-btn cp-btn-lang"
+          :title="isZh ? 'Switch to English' : '切换到中文'"
+          @click="toggleLocale"
+        >
+          {{ isZh ? 'English' : '中文' }}
+        </button>
         <NuxtLink to="/opentavern" class="cp-btn cp-btn-primary">{{ isZh ? '直接开聊' : 'Start chatting' }}</NuxtLink>
         <NuxtLink :to="localePath('/guides')" class="cp-btn">{{ isZh ? '打开教程' : 'Guides' }}</NuxtLink>
       </div>

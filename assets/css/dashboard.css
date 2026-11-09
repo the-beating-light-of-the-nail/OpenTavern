@@ -113,15 +113,6 @@
   font-size: 14px;
 }
 
-.cp-lang-mark {
-  width: 18px;
-  flex-shrink: 0;
-  text-align: center;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-
 .cp-sidebar-footer {
   display: flex;
   flex-direction: column;
@@ -657,6 +648,13 @@
 
   .cp-toolbar-actions .cp-btn:not(.cp-btn-primary) {
     display: none;
+  }
+
+  /* 语言切换是移动端唯一入口（侧栏已隐藏），不受上面隐藏规则影响；
+     选择器特意带 .cp-btn 提到与隐藏规则同级，靠后写覆盖 */
+  .cp-toolbar-actions .cp-btn.cp-btn-lang {
+    display: inline-flex;
+    padding: 0 12px;
   }
 
   .cp-workspace {
