@@ -167,7 +167,7 @@ useHead({
         <div class="cp-panel-head">
           <div>
             <p class="cp-kicker">RESOURCES</p>
-            <h2>{{ isZh ? '站内资源' : 'Resources' }}</h2>
+            <p class="cp-panel-title">{{ isZh ? '站内资源' : 'Resources' }}</p>
           </div>
         </div>
 
@@ -184,7 +184,7 @@ useHead({
         </ul>
 
         <div class="cp-quick">
-          <h3>{{ isZh ? '快速入口' : 'Quick links' }}</h3>
+          <p class="cp-quick-title">{{ isZh ? '快速入口' : 'Quick links' }}</p>
           <NuxtLink to="/opentavern">
             <span>{{ isZh ? '在线网页酒馆' : 'Online tavern' }}</span><span>→</span>
           </NuxtLink>
@@ -197,7 +197,16 @@ useHead({
         </div>
 
         <div class="cp-quick">
-          <h3>{{ isZh ? 'API 入门' : 'API quick start' }}</h3>
+          <p class="cp-quick-title">{{ isZh ? '本页板块' : 'On this page' }}</p>
+          <a href="#tools"><span>{{ isZh ? '在线工具箱' : 'Online toolbox' }}</span><span>↓</span></a>
+          <a href="#card-sites"><span>{{ isZh ? '角色卡站导航' : 'Card site directory' }}</span><span>↓</span></a>
+          <a href="#plugins"><span>{{ isZh ? '插件与预设资源' : 'Plugins &amp; presets' }}</span><span>↓</span></a>
+          <a href="#cloud"><span>{{ isZh ? '云酒馆方案' : 'Cloud taverns' }}</span><span>↓</span></a>
+          <a href="#api-guide"><span>{{ isZh ? 'API 导航' : 'API guide' }}</span><span>↓</span></a>
+        </div>
+
+        <div class="cp-quick">
+          <p class="cp-quick-title">{{ isZh ? 'API 入门' : 'API quick start' }}</p>
           <NuxtLink :to="localePath('/guides/how-to-get-an-api-key')">
             <span>{{ isZh ? '获取 API Key' : 'Get an API key' }}</span><span>→</span>
           </NuxtLink>
@@ -236,7 +245,7 @@ useHead({
         </div>
 
         <!-- M2 SillyTavern 核心在线工具箱 -->
-        <section class="cp-section">
+        <section id="tools" class="cp-section">
           <h2>{{ content.toolsTitle }}</h2>
           <p class="cp-section-desc">{{ content.toolsDesc }}</p>
           <div class="cp-tool-grid cp-tool-grid-detail">
@@ -255,8 +264,8 @@ useHead({
           </NuxtLink>
         </section>
 
-        <!-- M3 热门 AI 角色卡 + 角色卡网站导航 -->
-        <section class="cp-section">
+        <!-- M3 热门 AI 角色卡 -->
+        <section id="characters" class="cp-section">
           <h2>{{ content.charactersTitle }}</h2>
           <p class="cp-section-desc">{{ content.charactersDesc }}</p>
           <div class="cp-char-grid">
@@ -279,8 +288,11 @@ useHead({
           <NuxtLink :to="localePath('/characters')" class="cp-section-cta">
             {{ content.charactersCta }} →
           </NuxtLink>
+        </section>
 
-          <h3 class="cp-subsection-title">{{ content.cardSitesTitle }}</h3>
+        <!-- M3b 角色卡资源网站导航 -->
+        <section id="card-sites" class="cp-section">
+          <h2>{{ content.cardSitesTitle }}</h2>
           <p class="cp-section-desc">{{ content.cardSitesDesc }}</p>
           <div class="cp-sites-grid">
             <div v-for="site in content.cardSites" :key="site.name" class="cp-site-card">
@@ -295,7 +307,7 @@ useHead({
         </section>
 
         <!-- M4 酒馆插件、破限预设与正则资源 -->
-        <section class="cp-section">
+        <section id="plugins" class="cp-section">
           <h2>{{ content.resourcesTitle }}</h2>
           <p class="cp-section-desc">{{ content.resourcesDesc }}</p>
           <div class="cp-res-grid">
@@ -308,8 +320,8 @@ useHead({
           </div>
         </section>
 
-        <!-- M5a 云酒馆托管与在线开聊 -->
-        <section class="cp-section">
+        <!-- M5a 云酒馆与即开即聊方案 -->
+        <section id="cloud" class="cp-section">
           <h2>{{ content.cloudTitle }}</h2>
           <p class="cp-section-desc">{{ content.cloudDesc }}</p>
           <div class="cp-cloud-grid">
@@ -334,8 +346,8 @@ useHead({
           <p class="cp-section-note">{{ content.cloudNote }}</p>
         </section>
 
-        <!-- M5b AI 角色扮演 API 推荐导航 -->
-        <section class="cp-section">
+        <!-- M5b AI 角色扮演 API 推荐指南 -->
+        <section id="api-guide" class="cp-section">
           <h2>{{ content.apiTitle }}</h2>
           <p class="cp-section-desc">{{ content.apiDesc }}</p>
           <div class="cp-api-grid">
@@ -363,8 +375,8 @@ useHead({
           </NuxtLink>
         </section>
 
-        <!-- M6 酒馆角色扮演新手教程与常见问题 -->
-        <section class="cp-section">
+        <!-- M6 AI 角色扮演新手教程与常见问题 -->
+        <section id="guides" class="cp-section">
           <h2>{{ content.guidesTitle }}</h2>
           <p class="cp-section-desc">{{ content.guidesDesc }}</p>
           <ol class="cp-guide-list">

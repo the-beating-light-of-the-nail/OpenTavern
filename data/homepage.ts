@@ -110,8 +110,8 @@ export const HOME_CONTENT: Record<'zh-CN' | 'en', HomeContent> = {
       '数据 100% 存储在浏览器本地，无需配置 Python 或本地环境，接入 API 即可在网页端畅玩类酒馆 AI 角色扮演。',
     intro:
       'RoleChat AI（OpenTavern）是一个免登录的在线 AI 酒馆：打开网页就能和角色开聊，也可以用下面的角色卡编辑、世界书编写、预设对比等工具打理你的酒馆资源。',
-    ctaPrimary: '进入 OpenTavern 在线网页酒馆',
-    ctaSecondary: '看角色扮演教程',
+    ctaPrimary: '打开 OpenTavern 在线网页酒馆',
+    ctaSecondary: '阅读酒馆新手教程',
     trust: '免安装 · 免登录 · 数据存浏览器 · 可自带 API Key',
     toolsTitle: 'SillyTavern 核心在线工具箱',
     toolsDesc: '四个工具全部在浏览器本地运行，文件不上传；支持 SillyTavern V2/V3 规范的 PNG 与 JSON。',
@@ -153,7 +153,7 @@ export const HOME_CONTENT: Record<'zh-CN' | 'en', HomeContent> = {
     charactersDesc:
       '站内精选原创 AI 角色卡，覆盖现代、奇幻与科幻题材；每张卡支持 SillyTavern V2/V3 导入，点开即可查看人设与开场白。',
     charactersCta: '看全部角色卡',
-    cardSitesTitle: '角色卡网站导航',
+    cardSitesTitle: '角色卡资源网站导航',
     cardSitesDesc:
       '精选 8 个可用角色卡资源站（跨平台合集、RisuAI / JanitorAI 生态等）；下载前请确认站点条款与作者许可。',
     cardSites: [
@@ -199,7 +199,7 @@ export const HOME_CONTENT: Record<'zh-CN' | 'en', HomeContent> = {
         to: '/tools/card-converter',
       },
     ],
-    cloudTitle: '云酒馆托管与在线开聊',
+    cloudTitle: '云酒馆与即开即聊方案',
     cloudDesc: '云酒馆的价值是省掉安装和配置。我们按价格、隐私、中文支持、内容边界四项逐家复核，并把最后验证日期写进榜单。',
     cloud: [
       {
@@ -223,7 +223,7 @@ export const HOME_CONTENT: Record<'zh-CN' | 'en', HomeContent> = {
       { title: '内容边界', desc: '是否有明确开关、边界说明和年龄限制。' },
     ],
     cloudNote: '第三方云酒馆逐家实测榜单整理中，上线时会标注最后验证日期。',
-    apiTitle: 'AI 角色扮演 API 推荐导航',
+    apiTitle: 'AI 角色扮演 API 推荐指南',
     apiDesc: '开聊只需要一个 OpenAI 兼容的 API Key。下面是四条主流路线的客观对比：聚合平台、低价官方、大免费额度与角色扮演强模型。',
     apiProviders: [
       {
@@ -260,7 +260,7 @@ export const HOME_CONTENT: Record<'zh-CN' | 'en', HomeContent> = {
       },
     ],
     apiCta: '看 API Key 配置教程',
-    guidesTitle: '酒馆角色扮演新手教程与常见问题',
+    guidesTitle: 'AI 角色扮演新手教程与常见问题',
     guidesDesc: '从零开始玩转 AI 酒馆：怎么选 API、怎么拿 Key、怎么写角色卡、怎么调预设——7 篇教程按顺序看。',
     guidesCta: '看全部教程',
     tips: [

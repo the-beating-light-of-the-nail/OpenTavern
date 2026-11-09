@@ -326,7 +326,7 @@
   border-top: 1px solid var(--cp-border-light);
 }
 
-.cp-quick h3 {
+.cp-quick-title {
   margin: 0 0 10px;
   color: var(--cp-text-secondary);
   font-size: 0.78rem;
@@ -746,11 +746,6 @@
   font-weight: 800;
 }
 
-.cp-subsection-title {
-  margin: 26px 0 6px;
-  font-size: 1.02rem;
-  font-weight: 700;
-}
 
 .cp-section-desc {
   margin: 0 0 14px;
@@ -1168,4 +1163,18 @@
   .cp-api-grid {
     grid-template-columns: 1fr;
   }
+}
+/* 侧栏「本页板块」锚点：平滑滚动 + 板块落点留白；侧栏标题不进文档大纲 */
+html {
+  scroll-behavior: smooth;
+}
+
+.cp-section {
+  scroll-margin-top: 12px;
+}
+
+.cp-panel .cp-panel-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
 }
