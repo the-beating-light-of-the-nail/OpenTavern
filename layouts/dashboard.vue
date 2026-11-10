@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import { useGuides } from '~/data';
+import { KEPT_TOOL_SLUGS } from '~/data/tools';
+
 const { locale } = useI18n();
 const localePath = useLocalePath();
 const route = useRoute();
 
 const isZh = computed(() => locale.value === 'zh-CN');
 const expanded = ref(true);
+const guides = useGuides();
 
 onMounted(() => {
   try {
@@ -25,14 +29,15 @@ function navTo(path: string) {
   return localePath(path);
 }
 
-const navItems = computed(() => [
+// 数量徽标：原首页中间栏「站内资源」的计数并入侧栏（角色卡数在首屏统计卡展示，侧栏无对应项不标）
+const navItems = computed<{ to: string; label: string; icon: string; count?: number }[]>(() => [
   { to: navTo('/'), label: isZh.value ? '首页' : 'Home', icon: 'house' },
   // 锚文本带业务词（在线网页酒馆），让 /opentavern 承接「在线酒馆」搜索意图
   { to: '/opentavern', label: isZh.value ? '在线网页酒馆' : 'Online tavern', icon: 'chat' },
   // 教程/工具/卡站/酒馆方案四槽改指新版页面；旧 /guides /tools /where-to-find-character-cards
   // 保留 200 给搜索引擎自然流量，页内挂 PageUpgradeBanner 引流到新 URL
-  { to: navTo('/tutorials'), label: isZh.value ? '教程' : 'Guides', icon: 'book' },
-  { to: navTo('/toolkit'), label: isZh.value ? '工具' : 'Tools', icon: 'tools' },
+  { to: navTo('/tutorials'), label: isZh.value ? '教程' : 'Guides', icon: 'book', count: guides.value.length },
+  { to: navTo('/toolkit'), label: isZh.value ? '工具' : 'Tools', icon: 'tools', count: KEPT_TOOL_SLUGS.size },
   { to: navTo('/card-sites'), label: isZh.value ? '角色卡网站' : 'Card sites', icon: 'users' },
   { to: navTo('/web-tavern'), label: isZh.value ? '在线本地酒馆' : 'Online local tavern', icon: 'server' },
 ]);
@@ -72,6 +77,7 @@ function isActive(to: string) {
         >
           <HubIcon :name="item.icon as any" size="18" />
           <span v-if="expanded" class="cp-nav-label">{{ item.label }}</span>
+          <span v-if="expanded && item.count" class="cp-nav-count">{{ item.count }}</span>
         </NuxtLink>
       </nav>
 

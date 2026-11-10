@@ -113,6 +113,24 @@
   font-size: 14px;
 }
 
+/* 数量徽标：原首页中间栏「站内资源」的计数并入侧栏，不再单开模块展示 */
+.cp-nav-count {
+  margin-left: auto;
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #f0f2f5;
+  color: var(--cp-text-secondary);
+  font-size: 0.72rem;
+  line-height: 18px;
+  text-align: center;
+}
+
+.cp-nav-item.is-active .cp-nav-count {
+  background: #d9ecff;
+  color: var(--cp-primary);
+}
+
 .cp-sidebar-footer {
   display: flex;
   flex-direction: column;
@@ -228,11 +246,13 @@
   color: #fff;
 }
 
+/* 单列内容；≥1200px 在右侧加「本页板块」目录栏（PageToc），不再要中间次级栏——
+   其「站内资源/快速入口」与左侧导航、首屏统计完全重复 */
 .cp-workspace {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(220px, 0.8fr) minmax(360px, 1.6fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 24px;
   padding: 30px clamp(16px, 3vw, 48px) 12px;
   overflow: hidden;
@@ -248,51 +268,12 @@
   box-shadow: 0 12px 32px rgb(0 0 0 / 4%);
 }
 
-.cp-panel-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.cp-kicker {
-  margin: 0 0 5px;
-  color: var(--cp-primary);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-}
-
 .cp-panel h2 {
   margin: 0;
   font-size: 1.15rem;
 }
 
-.cp-tree {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.cp-tree a {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 8px;
-  border-radius: 8px;
-  color: var(--cp-text-regular);
-  text-decoration: none;
-}
-
-.cp-tree a:hover {
-  background: #f5f7fa;
-  color: var(--cp-text);
-}
-
+/* 工具卡头部的彩色图标块（原中间栏「站内资源」树也用，栏已删、图标保留） */
 .cp-tree-icon {
   width: 30px;
   height: 30px;
@@ -307,47 +288,53 @@
 .cp-tree-icon.is-orange { color: #e6a23c; background: #fdf6ec; }
 .cp-tree-icon.is-red { color: #f56c6c; background: #fef0f0; }
 
-.cp-tree-label {
-  flex: 1;
-  font-size: 14px;
+/* 「本页板块」目录栏（PageToc）：≥1200px 显示在主内容右侧，窄视口隐藏 */
+.cp-toc {
+  display: none;
+  align-self: start;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 0;
 }
 
-.cp-count {
-  padding: 1px 8px;
-  border-radius: 999px;
-  background: #f5f7fa;
+.cp-toc-title {
+  margin: 0 0 8px;
+  padding: 0 12px;
   color: var(--cp-text-secondary);
-  font-size: 0.76rem;
-}
-
-.cp-quick {
-  margin-top: 24px;
-  padding-top: 18px;
-  border-top: 1px solid var(--cp-border-light);
-}
-
-.cp-quick-title {
-  margin: 0 0 10px;
-  color: var(--cp-text-secondary);
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
-.cp-quick a {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 7px 0;
+.cp-toc a {
+  display: block;
+  padding: 6px 12px;
+  border-left: 2px solid var(--cp-border-light);
   color: var(--cp-text-regular);
-  font-size: 0.88rem;
+  font-size: 0.82rem;
+  line-height: 1.35;
   text-decoration: none;
 }
 
-.cp-quick a:hover {
+.cp-toc a:hover {
   color: var(--cp-primary);
+}
+
+.cp-toc a.is-active {
+  border-left-color: var(--cp-primary);
+  background: var(--cp-primary-light);
+  color: var(--cp-primary);
+}
+
+@media (min-width: 1200px) {
+  .cp-workspace {
+    grid-template-columns: minmax(0, 1fr) 208px;
+  }
+
+  .cp-toc {
+    display: flex;
+  }
 }
 
 .cp-hero {
@@ -625,10 +612,6 @@
 }
 
 @media (max-width: 1023px) {
-  .cp-workspace {
-    grid-template-columns: minmax(180px, 0.8fr) minmax(300px, 1.2fr);
-  }
-
   .cp-stats,
   .cp-welcome-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1164,17 +1147,7 @@
     grid-template-columns: 1fr;
   }
 }
-/* 侧栏「本页板块」锚点：平滑滚动 + 板块落点留白；侧栏标题不进文档大纲 */
-html {
-  scroll-behavior: smooth;
-}
-
+/* 「本页板块」锚点（PageToc）：板块落点留白；平滑滚动由 PageToc 的 scrollIntoView 负责 */
 .cp-section {
   scroll-margin-top: 12px;
-}
-
-.cp-panel .cp-panel-title {
-  margin: 0;
-  font-size: 1.15rem;
-  font-weight: 700;
 }

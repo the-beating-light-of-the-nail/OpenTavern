@@ -36,6 +36,10 @@ export interface LocalTavern {
   license?: 'AGPL-3.0';
 }
 
+/** 仍保留的站内工具 slug 白名单：/toolkit 列表、首页统计与侧栏「工具」计数共用一处维护
+ *  （zh-CN 下 pure-tavern 详情页未保留，列表页单独隐藏；计数按收录数 5 算，与首页统计一致） */
+export const KEPT_TOOL_SLUGS = new Set(['card-studio', 'worldbook-forge', 'preset-lab', 'card-converter', 'pure-tavern']);
+
 /** 站内工具：首页宫格与 /tools 站内工具区共用 */
 export const SITE_TOOLS: SiteTool[] = [
   {

@@ -62,8 +62,6 @@ const C = {
       { title: '导入酒馆开聊', desc: '把卡带进在线酒馆直接开聊，聊天记录只存你自己的浏览器。', cta: '立即开聊', to: '/opentavern' },
     ],
     note: '站点信息人工复核，仅供导航参考；下载前请确认各站点条款与作者许可。本站与上述站点无关联。',
-    asideQuick: '相关入口',
-    asideHere: '本页板块',
     updated: '最后更新：2026-11-10',
     seo: {
       title: '角色卡网站导航：8 个精选角色卡资源站 + 导入指引 | RoleChat AI',
@@ -94,8 +92,6 @@ const C = {
       { title: 'Import and chat', desc: 'Bring the card into the online tavern and start chatting — logs stay in your browser.', cta: 'Start chatting', to: '/opentavern' },
     ],
     note: 'Site listings are human-reviewed and provided for navigation only; check each site’s terms and creator licenses before downloading. We are not affiliated with these sites.',
-    asideQuick: 'Related',
-    asideHere: 'On this page',
     updated: 'Last updated: 2026-11-10',
     seo: {
       title: 'Character Card Site Directory: 8 Curated Card Sites + Import Guide | RoleChat AI',
@@ -108,6 +104,12 @@ const C = {
 } as const;
 
 const content = computed(() => (isZh.value ? C['zh-CN'] : C.en));
+
+// 右侧「本页板块」目录：三个分组 + 导入指引（原中间栏锚点）
+const tocItems = computed(() => [
+  ...GROUPS.map((group, i) => ({ id: group.key, label: content.value.groups[i].title })),
+  { id: 'how', label: content.value.howTitle },
+]);
 
 const canonicalUrl = computed(() =>
   isZh.value ? 'https://www.rolechatai.com/zh-CN/card-sites' : 'https://www.rolechatai.com/card-sites',
@@ -149,41 +151,7 @@ useHead({
     <PageToolbar :badge="content.badge" :cta-label="content.ctaPrimary" />
 
     <main class="cp-workspace">
-      <!-- 左：相关入口 + 本页板块 -->
-      <aside class="cp-panel">
-        <div class="cp-panel-head">
-          <div>
-            <p class="cp-kicker">CARD SITES</p>
-            <p class="cp-panel-title">{{ content.h1 }}</p>
-          </div>
-        </div>
-
-        <div class="cp-quick">
-          <p class="cp-quick-title">{{ content.asideQuick }}</p>
-          <NuxtLink to="/opentavern">
-            <span>{{ isZh ? '在线网页酒馆' : 'Online tavern' }}</span><span>→</span>
-          </NuxtLink>
-          <NuxtLink :to="localePath('/tutorials')">
-            <span>{{ isZh ? '教程中心' : 'Tutorials' }}</span><span>→</span>
-          </NuxtLink>
-          <NuxtLink :to="localePath('/toolkit')">
-            <span>{{ isZh ? '工具中心' : 'Toolkit' }}</span><span>→</span>
-          </NuxtLink>
-          <NuxtLink :to="localePath('/web-tavern')">
-            <span>{{ isZh ? '在线本地酒馆' : 'Online local tavern' }}</span><span>→</span>
-          </NuxtLink>
-        </div>
-
-        <div class="cp-quick">
-          <p class="cp-quick-title">{{ content.asideHere }}</p>
-          <a v-for="(group, i) in GROUPS" :key="group.key" :href="`#${group.key}`">
-            <span>{{ content.groups[i].title }}</span><span>↓</span>
-          </a>
-          <a href="#how"><span>{{ content.howTitle }}</span><span>↓</span></a>
-        </div>
-      </aside>
-
-      <!-- 中：内容橱窗 -->
+      <!-- 主内容（原「相关入口」中间栏与左侧全局导航完全重复，已删；板块跳转移至右侧 PageToc） -->
       <section class="cp-panel">
         <div class="cp-hero">
           <h1>{{ content.h1 }}</h1>
@@ -230,6 +198,9 @@ useHead({
 
         <p class="cp-updated">{{ content.updated }}</p>
       </section>
+
+      <!-- 右：本页板块目录（≥1200px 显示） -->
+      <PageToc :items="tocItems" />
     </main>
   </div>
 </template>

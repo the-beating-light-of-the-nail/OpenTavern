@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SITE_TOOLS } from '~/data/tools';
+import { SITE_TOOLS, KEPT_TOOL_SLUGS } from '~/data/tools';
 import { useGuides } from '~/data';
 import { breadcrumbSchema } from '~/composables/useSeo';
 
@@ -14,8 +14,7 @@ const { t, locale } = useI18n();
 const localePath = useLocalePath();
 const isZh = computed(() => locale.value === 'zh-CN');
 
-// 与旧 /tools 列表同一收敛规则：只展示仍保留的站内工具，避免链到已 410 的工具页
-const KEPT_TOOL_SLUGS = new Set(['card-studio', 'worldbook-forge', 'preset-lab', 'card-converter', 'pure-tavern']);
+// 只展示白名单内的站内工具，避免链到已 410 的工具页（白名单在 data/tools.ts 统一维护）
 const keptTools = computed(() =>
   SITE_TOOLS.filter((tool) => {
     if (!KEPT_TOOL_SLUGS.has(tool.slug)) return false;
@@ -53,8 +52,6 @@ const C = {
     ],
     guidesTitle: '开工前的两篇教程',
     guidesDesc: '工具都就绪了，只差一把 API Key——这两篇按顺序看完即可开聊。',
-    asideQuick: '相关入口',
-    asideHere: '本页板块',
     updated: '最后更新：2026-11-10',
     seo: {
       title: 'SillyTavern 在线工具箱：角色卡编辑、世界书、预设、格式转换 | RoleChat AI',
@@ -84,8 +81,6 @@ const C = {
     ],
     guidesTitle: 'Two guides before you start',
     guidesDesc: 'The tools are ready — all you need is an API key. Read these two in order and you can chat.',
-    asideQuick: 'Related',
-    asideHere: 'On this page',
     updated: 'Last updated: 2026-11-10',
     seo: {
       title: 'SillyTavern Online Toolkit: Card Editor, Worldbook, Presets & Converter | RoleChat AI',
@@ -98,6 +93,13 @@ const C = {
 } as const;
 
 const content = computed(() => (isZh.value ? C['zh-CN'] : C.en));
+
+// 右侧「本页板块」目录（原中间栏锚点）
+const tocItems = computed(() => [
+  { id: 'tools', label: content.value.toolsTitle },
+  { id: 'pick', label: content.value.pickTitle },
+  { id: 'guides', label: content.value.guidesTitle },
+]);
 
 const canonicalUrl = computed(() =>
   isZh.value ? 'https://www.rolechatai.com/zh-CN/toolkit' : 'https://www.rolechatai.com/toolkit',
@@ -139,40 +141,7 @@ useHead({
     <PageToolbar :badge="content.badge" :cta-label="content.ctaPrimary" />
 
     <main class="cp-workspace">
-      <!-- 左：相关入口 + 本页板块 -->
-      <aside class="cp-panel">
-        <div class="cp-panel-head">
-          <div>
-            <p class="cp-kicker">TOOLKIT</p>
-            <p class="cp-panel-title">{{ content.h1 }}</p>
-          </div>
-        </div>
-
-        <div class="cp-quick">
-          <p class="cp-quick-title">{{ content.asideQuick }}</p>
-          <NuxtLink to="/opentavern">
-            <span>{{ isZh ? '在线网页酒馆' : 'Online tavern' }}</span><span>→</span>
-          </NuxtLink>
-          <NuxtLink :to="localePath('/tutorials')">
-            <span>{{ isZh ? '教程中心' : 'Tutorials' }}</span><span>→</span>
-          </NuxtLink>
-          <NuxtLink :to="localePath('/card-sites')">
-            <span>{{ isZh ? '卡站导航' : 'Card sites' }}</span><span>→</span>
-          </NuxtLink>
-          <NuxtLink :to="localePath('/web-tavern')">
-            <span>{{ isZh ? '在线本地酒馆' : 'Online local tavern' }}</span><span>→</span>
-          </NuxtLink>
-        </div>
-
-        <div class="cp-quick">
-          <p class="cp-quick-title">{{ content.asideHere }}</p>
-          <a href="#tools"><span>{{ content.toolsTitle }}</span><span>↓</span></a>
-          <a href="#pick"><span>{{ content.pickTitle }}</span><span>↓</span></a>
-          <a href="#guides"><span>{{ content.guidesTitle }}</span><span>↓</span></a>
-        </div>
-      </aside>
-
-      <!-- 中：内容橱窗 -->
+      <!-- 主内容（原「相关入口」中间栏与左侧全局导航完全重复，已删；板块跳转移至右侧 PageToc） -->
       <section class="cp-panel">
         <div class="cp-hero">
           <h1>{{ content.h1 }}</h1>
@@ -229,6 +198,9 @@ useHead({
 
         <p class="cp-updated">{{ content.updated }}</p>
       </section>
+
+      <!-- 右：本页板块目录（≥1200px 显示） -->
+      <PageToc :items="tocItems" />
     </main>
   </div>
 </template>

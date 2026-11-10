@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useCharacters, useGuides, KEPT_CHARACTER_SLUGS } from '~/data';
 import { HOME_CONTENT } from '~/data/homepage';
+import { KEPT_TOOL_SLUGS } from '~/data/tools';
 
 definePageMeta({ layout: 'dashboard' });
 
@@ -23,8 +24,6 @@ const guides = useGuides();
 // 只展示收录白名单内的角色，与 /characters 列表页一致（避免链到 410 详情页）
 const characters = computed(() => allCharacters.value.filter((c) => KEPT_CHARACTER_SLUGS.has(c.slug)));
 
-const KEPT_TOOLS = 5;
-
 const stats = computed(() => [
   {
     key: 'characters',
@@ -45,11 +44,22 @@ const stats = computed(() => [
   {
     key: 'tools',
     label: isZh.value ? '工具' : 'Tools',
-    value: KEPT_TOOLS,
+    value: KEPT_TOOL_SLUGS.size,
     icon: 'tools',
     color: 'orange',
     to: localePath('/toolkit'),
   },
+]);
+
+// 右侧「本页板块」目录：七个板块全量（原中间栏只列 5 个，补齐角色卡与教程）
+const tocItems = computed(() => [
+  { id: 'tools', label: isZh.value ? '工具箱' : 'Toolbox' },
+  { id: 'characters', label: isZh.value ? '角色卡' : 'Characters' },
+  { id: 'card-sites', label: isZh.value ? '卡站导航' : 'Card sites' },
+  { id: 'plugins', label: isZh.value ? '插件与预设' : 'Plugins & presets' },
+  { id: 'cloud', label: isZh.value ? '云酒馆' : 'Cloud taverns' },
+  { id: 'api-guide', label: isZh.value ? 'API 指南' : 'API guide' },
+  { id: 'guides', label: isZh.value ? '教程' : 'Guides' },
 ]);
 
 const tipIndex = ref(0);
@@ -162,61 +172,8 @@ useHead({
     </header>
 
     <main class="cp-workspace">
-      <!-- 左：站内资源 -->
-      <aside class="cp-panel">
-        <div class="cp-panel-head">
-          <div>
-            <p class="cp-kicker">RESOURCES</p>
-            <p class="cp-panel-title">{{ isZh ? '站内资源' : 'Resources' }}</p>
-          </div>
-        </div>
-
-        <ul class="cp-tree">
-          <li v-for="stat in stats" :key="stat.key">
-            <NuxtLink :to="stat.to">
-              <span class="cp-tree-icon" :class="`is-${stat.color}`">
-                <HubIcon :name="stat.icon as any" size="17" />
-              </span>
-              <span class="cp-tree-label">{{ stat.label }}</span>
-              <strong class="cp-count">{{ stat.value }}</strong>
-            </NuxtLink>
-          </li>
-        </ul>
-
-        <div class="cp-quick">
-          <p class="cp-quick-title">{{ isZh ? '快速入口' : 'Quick links' }}</p>
-          <NuxtLink to="/opentavern">
-            <span>{{ isZh ? '在线网页酒馆' : 'Online tavern' }}</span><span>→</span>
-          </NuxtLink>
-          <NuxtLink :to="localePath('/card-sites')">
-            <span>{{ isZh ? '角色卡网站' : 'Card sites' }}</span><span>→</span>
-          </NuxtLink>
-          <NuxtLink :to="localePath('/web-tavern')">
-            <span>{{ isZh ? '在线本地酒馆' : 'Online local tavern' }}</span><span>→</span>
-          </NuxtLink>
-        </div>
-
-        <div class="cp-quick">
-          <p class="cp-quick-title">{{ isZh ? '本页板块' : 'On this page' }}</p>
-          <a href="#tools"><span>{{ isZh ? '在线工具箱' : 'Online toolbox' }}</span><span>↓</span></a>
-          <a href="#card-sites"><span>{{ isZh ? '角色卡站导航' : 'Card site directory' }}</span><span>↓</span></a>
-          <a href="#plugins"><span>{{ isZh ? '插件与预设资源' : 'Plugins &amp; presets' }}</span><span>↓</span></a>
-          <a href="#cloud"><span>{{ isZh ? '云酒馆方案' : 'Cloud taverns' }}</span><span>↓</span></a>
-          <a href="#api-guide"><span>{{ isZh ? 'API 导航' : 'API guide' }}</span><span>↓</span></a>
-        </div>
-
-        <div class="cp-quick">
-          <p class="cp-quick-title">{{ isZh ? 'API 入门' : 'API quick start' }}</p>
-          <NuxtLink :to="localePath('/guides/how-to-get-an-api-key')">
-            <span>{{ isZh ? '获取 API Key' : 'Get an API key' }}</span><span>→</span>
-          </NuxtLink>
-          <NuxtLink :to="localePath('/guides/how-to-use-openrouter-for-roleplay')">
-            <span>{{ isZh ? 'OpenRouter 教程' : 'OpenRouter guide' }}</span><span>→</span>
-          </NuxtLink>
-        </div>
-      </aside>
-
-      <!-- 中：六板块内容橱窗 -->
+      <!-- 主内容：六板块内容橱窗（原「站内资源/快速入口」中间栏与左侧导航、
+           首屏统计完全重复，已删；板块跳转移至右侧 PageToc 目录栏） -->
       <section class="cp-panel cp-showcase">
         <!-- M1 首屏主视觉 -->
         <div class="cp-hero">
@@ -397,6 +354,9 @@ useHead({
 
         <p class="cp-updated">{{ content.updated }}</p>
       </section>
+
+      <!-- 右：本页板块目录（≥1200px 显示） -->
+      <PageToc :items="tocItems" />
     </main>
 
     <!-- 首次进入的欢迎浮层（对齐 cardplus 的 welcome overlay；SSR 不渲染，不影响 SEO） -->
