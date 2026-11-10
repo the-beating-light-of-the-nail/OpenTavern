@@ -17,6 +17,11 @@ export default defineNuxtConfig({
     '/privacy': { prerender: true },
     '/terms': { prerender: true },
     '/where-to-find-character-cards': { prerender: true },
+    // 新版列表页（承接侧栏导航与内链；旧 /guides /tools /where-to-find-character-cards 保留 200 给搜索流量）
+    '/tutorials': { prerender: true },
+    '/toolkit': { prerender: true },
+    '/card-sites': { prerender: true },
+    '/web-tavern': { prerender: true },
     // 全站安全响应头（审计 Phase 2）；CSP 留待渲染回归测试后再加，避免误伤内联 hydration 脚本
     '/**': {
       headers: {
@@ -97,6 +102,15 @@ export default defineNuxtConfig({
         '/zh-CN/terms',
         '/where-to-find-character-cards',
         '/zh-CN/where-to-find-character-cards',
+        // 新版列表页（与 route-guard ALLOW_EXACT、public/sitemap.xml 四处同步）
+        '/tutorials',
+        '/zh-CN/tutorials',
+        '/toolkit',
+        '/zh-CN/toolkit',
+        '/card-sites',
+        '/zh-CN/card-sites',
+        '/web-tavern',
+        '/zh-CN/web-tavern',
         '/characters',
         '/characters/the-dragon-prince',
         // 新收录 3 张热门卡（首页 M3 橱窗链接 en + zh-CN 版本，与 route-guard/sitemap 同步）

@@ -40,7 +40,7 @@ const stats = computed(() => [
     value: guides.value.length,
     icon: 'book',
     color: 'green',
-    to: localePath('/guides'),
+    to: localePath('/tutorials'),
   },
   {
     key: 'tools',
@@ -48,7 +48,7 @@ const stats = computed(() => [
     value: KEPT_TOOLS,
     icon: 'tools',
     color: 'orange',
-    to: localePath('/tools'),
+    to: localePath('/toolkit'),
   },
 ]);
 
@@ -157,7 +157,7 @@ useHead({
         <NuxtLink to="/opentavern" class="cp-btn cp-btn-primary">
           {{ isZh ? '在线网页酒馆 (OpenTavern)' : 'Online Tavern (OpenTavern)' }}
         </NuxtLink>
-        <NuxtLink :to="localePath('/guides')" class="cp-btn">{{ isZh ? '打开教程' : 'Guides' }}</NuxtLink>
+        <NuxtLink :to="localePath('/tutorials')" class="cp-btn">{{ isZh ? '打开教程' : 'Guides' }}</NuxtLink>
       </div>
     </header>
 
@@ -188,11 +188,11 @@ useHead({
           <NuxtLink to="/opentavern">
             <span>{{ isZh ? '在线网页酒馆' : 'Online tavern' }}</span><span>→</span>
           </NuxtLink>
-          <NuxtLink :to="localePath('/where-to-find-character-cards')">
+          <NuxtLink :to="localePath('/card-sites')">
             <span>{{ isZh ? '角色卡网站' : 'Card sites' }}</span><span>→</span>
           </NuxtLink>
-          <NuxtLink to="/cloud-taverns/">
-            <span>{{ isZh ? '云酒馆' : 'Cloud taverns' }}</span><span>→</span>
+          <NuxtLink :to="localePath('/web-tavern')">
+            <span>{{ isZh ? '在线本地酒馆' : 'Online local tavern' }}</span><span>→</span>
           </NuxtLink>
         </div>
 
@@ -259,7 +259,7 @@ useHead({
               <small>{{ tool.desc }}</small>
             </NuxtLink>
           </div>
-          <NuxtLink :to="localePath('/tools')" class="cp-section-cta">
+          <NuxtLink :to="localePath('/toolkit')" class="cp-section-cta">
             {{ isZh ? '全部工具' : 'All tools' }} →
           </NuxtLink>
         </section>
@@ -301,7 +301,7 @@ useHead({
               <small>{{ site.desc }}</small>
             </div>
           </div>
-          <NuxtLink :to="localePath('/where-to-find-character-cards')" class="cp-section-cta">
+          <NuxtLink :to="localePath('/card-sites')" class="cp-section-cta">
             {{ content.cardSitesCta }} →
           </NuxtLink>
         </section>
@@ -344,6 +344,9 @@ useHead({
             </li>
           </ul>
           <p class="cp-section-note">{{ content.cloudNote }}</p>
+          <NuxtLink :to="localePath('/web-tavern')" class="cp-section-cta">
+            {{ isZh ? '了解在线本地酒馆方案' : 'About the online local tavern' }} →
+          </NuxtLink>
         </section>
 
         <!-- M5b AI 角色扮演 API 推荐指南 -->
@@ -387,7 +390,7 @@ useHead({
               </NuxtLink>
             </li>
           </ol>
-          <NuxtLink :to="localePath('/guides')" class="cp-section-cta">
+          <NuxtLink :to="localePath('/tutorials')" class="cp-section-cta">
             {{ content.guidesCta }} →
           </NuxtLink>
         </section>

@@ -17,6 +17,9 @@ const guides = useGuides();
   <WorkbenchShell active-cat="resource">
 
     <main class="mx-auto max-w-3xl px-5 py-14">
+      <!-- 本页已升级：新版教程中心承接导航与内链，旧 URL 保留给搜索流量（不加 301/canonical） -->
+      <PageUpgradeBanner to="/tutorials" name-zh="教程中心" name-en="Tutorial Center" class="mb-10" />
+
       <div class="mb-10 text-center">
         <h1 class="font-display text-3xl font-semibold tracking-wide sm:text-4xl">{{ t('guides_title') }}</h1>
         <p class="mx-auto mt-3 max-w-xl text-plum-muted">

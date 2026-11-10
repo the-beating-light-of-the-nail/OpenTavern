@@ -60,11 +60,11 @@ function onCat(id: string) {
   else navigateTo({ path: navTo('/'), query: { cat: id }, hash: '#tools-hub' });
 }
 
-/* ================= 极简页脚（路由收敛后只保留白名单链接） ================= */
+/* ================= 极简页脚（路由收敛后只保留白名单链接；列表页换新版 URL，旧 URL 留给搜索流量） ================= */
 const footerLinks = computed(() => [
-  { to: navTo('/tools'), label: t('nav_tools') },
+  { to: navTo('/toolkit'), label: t('nav_tools') },
   { to: navTo('/characters'), label: t('nav_characters') },
-  { to: navTo('/guides'), label: t('nav_guides') },
+  { to: navTo('/tutorials'), label: t('nav_guides') },
   { to: navTo('/about'), label: t('nav_about') },
   { to: navTo('/contact'), label: t('nav_contact') },
   { to: navTo('/privacy'), label: t('nav_privacy') },

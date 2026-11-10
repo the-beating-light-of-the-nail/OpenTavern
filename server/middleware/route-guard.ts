@@ -19,10 +19,11 @@ const REDIRECTS_301: Record<string, string> = {
 
 // 新首页规划中的栏目 URL：栏目页建好前临时 302 到最接近的现有页面，
 // 避免首页内链直接打到 404；栏目页上线后删掉对应条目即可。
+// 2026-11-10：/card-sites 升级为新版卡站导航页（302 条目移除）；
+// /cloud-taverns 槽位升级为 /web-tavern 在线本地酒馆方案页（302 目标更新）。
 const REDIRECTS_302: Record<string, string> = {
   '/ai-chat': '/opentavern',
-  '/cloud-taverns': '/tools',
-  '/card-sites': '/where-to-find-character-cards',
+  '/cloud-taverns': '/web-tavern',
   '/wiki': '/guides',
   '/wiki/local-deploy': '/guides/sillytavern-vs-web-tavern',
   '/wiki/glossary': '/guides',
@@ -44,6 +45,15 @@ const ALLOW_EXACT = new Set([
   '/zh-CN/terms',
   '/where-to-find-character-cards',
   '/zh-CN/where-to-find-character-cards',
+  // 新版列表页（承接导航与内链；与 nuxt.config prerender、public/sitemap.xml 四处同步）
+  '/tutorials',
+  '/zh-CN/tutorials',
+  '/toolkit',
+  '/zh-CN/toolkit',
+  '/card-sites',
+  '/zh-CN/card-sites',
+  '/web-tavern',
+  '/zh-CN/web-tavern',
   '/characters',
   '/characters/the-dragon-prince',
   // 新收录 3 张热门卡 + zh-CN 角色卡列表页（首页六板块橱窗链接；与 nuxt.config prerender、public/sitemap.xml 同步）

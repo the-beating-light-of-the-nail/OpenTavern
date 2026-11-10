@@ -66,7 +66,11 @@ function inSection(section: string) {
             <HubIcon name="house" size="16" />
             <span class="wb-nav-label">{{ t('breadcrumb_home') }}</span>
           </NuxtLink>
-          <NuxtLink :to="navTo('/tools')" class="wb-nav-link" :class="{ 'is-active': inSection('/tools') }">
+          <NuxtLink
+            :to="navTo('/toolkit')"
+            class="wb-nav-link"
+            :class="{ 'is-active': inSection('/toolkit') || inSection('/tools') }"
+          >
             <HubIcon name="tools" size="16" />
             <span class="wb-nav-label">{{ t('nav_tools') }}</span>
           </NuxtLink>
@@ -74,7 +78,11 @@ function inSection(section: string) {
             <HubIcon name="users" size="16" />
             <span class="wb-nav-label">{{ t('nav_characters') }}</span>
           </NuxtLink>
-          <NuxtLink :to="navTo('/guides')" class="wb-nav-link" :class="{ 'is-active': inSection('/guides') }">
+          <NuxtLink
+            :to="navTo('/tutorials')"
+            class="wb-nav-link"
+            :class="{ 'is-active': inSection('/tutorials') || inSection('/guides') }"
+          >
             <HubIcon name="book" size="16" />
             <span class="wb-nav-label">{{ t('nav_guides') }}</span>
           </NuxtLink>

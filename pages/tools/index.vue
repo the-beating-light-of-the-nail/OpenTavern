@@ -42,6 +42,9 @@ const keptTools = computed(() =>
 <template>
   <WorkbenchShell active-cat="all">
 
+    <!-- 本页已升级：新版工具中心承接导航与内链，旧 URL 保留给搜索流量（不加 301/canonical） -->
+    <PageUpgradeBanner to="/toolkit" name-zh="工具中心" name-en="Toolkit" class="mx-auto max-w-3xl px-5 pt-8" />
+
     <!-- Hero -->
     <section class="rc-hero-bg relative overflow-hidden">
       <div class="relative z-10 mx-auto max-w-3xl px-5 py-20 text-center sm:py-24">

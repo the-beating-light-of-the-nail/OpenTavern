@@ -33,6 +33,9 @@ const individual = [
   <WorkbenchShell active-cat="resource">
 
     <main class="mx-auto max-w-2xl px-5 py-12">
+      <!-- 本页已升级：新版卡站导航承接导航与内链，旧 URL 保留给搜索流量（不加 301/canonical） -->
+      <PageUpgradeBanner to="/card-sites" name-zh="角色卡网站导航" name-en="Card Site Directory" class="mb-6" />
+
       <NuxtLink :to="localePath('/guides')" class="rc-nav-link mb-6 inline-flex">{{ t('wfc_back_all_guides') }}</NuxtLink>
 
       <h1 class="font-display text-3xl font-semibold tracking-wide sm:text-4xl">{{ t('wfc_title') }}</h1>

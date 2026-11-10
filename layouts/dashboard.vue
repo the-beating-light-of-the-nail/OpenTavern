@@ -21,7 +21,7 @@ function toggleSidebar() {
 }
 
 function navTo(path: string) {
-  if (path === '/opentavern' || path.startsWith('/cloud-taverns')) return path;
+  if (path === '/opentavern') return path;
   return localePath(path);
 }
 
@@ -29,17 +29,19 @@ const navItems = computed(() => [
   { to: navTo('/'), label: isZh.value ? '首页' : 'Home', icon: 'house' },
   // 锚文本带业务词（在线网页酒馆），让 /opentavern 承接「在线酒馆」搜索意图
   { to: '/opentavern', label: isZh.value ? '在线网页酒馆' : 'Online tavern', icon: 'chat' },
-  { to: navTo('/guides'), label: isZh.value ? '教程' : 'Guides', icon: 'book' },
-  { to: navTo('/tools'), label: isZh.value ? '工具' : 'Tools', icon: 'tools' },
-  { to: navTo('/where-to-find-character-cards'), label: isZh.value ? '角色卡网站' : 'Card sites', icon: 'users' },
-  { to: '/cloud-taverns/', label: isZh.value ? '云酒馆' : 'Cloud taverns', icon: 'server' },
+  // 教程/工具/卡站/酒馆方案四槽改指新版页面；旧 /guides /tools /where-to-find-character-cards
+  // 保留 200 给搜索引擎自然流量，页内挂 PageUpgradeBanner 引流到新 URL
+  { to: navTo('/tutorials'), label: isZh.value ? '教程' : 'Guides', icon: 'book' },
+  { to: navTo('/toolkit'), label: isZh.value ? '工具' : 'Tools', icon: 'tools' },
+  { to: navTo('/card-sites'), label: isZh.value ? '角色卡网站' : 'Card sites', icon: 'users' },
+  { to: navTo('/web-tavern'), label: isZh.value ? '在线本地酒馆' : 'Online local tavern', icon: 'server' },
 ]);
 
 const mobileNav = computed(() => [
   { to: navTo('/'), label: isZh.value ? '首页' : 'Home', icon: 'house' },
   { to: '/opentavern', label: isZh.value ? '网页酒馆' : 'Tavern', icon: 'chat' },
-  { to: navTo('/guides'), label: isZh.value ? '教程' : 'Guides', icon: 'book' },
-  { to: navTo('/tools'), label: isZh.value ? '工具' : 'Tools', icon: 'tools' },
+  { to: navTo('/tutorials'), label: isZh.value ? '教程' : 'Guides', icon: 'book' },
+  { to: navTo('/toolkit'), label: isZh.value ? '工具' : 'Tools', icon: 'tools' },
   { to: navTo('/about'), label: isZh.value ? '关于' : 'About', icon: 'compass' },
 ]);
 

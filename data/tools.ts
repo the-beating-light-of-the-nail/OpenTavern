@@ -200,8 +200,8 @@ export const HOME_HUB: HubTool[] = [
   { slug: 'sillytavern', name: 'SillyTavern', category: 'local', status: 'live', href: 'https://sillytavern.dev', license: 'AGPL-3.0', descKey: 'tools_dir_sillytavern_desc' },
   { slug: 'risuai', name: 'RisuAI', category: 'local', status: 'live', href: 'https://risuai.net', descKey: 'tools_dir_risuai_desc' },
   { slug: 'agnai', name: 'AgnAI', category: 'local', status: 'live', href: 'https://agnai.chat', descKey: 'tools_dir_agnai_desc' },
-  // 资源指南
-  { slug: 'guides', name: 'Guides', category: 'resource', status: 'live', to: '/guides', descKey: 'home_hub_gd_desc' },
-  { slug: 'card-sources', name: 'Card Sources', category: 'resource', status: 'live', to: '/where-to-find-character-cards', descKey: 'home_hub_wf_desc' },
+  // 资源指南（列表页换新版 URL：/tutorials 与 /card-sites；旧 /guides、/where-to-find-character-cards 保留给搜索流量）
+  { slug: 'guides', name: 'Guides', category: 'resource', status: 'live', to: '/tutorials', descKey: 'home_hub_gd_desc' },
+  { slug: 'card-sources', name: 'Card Sources', category: 'resource', status: 'live', to: '/card-sites', descKey: 'home_hub_wf_desc' },
   { slug: 'compare', name: 'Compare Taverns', category: 'resource', status: 'live', to: '/compare', descKey: 'home_hub_cmp_desc' },
 ];
