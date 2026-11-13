@@ -22,6 +22,8 @@ export default defineNuxtConfig({
     '/toolkit': { prerender: true },
     '/card-sites': { prerender: true },
     '/web-tavern': { prerender: true },
+    // 酒馆插件合辑（承接「酒馆插件/酒馆助手插件/酒馆提示词模板/酒馆美化」中文搜索词）
+    '/sillytavern-plugins': { prerender: true },
     // 全站安全响应头（审计 Phase 2）；CSP 留待渲染回归测试后再加，避免误伤内联 hydration 脚本
     '/**': {
       headers: {
@@ -111,6 +113,9 @@ export default defineNuxtConfig({
         '/zh-CN/card-sites',
         '/web-tavern',
         '/zh-CN/web-tavern',
+        // 酒馆插件合辑页（与 route-guard ALLOW_EXACT、public/sitemap.xml 四处同步）
+        '/sillytavern-plugins',
+        '/zh-CN/sillytavern-plugins',
         '/characters',
         '/characters/the-dragon-prince',
         // 新收录 3 张热门卡（首页 M3 橱窗链接 en + zh-CN 版本，与 route-guard/sitemap 同步）

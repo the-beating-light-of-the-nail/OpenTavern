@@ -54,6 +54,9 @@ const ALLOW_EXACT = new Set([
   '/zh-CN/card-sites',
   '/web-tavern',
   '/zh-CN/web-tavern',
+  // 酒馆插件合辑页（与 nuxt.config prerender、public/sitemap.xml 四处同步）
+  '/sillytavern-plugins',
+  '/zh-CN/sillytavern-plugins',
   '/characters',
   '/characters/the-dragon-prince',
   // 新收录 3 张热门卡 + zh-CN 角色卡列表页（首页六板块橱窗链接；与 nuxt.config prerender、public/sitemap.xml 同步）

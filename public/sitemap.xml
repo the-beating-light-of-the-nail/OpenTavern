@@ -356,4 +356,17 @@
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
+  <!-- 酒馆插件合辑页（酒馆插件/酒馆助手插件/酒馆提示词模板/酒馆美化） -->
+  <url>
+    <loc>https://www.rolechatai.com/sillytavern-plugins</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.rolechatai.com/zh-CN/sillytavern-plugins</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
 </urlset>

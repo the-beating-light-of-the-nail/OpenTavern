@@ -168,7 +168,7 @@ export const HOME_CONTENT: Record<'zh-CN' | 'en', HomeContent> = {
     ],
     cardSitesCta: '看角色卡站完整清单',
     resourcesTitle: '酒馆插件、破限预设与正则资源',
-    resourcesDesc: '预设、世界书、客户端与角色卡四类核心资源怎么选怎么用；站内工具可以直接上手。',
+    resourcesDesc: '预设、世界书、插件与角色卡四类核心资源怎么选怎么用；站内工具可以直接上手。',
     resources: [
       {
         tag: '预设',
@@ -186,10 +186,10 @@ export const HOME_CONTENT: Record<'zh-CN' | 'en', HomeContent> = {
       },
       {
         tag: '插件',
-        title: '酒馆客户端与插件生态',
-        desc: 'SillyTavern 本体与 PureTavern 等开源客户端支持扩展、主题与正则脚本；先看本地酒馆详情页再决定装哪个。',
-        cta: '看本地酒馆',
-        to: '/tools/pure-tavern',
+        title: '酒馆插件合辑（2026）',
+        desc: '酒馆助手、提示词模板、记忆表格与美化扩展的仓库地址、国内直连与安装教程，一页配齐。',
+        cta: '看插件合辑',
+        to: '/sillytavern-plugins',
       },
       {
         tag: '角色卡',
@@ -343,7 +343,7 @@ export const HOME_CONTENT: Record<'zh-CN' | 'en', HomeContent> = {
     ],
     cardSitesCta: 'See the full card-site list',
     resourcesTitle: 'Tavern Plugins, Jailbreak Presets & Regex Resources',
-    resourcesDesc: 'The four core resource types every tavern player juggles — presets, world books, clients and cards — and the in-site tools to handle them.',
+    resourcesDesc: 'The four core resource types every tavern player juggles — presets, world books, plugins and cards — and the in-site tools to handle them.',
     resources: [
       {
         tag: 'Presets',
@@ -361,10 +361,10 @@ export const HOME_CONTENT: Record<'zh-CN' | 'en', HomeContent> = {
       },
       {
         tag: 'Plugins',
-        title: 'Tavern clients & plugin ecosystem',
-        desc: 'SillyTavern itself and open clients like PureTavern support extensions, themes and regex scripts. Compare them before installing.',
-        cta: 'Compare local taverns',
-        to: '/tools/pure-tavern',
+        title: 'Tavern plugin collection (2026)',
+        desc: 'Repo links, China-friendly mirrors and a 3-step install guide for Tavern Helper, prompt-template, memory and beautify extensions — all on one page.',
+        cta: 'Browse plugins',
+        to: '/sillytavern-plugins',
       },
       {
         tag: 'Cards',
