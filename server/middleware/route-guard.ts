@@ -27,6 +27,8 @@ const REDIRECTS_302: Record<string, string> = {
   '/wiki': '/guides',
   '/wiki/local-deploy': '/guides/sillytavern-vs-web-tavern',
   '/wiki/glossary': '/guides',
+  // 在线体验区裸路径导流到 /web-tavern 落地页（应用本体在前缀 /play// 下）
+  '/play': '/web-tavern',
 };
 
 const ALLOW_EXACT = new Set([
@@ -102,6 +104,8 @@ const ALLOW_EXACT = new Set([
 const ALLOW_PREFIXES = [
   '/guides/',
   '/zh-CN/guides/',
+  // 在线体验区：自托管第三方纯前端酒馆（public/play/*，非 Nuxt 页面，不入 sitemap）
+  '/play/',
   '/_nuxt/',
   '/_ipx/',
   '/__nuxt',

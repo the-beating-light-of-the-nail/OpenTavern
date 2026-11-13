@@ -210,6 +210,12 @@ export const HOME_CONTENT: Record<'zh-CN' | 'en', HomeContent> = {
         highlight: true,
       },
       {
+        title: '开源酒馆在线体验区（本站托管）',
+        desc: 'EllipsisLM、FATI Tavern 等开源纯前端酒馆已由本站直接托管：点开即用，数据只存浏览器，还有 WebGPU 免 Key 本地推理可玩。',
+        cta: '去在线体验区',
+        to: '/web-tavern',
+      },
+      {
         title: '云主机自部署 SillyTavern',
         desc: '在 VPS 上架一套自己的酒馆，任何设备浏览器访问；插件、预设、角色卡完全自主掌控，数据不经过第三方。',
         cta: '看部署对比教程',
@@ -383,6 +389,12 @@ export const HOME_CONTENT: Record<'zh-CN' | 'en', HomeContent> = {
         cta: 'Open the online tavern',
         to: '/opentavern',
         highlight: true,
+      },
+      {
+        title: 'Open-source tavern playground (hosted here)',
+        desc: 'EllipsisLM, FATI Tavern and other open-source pure-frontend taverns, hosted on this site: click and chat, data stays in your browser — including a keyless WebGPU local-inference demo.',
+        cta: 'Visit the playground',
+        to: '/web-tavern',
       },
       {
         title: 'Self-host SillyTavern on a VPS',

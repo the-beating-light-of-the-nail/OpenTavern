@@ -33,6 +33,10 @@ interface TavernContent {
   waysTitle: string;
   waysDesc: string;
   ways: TavernWay[];
+  playTitle: string;
+  playDesc: string;
+  play: { name: string; tag: string; desc: string; cta: string; href: string; repo: string }[];
+  playNote: string;
   whyTitle: string;
   why: { title: string; desc: string }[];
   faqTitle: string;
@@ -76,6 +80,29 @@ const C: Record<'zh-CN' | 'en', TavernContent> = {
         to: '/opentavern',
       },
     ],
+    playTitle: '本站在线体验区',
+    playDesc:
+      '不想装任何东西？这些开源纯前端酒馆已由本站直接托管，点开即用——和在线本地酒馆同思路：数据只存你自己的浏览器，不经本站服务器中转。',
+    play: [
+      {
+        name: 'EllipsisLM',
+        tag: '单文件 · 即开即用',
+        desc: '开源单页酒馆：支持导入 SillyTavern V2 角色卡，连接 Gemini、OpenRouter、KoboldCpp 等接口即可开聊，适合先用云端 API 快速上手。',
+        cta: '打开 EllipsisLM',
+        href: '/play/ellipsis/',
+        repo: 'https://github.com/pacmanincarnate/EllipsisLM',
+      },
+      {
+        name: 'FATI Tavern',
+        tag: 'WebGPU 本地推理',
+        desc: '开源 PWA 酒馆：除自带 API Key 直连外，还内置免 Key 试玩档——WebGPU 把小模型直接跑进浏览器显存，断网也能聊（需 Chrome / Edge 等现代浏览器）。',
+        cta: '打开 FATI Tavern',
+        href: '/play/fati/',
+        repo: 'https://github.com/dongzhang777-source/fati-tavern',
+      },
+    ],
+    playNote:
+      '体验区应用均为第三方开源项目（Apache-2.0 / MIT），本站原样托管、随附原始许可与来源声明；各应用内的聊天数据与 API Key 只保存在你的浏览器里，本站不接触。',
     whyTitle: '为什么坚持「数据存本地」',
     why: [
       { title: '隐私', desc: '聊天记录不上传服务器，不用于模型训练。' },
@@ -102,7 +129,7 @@ const C: Record<'zh-CN' | 'en', TavernContent> = {
     ctaDesc: '打开网页、填上 API Key，三十秒内开始你的第一段对话。',
     ctaPrimary2: '打开在线网页酒馆',
     ctaSecondary2: '先看新手教程',
-    updated: '最后更新：2026-11-10',
+    updated: '最后更新：2026-11-13',
     seo: {
       title: '在线本地酒馆：免安装的网页 AI 酒馆方案 | RoleChat AI',
       description:
@@ -141,6 +168,29 @@ const C: Record<'zh-CN' | 'en', TavernContent> = {
         to: '/opentavern',
       },
     ],
+    playTitle: 'Try open-source taverns right here',
+    playDesc:
+      'Not into installing anything? These open-source pure-frontend taverns are hosted by this site — same idea as the online local tavern: your data stays in your own browser and never touches our servers.',
+    play: [
+      {
+        name: 'EllipsisLM',
+        tag: 'Single file · instant',
+        desc: 'An open-source single-page tavern: import SillyTavern V2 character cards, connect Gemini, OpenRouter, KoboldCpp and chat — a fast start with cloud APIs.',
+        cta: 'Open EllipsisLM',
+        href: '/play/ellipsis/',
+        repo: 'https://github.com/pacmanincarnate/EllipsisLM',
+      },
+      {
+        name: 'FATI Tavern',
+        tag: 'WebGPU local inference',
+        desc: 'An open-source PWA tavern: bring your own API key, or use the built-in keyless demo — WebGPU runs a small model right in your browser, even offline (modern Chrome / Edge required).',
+        cta: 'Open FATI Tavern',
+        href: '/play/fati/',
+        repo: 'https://github.com/dongzhang777-source/fati-tavern',
+      },
+    ],
+    playNote:
+      'Playground apps are third-party open-source projects (Apache-2.0 / MIT), hosted unmodified with their original licenses and source attribution; in-app chats and API keys stay in your browser — this site never sees them.',
     whyTitle: 'Why keep data local',
     why: [
       { title: 'Privacy', desc: 'Chat logs are never uploaded to a server or used for training.' },
@@ -167,7 +217,7 @@ const C: Record<'zh-CN' | 'en', TavernContent> = {
     ctaDesc: 'Open the page, add an API key, and start your first conversation in thirty seconds.',
     ctaPrimary2: 'Open the online web tavern',
     ctaSecondary2: 'Read the beginner guides',
-    updated: 'Last updated: 2026-11-10',
+    updated: 'Last updated: 2026-11-13',
     seo: {
       title: 'Online Local Tavern: The No-Install Web AI Tavern | RoleChat AI',
       description:
@@ -183,6 +233,7 @@ const content = computed(() => (isZh.value ? C['zh-CN'] : C.en));
 // 右侧「本页板块」目录（原中间栏锚点）
 const tocItems = computed(() => [
   { id: 'ways', label: content.value.waysTitle },
+  { id: 'play', label: content.value.playTitle },
   { id: 'why', label: content.value.whyTitle },
   { id: 'faq', label: content.value.faqTitle },
 ]);
@@ -261,6 +312,24 @@ useHead({
               </NuxtLink>
             </div>
           </div>
+        </section>
+
+        <!-- 本站在线体验区（自托管第三方纯前端酒馆；/play/* 为静态目录，必须用原生 <a> 整页跳转，NuxtLink 会走 SPA 路由） -->
+        <section id="play" class="cp-section">
+          <h2>{{ content.playTitle }}</h2>
+          <p class="cp-section-desc">{{ content.playDesc }}</p>
+          <div class="cp-cloud-grid">
+            <div v-for="app in content.play" :key="app.name" class="cp-cloud-card">
+              <span class="cp-res-tag">{{ app.tag }}</span>
+              <strong>{{ app.name }}</strong>
+              <small>{{ app.desc }}</small>
+              <div class="flex flex-wrap items-center gap-4">
+                <a :href="app.href" class="cp-res-cta">{{ app.cta }} →</a>
+                <a :href="app.repo" target="_blank" rel="noopener" class="cp-res-cta">GitHub ↗</a>
+              </div>
+            </div>
+          </div>
+          <p class="cp-hint">{{ content.playNote }}</p>
         </section>
 
         <!-- 为什么数据存本地 -->
