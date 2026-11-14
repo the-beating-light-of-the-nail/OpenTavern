@@ -165,7 +165,7 @@ useHead({
           {{ isZh ? 'English' : '中文' }}
         </button>
         <NuxtLink to="/opentavern" class="cp-btn cp-btn-primary">
-          {{ isZh ? '在线网页酒馆 (OpenTavern)' : 'Online Tavern (OpenTavern)' }}
+          OpenTavern
         </NuxtLink>
         <NuxtLink :to="localePath('/tutorials')" class="cp-btn">{{ isZh ? '打开教程' : 'Guides' }}</NuxtLink>
       </div>
