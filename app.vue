@@ -3,19 +3,11 @@
     <NuxtPage />
   </NuxtLayout>
   <CookieConsent />
-  <template v-if="!hideAds">
-    <AdSidebar side="right" ad-id="banner160x600" :src="ADS.banner160x600.html" :width="ADS.banner160x600.width" :height="ADS.banner160x600.height" />
-    <AdSidebar side="left" ad-id="banner160x300" :src="ADS.banner160x300.html" :width="ADS.banner160x300.width" :height="ADS.banner160x300.height" />
-    <AdFooter ad-id="banner300" :src="ADS.banner300.html" :width="ADS.banner300.width" :height="ADS.banner300.height" />
-    <AdPanel />
-  </template>
 </template>
 
 <script setup lang="ts">
 // 站点级 SEO 默认值（所有页面生效；页面内 useSeoMeta 可按需覆盖）
 // 解决审计发现的全站缺失项：canonical、OG/Twitter、Organization/WebSite JSON-LD
-import { ADS } from '~/utils/ads';
-import { useAdPanel } from '~/composables/useAdPanel';
 import { mergeAiToolkitI18n } from '~/utils/st/regex-script';
 import { mergeToolPagesI18n } from '~/utils/tool-pages-i18n';
 
@@ -36,10 +28,6 @@ const canonicalUrl = useCanonicalUrl();
 const ogImage = absUrl('/og-default.png');
 const { locale } = useI18n();
 const route = useRoute();
-const isOtApp = computed(() => route.path.startsWith('/opentavern'));
-// 首页工作台是 cardplus 风格的全屏浅色布局，不叠加全站广告位
-const isDashboard = computed(() => route.path === '/' || route.path === '/zh-CN');
-const hideAds = computed(() => isOtApp.value || isDashboard.value);
 
 useHead({
   htmlAttrs: { lang: computed(() => localeToHtmlLang(locale.value)) },
@@ -104,16 +92,6 @@ useHead({
     },
   ],
 });
-
-// social-bar 脚本注入：随运行时状态 state.socialBar 显隐。
-// ?adpanel=1 面板可切换；脚本型广告关闭后可能需刷新才彻底消失。
-const { state, load } = useAdPanel();
-useHead(
-  computed(() => ({
-    script: !hideAds.value && state.value.socialBar ? [{ src: ADS.socialBar, async: true, body: true }] : [],
-  })),
-);
-onMounted(() => load());
 
 // PWA：注册 service worker（离线支持；不可用时静默降级，不影响站点）
 onMounted(() => {

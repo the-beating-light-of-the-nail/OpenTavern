@@ -10,8 +10,6 @@
  * - railMode="nav"（内页，默认）：分类点击导航到 /?cat=<id>#tools-hub，由首页 onMounted 读取生效；
  *   activeCat 高亮当前页所属分类（页面→分类映射沿用 HOME_HUB 注册表）
  * - 左栏收缩状态存 localStorage（键 wb_rail_collapsed），全站共享一份
- * - 顶栏下方保留 SiteAd（Smartlink + 468x60）：原内页 SiteHeader 内嵌的广告位随外壳统一迁入，
- *   不随旧页头下线；显隐仍由 ?adpanel=1 面板运行时控制
  */
 import { HUB_CATEGORIES, HOME_HUB } from '~/data/tools';
 
@@ -76,7 +74,6 @@ const footerLinks = computed(() => [
 <template>
   <div class="wb-shell">
     <WorkbenchHeader />
-    <SiteAd />
 
     <!-- 全幅主体：路由收敛后旧分类栏/分类页已下线，只保留内容列 -->
     <div class="wb-body">
